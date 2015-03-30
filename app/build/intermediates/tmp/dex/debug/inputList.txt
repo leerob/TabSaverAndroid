@@ -1,0 +1,6 @@
+/Users/Lee/AndroidStudioProjects/TabSaver/app/build/intermediates/classes/debug
+/Users/Lee/AndroidStudioProjects/TabSaver/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-80fdc798b8d638210b86b514a140d17f64bacdbf.jar
+/Users/Lee/AndroidStudioProjects/TabSaver/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.3-b433f5f6c3b2ce2661cf924cddf4d2c9118c9ec0.jar
+/Users/Lee/AndroidStudioProjects/TabSaver/app/build/intermediates/pre-dexed/debug/classes-e68e6d88d65b95f7cfda0773f82f41cdcbde84d1.jar
+/Users/Lee/AndroidStudioProjects/TabSaver/app/build/intermediates/pre-dexed/debug/classes-f02efb6a6face33fc714d0c7fb8e4ec1441b6a8e.jar
+/Users/Lee/AndroidStudioProjects/TabSaver/app/build/intermediates/pre-dexed/debug/classes-88a7b85539834a941c2453c2ac41b467d4760e07.jar
