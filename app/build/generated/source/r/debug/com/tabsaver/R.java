@@ -1683,13 +1683,14 @@ containing a value of this type.
         public static final int common_signin_btn_text_normal_light=0x7f02004a;
         public static final int common_signin_btn_text_pressed_dark=0x7f02004b;
         public static final int common_signin_btn_text_pressed_light=0x7f02004c;
-        public static final int ic_launcher=0x7f02004d;
-        public static final int ic_plusone_medium_off_client=0x7f02004e;
-        public static final int ic_plusone_small_off_client=0x7f02004f;
-        public static final int ic_plusone_standard_off_client=0x7f020050;
-        public static final int ic_plusone_tall_off_client=0x7f020051;
-        public static final int powered_by_google_dark=0x7f020052;
-        public static final int powered_by_google_light=0x7f020053;
+        public static final int ic_action_search=0x7f02004d;
+        public static final int ic_launcher=0x7f02004e;
+        public static final int ic_plusone_medium_off_client=0x7f02004f;
+        public static final int ic_plusone_small_off_client=0x7f020050;
+        public static final int ic_plusone_standard_off_client=0x7f020051;
+        public static final int ic_plusone_tall_off_client=0x7f020052;
+        public static final int powered_by_google_dark=0x7f020053;
+        public static final int powered_by_google_light=0x7f020054;
     }
     public static final class id {
         public static final int action_bar=0x7f090045;
@@ -1700,7 +1701,7 @@ containing a value of this type.
         public static final int action_bar_subtitle=0x7f090033;
         public static final int action_bar_title=0x7f090032;
         public static final int action_context_bar=0x7f090046;
-        public static final int action_list=0x7f090059;
+        public static final int action_list=0x7f09005a;
         public static final int action_menu_divider=0x7f090002;
         public static final int action_menu_presenter=0x7f090003;
         public static final int action_mode_bar=0x7f090042;
@@ -1757,6 +1758,7 @@ containing a value of this type.
         public static final int radio=0x7f09003f;
         public static final int sandbox=0x7f090026;
         public static final int satellite=0x7f090019;
+        public static final int search=0x7f090059;
         public static final int search_badge=0x7f090049;
         public static final int search_bar=0x7f090048;
         public static final int search_button=0x7f09004a;

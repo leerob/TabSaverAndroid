@@ -2,9 +2,13 @@ package com.tabsaver;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ListView;
 
 import org.json.JSONArray;
@@ -30,6 +34,30 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         new DownloadJSON().execute();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_list_view, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_list:
+                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(i);
+                return true;
+            case R.id.action_settings:
+                //openSettings();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     // DownloadJSON AsyncTask
@@ -62,6 +90,12 @@ public class MainActivity extends Activity {
                     map.put("id",  String.valueOf(i));
                     map.put("name", obj.getString("name"));
                     map.put("Monday", obj.getString("Monday"));
+                    map.put("Tuesday", obj.getString("Tuesday"));
+                    map.put("Wednesday", obj.getString("Wednesday"));
+                    map.put("Thursday", obj.getString("Thursday"));
+                    map.put("Friday", obj.getString("Friday"));
+                    map.put("Saturday", obj.getString("Saturday"));
+                    map.put("Sunday", obj.getString("Sunday"));
 
                     // Set the JSON Objects into the array
                     arraylist.add(map);
@@ -84,5 +118,7 @@ public class MainActivity extends Activity {
 
 
         }
+
+
     }
 }

@@ -15,6 +15,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
@@ -23,6 +25,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class MapActivity extends FragmentActivity {
 
@@ -50,7 +53,7 @@ public class MapActivity extends FragmentActivity {
             super.onPreExecute();
             // Create a Progress Dialog
             mProgressDialog = new ProgressDialog(MapActivity.this);
-            mProgressDialog.setTitle("Android JSON Parse Tutorial");
+            mProgressDialog.setTitle("Downloading Bar Data");
             mProgressDialog.setMessage("Loading...");
             mProgressDialog.setIndeterminate(false);
             mProgressDialog.show();
@@ -88,6 +91,8 @@ public class MapActivity extends FragmentActivity {
         @Override
         protected void onPostExecute(Void args) {
 
+            List<Marker> markers = new ArrayList<Marker>();
+
             // Add markers to the map
             for(int i = 0; i < arraylist.size(); i++){
                 // Get the current bar HashMap
@@ -100,17 +105,16 @@ public class MapActivity extends FragmentActivity {
                 Log.d("Name", name);
                 Log.d("Lat", "" + latitude);
                 Log.d("Long", "" + longitude);
-                mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(name).snippet("Deals"));
+                Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(name).snippet("Deals"));
+                markers.add((m));
             }
-            // Zoom in camera to Ames
-            //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(42.035021, -93.645), 15));
-
-            LatLng latLng = new LatLng(42.035021, -93.645);
-
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+            // Zoom in camera to Ames, will have to have separate arrays of markers to zoom to based on location
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            for (Marker marker : markers) {
+                builder.include(marker.getPosition());
+            }
+            LatLngBounds bounds = builder.build();
+            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
 
             mProgressDialog.dismiss();
         }
@@ -161,6 +165,7 @@ public class MapActivity extends FragmentActivity {
         switch (item.getItemId()) {
             case R.id.action_list:
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                //i.putExtra(jsonarray);
                 startActivity(i);
                 return true;
             case R.id.action_settings:

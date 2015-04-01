@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 public class ListArrayAdapter extends BaseAdapter {
@@ -42,8 +43,34 @@ public class ListArrayAdapter extends BaseAdapter {
         distance = (TextView) itemView.findViewById(R.id.distance);
         deals = (TextView) itemView.findViewById(R.id.deals);
 
-        String dealsStr = resultp.get("Monday");
-        //String[] dealArr = dealsStr.split(",");
+        // Determine Day of Week
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+
+        String dealsStr = "";
+        switch (day) {
+            case Calendar.SUNDAY:
+                dealsStr = resultp.get("Sunday");
+                break;
+            case Calendar.MONDAY:
+                dealsStr = resultp.get("Monday");
+                break;
+            case Calendar.TUESDAY:
+                dealsStr = resultp.get("Tuesday");
+                break;
+            case Calendar.WEDNESDAY:
+                dealsStr = resultp.get("Wednesday");
+                break;
+            case Calendar.THURSDAY:
+                dealsStr = resultp.get("Thursday");
+                break;
+            case Calendar.FRIDAY:
+                dealsStr = resultp.get("Friday");
+                break;
+            case Calendar.SATURDAY:
+                dealsStr = resultp.get("Saturday");
+                break;
+        }
 
         String formattedDeals = dealsStr.replace(",", "\n");
 
