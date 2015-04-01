@@ -35,17 +35,18 @@
 
         <activity
             android:name="com.tabsaver.MapActivity"
-            android:label="@string/title_activity_map" >
-        </activity>
-        <activity
-            android:name="com.tabsaver.MainActivity"
-            android:label="@string/title_activity_main"
+            android:label="@string/title_activity_map"
             android:theme="@android:style/Theme.Holo.Light" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.tabsaver.MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@android:style/Theme.Holo.Light" >
         </activity>
     </application>
 
