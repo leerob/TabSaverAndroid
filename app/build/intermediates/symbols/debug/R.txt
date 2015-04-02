@@ -431,6 +431,7 @@ int drawable ic_plusone_standard_off_client 0x7f020051
 int drawable ic_plusone_tall_off_client 0x7f020052
 int drawable powered_by_google_dark 0x7f020053
 int drawable powered_by_google_light 0x7f020054
+int drawable transparent 0x7f020055
 int id action_bar 0x7f090045
 int id action_bar_activity_content 0x7f090000
 int id action_bar_container 0x7f090044

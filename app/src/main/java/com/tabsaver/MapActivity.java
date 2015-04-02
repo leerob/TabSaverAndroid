@@ -2,6 +2,9 @@ package com.tabsaver;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -14,6 +17,7 @@ import android.widget.ListView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -88,6 +92,7 @@ public class MapActivity extends FragmentActivity {
             return null;
         }
 
+
         @Override
         protected void onPostExecute(Void args) {
 
@@ -102,10 +107,16 @@ public class MapActivity extends FragmentActivity {
                 double longitude = Double.parseDouble("-" + barHashMap.get("long"));
                 String name = barHashMap.get("name");
 
-                Log.d("Name", name);
-                Log.d("Lat", "" + latitude);
-                Log.d("Long", "" + longitude);
-                Marker m = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(name).snippet("Deals"));
+                
+                Bitmap newImg = scaleImage(getResources(), R.drawable.transparent, 35);
+
+
+                Marker m = mMap.addMarker(new MarkerOptions()
+                                .position(new LatLng(latitude, longitude))
+                                .title(name)
+                                .snippet("Deals")
+                                .icon(BitmapDescriptorFactory.fromBitmap(newImg)));
+
                 markers.add((m));
             }
             // Zoom in camera to Ames, will have to have separate arrays of markers to zoom to based on location
@@ -118,6 +129,33 @@ public class MapActivity extends FragmentActivity {
 
             mProgressDialog.dismiss();
         }
+    }
+
+    private Bitmap scaleImage(Resources res, int id, int lessSideSize) {
+        Bitmap b = null;
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inJustDecodeBounds = true;
+
+        BitmapFactory.decodeResource(res, id, o);
+
+        float sc = 0.0f;
+        int scale = 1;
+        // if image height is greater than width
+        if (o.outHeight > o.outWidth) {
+            sc = o.outHeight / lessSideSize;
+            scale = Math.round(sc);
+        }
+        // if image width is greater than height
+        else {
+            sc = o.outWidth / lessSideSize;
+            scale = Math.round(sc);
+        }
+
+        // Decode with inSampleSize
+        BitmapFactory.Options o2 = new BitmapFactory.Options();
+        o2.inSampleSize = scale;
+        b = BitmapFactory.decodeResource(res, id, o2);
+        return b;
     }
 
     @Override
