@@ -48,7 +48,7 @@ public class MainActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
-            case R.id.action_list:
+            case R.id.action_search:
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(i);
                 return true;

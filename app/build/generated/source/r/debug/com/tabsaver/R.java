@@ -1701,12 +1701,12 @@ containing a value of this type.
         public static final int action_bar_subtitle=0x7f090033;
         public static final int action_bar_title=0x7f090032;
         public static final int action_context_bar=0x7f090046;
-        public static final int action_list=0x7f09005a;
         public static final int action_menu_divider=0x7f090002;
         public static final int action_menu_presenter=0x7f090003;
         public static final int action_mode_bar=0x7f090042;
         public static final int action_mode_bar_stub=0x7f090041;
         public static final int action_mode_close_button=0x7f090034;
+        public static final int action_search=0x7f09005a;
         public static final int action_settings=0x7f090058;
         public static final int activity_chooser_view_content=0x7f090035;
         public static final int adjust_height=0x7f090016;
@@ -1895,11 +1895,12 @@ https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend
          */
         public static final int google_maps_key_instructions=0x7f0b0033;
         public static final int menu_settings=0x7f0b0034;
-        public static final int store_picture_message=0x7f0b0035;
-        public static final int store_picture_title=0x7f0b0036;
-        public static final int title_activity_main=0x7f0b0037;
-        public static final int title_activity_map=0x7f0b0038;
-        public static final int wallet_buy_button_place_holder=0x7f0b0039;
+        public static final int search=0x7f0b0035;
+        public static final int store_picture_message=0x7f0b0036;
+        public static final int store_picture_title=0x7f0b0037;
+        public static final int title_activity_main=0x7f0b0038;
+        public static final int title_activity_map=0x7f0b0039;
+        public static final int wallet_buy_button_place_holder=0x7f0b003a;
     }
     public static final class style {
         /**  Customize your theme here. 

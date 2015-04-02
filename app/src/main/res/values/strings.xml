@@ -6,5 +6,6 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_main">TabSaver</string>
     <string name="menu_settings">Settings</string>
+    <string name="search">Search</string>
 
 </resources>

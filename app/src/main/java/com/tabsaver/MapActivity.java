@@ -163,7 +163,7 @@ public class MapActivity extends FragmentActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
-            case R.id.action_list:
+            case R.id.action_search:
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
                 //i.putExtra(jsonarray);
                 startActivity(i);
