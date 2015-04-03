@@ -169,6 +169,17 @@
     <item name="dialog_fixed_width_minor" type="dimen">320dp</item>
     <item format="float" name="disabled_alpha_material_dark" type="dimen">0.30</item>
     <item format="float" name="disabled_alpha_material_light" type="dimen">0.26</item>
+    <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/src/main/res/values/colors.xml -->
+    <eat-comment/>
+    <drawable name="blue">#3969f7</drawable>
+    <drawable name="darkgray">#404040ff</drawable>
+    <drawable name="gray">#808080ff</drawable>
+    <drawable name="green">#0ff0ff</drawable>
+    <drawable name="lightgray">#c0c0c0ff</drawable>
+    <drawable name="red">#ff00ff</drawable>
+    <drawable name="white">#ffffffff</drawable>
+    <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/res/values/values.xml -->
+    <eat-comment/>
     <item name="action_bar_activity_content" type="id"/>
     <item name="action_bar_spinner" type="id"/>
     <item name="action_menu_divider" type="id"/>
@@ -261,6 +272,7 @@ https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend
     --></string>
     <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/src/main/res/values/strings.xml -->
     <eat-comment/>
+    <string name="list">List</string>
     <string name="menu_settings">Settings</string>
     <string name="search">Search</string>
     <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/build/intermediates/exploded-aar/com.google.android.gms/play-services/6.5.87/res/values/admob_strings.xml -->
@@ -1033,6 +1045,23 @@ https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend
         <item name="android:scaleType">center</item>
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
+    <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/src/main/res/values/themes.xml -->
+    <eat-comment/>
+    <style name="CustomActionBarTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/MyActionBar</item>
+
+        <!-- Support library compatibility -->
+        <item name="actionBarStyle">@style/MyActionBar</item>
+    </style>
+    <style name="MyActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@drawable/blue</item>
+
+        <!-- Support library compatibility -->
+        <item name="background">@drawable/blue</item>
+
+    </style>
+    <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/res/values/values.xml -->
+    <eat-comment/>
     <style name="Platform.AppCompat" parent="android:Theme">
         <item name="android:windowNoTitle">true</item>
         <item name="buttonBarStyle">@android:style/ButtonBar</item>

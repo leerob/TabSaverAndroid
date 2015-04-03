@@ -1,18 +1,22 @@
 package com.tabsaver;
 
 import android.app.ProgressDialog;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -31,7 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MapActivity extends FragmentActivity {
+public class MapActivity extends ActionBarActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     JSONArray jsonarray;
@@ -107,15 +111,15 @@ public class MapActivity extends FragmentActivity {
                 double longitude = Double.parseDouble("-" + barHashMap.get("long"));
                 String name = barHashMap.get("name");
 
-                
+
                 Bitmap newImg = scaleImage(getResources(), R.drawable.transparent, 35);
 
 
                 Marker m = mMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(latitude, longitude))
-                                .title(name)
-                                .snippet("Deals")
-                                .icon(BitmapDescriptorFactory.fromBitmap(newImg)));
+                        .position(new LatLng(latitude, longitude))
+                        .title(name)
+                        .snippet("Deals")
+                        .icon(BitmapDescriptorFactory.fromBitmap(newImg)));
 
                 markers.add((m));
             }
@@ -178,15 +182,11 @@ public class MapActivity extends FragmentActivity {
     }
 
     private void setUpMap() {
-
-
         // Zoom in, animating the camera.
         //mMap.animateCamera(CameraUpdateFactory.zoomIn());
 
         // Zoom out to zoom level 10, animating with a duration of 2 seconds.
         //mMap.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
-
-
     }
 
     @Override
@@ -194,25 +194,46 @@ public class MapActivity extends FragmentActivity {
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
-        return super.onCreateOptionsMenu(menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        final SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        searchView.setQueryHint("Enter bar name");
+        searchView.setIconifiedByDefault(false);
+
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+                searchView.clearFocus();
+                // Zoom to bar
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+
+        });
+
+        return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
-            case R.id.action_search:
+            case R.id.action_list:
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                //i.putExtra(jsonarray);
+                i.putExtra("jsonArray", jsonarray.toString());
                 startActivity(i);
-                return true;
-            case R.id.action_settings:
-                //openSettings();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
-
-
 }
