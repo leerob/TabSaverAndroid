@@ -1829,7 +1829,6 @@ containing a value of this type.
     public static final class menu {
         public static final int menu_list_view=0x7f0e0000;
         public static final int menu_main=0x7f0e0001;
-        public static final int menu_single_item_view=0x7f0e0002;
     }
     public static final class raw {
         public static final int gtm_analytics=0x7f060000;

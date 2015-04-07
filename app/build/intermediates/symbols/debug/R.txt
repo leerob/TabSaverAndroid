@@ -561,7 +561,6 @@ int layout list_item 0x7f030019
 int layout support_simple_spinner_dropdown_item 0x7f03001a
 int menu menu_list_view 0x7f0e0000
 int menu menu_main 0x7f0e0001
-int menu menu_single_item_view 0x7f0e0002
 int raw gtm_analytics 0x7f060000
 int string abc_action_bar_home_description 0x7f0c0000
 int string abc_action_bar_home_description_format 0x7f0c0001
