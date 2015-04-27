@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -44,6 +45,7 @@ public class MapActivity extends ActionBarActivity {
     ListView listview;
     ListArrayAdapter adapter;
     HashMap<String, String> barHashMap = new HashMap<String, String>();
+    List<Marker> markers = new ArrayList<Marker>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,8 +102,6 @@ public class MapActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(Void args) {
 
-            List<Marker> markers = new ArrayList<Marker>();
-
             // Add markers to the map
             for(int i = 0; i < arraylist.size(); i++){
                 // Get the current bar HashMap
@@ -114,7 +114,6 @@ public class MapActivity extends ActionBarActivity {
 
                 Bitmap newImg = scaleImage(getResources(), R.drawable.transparent, 35);
 
-
                 Marker m = mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(latitude, longitude))
                         .title(name)
@@ -122,6 +121,25 @@ public class MapActivity extends ActionBarActivity {
                         .icon(BitmapDescriptorFactory.fromBitmap(newImg)));
 
                 markers.add((m));
+
+//                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
+//                {
+//                    @Override
+//                    public boolean onMarkerClick(Marker arg0) {
+//                        //if(arg0.getTitle().equals("MyHome")) // if marker source is clicked
+//                            Toast.makeText(MapActivity.this, arg0.getTitle(), Toast.LENGTH_SHORT).show();// display toast
+//                        return true;
+//                    }
+//
+//                });
+                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+
+                    @Override
+                    public void onInfoWindowClick(Marker marker) {
+                        // Make new intent to detail view
+                        Toast.makeText(MapActivity.this, marker.getTitle(), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
             // Zoom in camera to Ames, will have to have separate arrays of markers to zoom to based on location
             LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -207,7 +225,14 @@ public class MapActivity extends ActionBarActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+                for (Marker marker : markers) {
+                    if(marker.getTitle().equals(s)){
+                        Toast.makeText(getApplicationContext(), "Found bar: " + s, Toast.LENGTH_SHORT).show();
+                        float zoom = 18;
+                        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(marker.getPosition(), zoom);
+                        mMap.animateCamera(update);
+                    }
+                }
                 searchView.clearFocus();
                 // Zoom to bar
                 return true;
