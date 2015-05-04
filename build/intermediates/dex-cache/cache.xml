@@ -2,6 +2,20 @@
 <items version="2" >
 
     <item
+        jar="/Users/Lee/AndroidStudioProjects/TabSaver/app/libs/Parse-1.9.1.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="1b065010f3c9d441ede9078aca8eabcd1c81e647">
+        <dex dex="/Users/Lee/AndroidStudioProjects/TabSaver/app/build/intermediates/pre-dexed/debug/Parse-1.9.1-a3113350c0edb0da0d7359da8360f8f1afd3c334.jar" />
+    </item>
+    <item
+        jar="/Users/Lee/.gradle/caches/modules-2/files-2.1/com.parse.bolts/bolts-android/1.2.0/6ee2953ccf51ce72b6d548c30c4633b99eb4f9dd/bolts-android-1.2.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="6ee2953ccf51ce72b6d548c30c4633b99eb4f9dd">
+        <dex dex="/Users/Lee/AndroidStudioProjects/TabSaver/app/build/intermediates/pre-dexed/debug/bolts-android-1.2.0-7ccc64991d94e3e4f9d206942affc2d9a00f6ddb.jar" />
+    </item>
+    <item
         jar="/Users/Lee/AndroidStudioProjects/TabSaver/app/build/intermediates/exploded-aar/com.google.android.gms/play-services/6.5.87/classes.jar"
         jumboMode="false"
         revision="21.1.2"

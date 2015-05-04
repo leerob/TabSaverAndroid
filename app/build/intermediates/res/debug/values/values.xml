@@ -1,5 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/src/main/res/values/strings.xml -->
+    <eat-comment/>
+    <string-array name="daysSpinner">
+        <item>Select...</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
+    </string-array>
+    <string-array name="days_of_week">
+        <item>Sunday</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+    </string-array>
     <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/res/values/values.xml -->
     <eat-comment/>
     <attr format="reference" name="drawerArrowStyle"/>
@@ -216,7 +237,14 @@
     <string name="accept">Accept</string>
     <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/src/main/res/values/strings.xml -->
     <eat-comment/>
+    <string name="action_client">Client Login</string>
     <string name="action_settings">Settings</string>
+    <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/src/debug/res/values/strings_activity_login.xml -->
+    <eat-comment/>
+    <string name="action_sign_in">Sign In</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/src/main/res/values/strings.xml -->
+    <eat-comment/>
     <string name="app_name">TabSaver</string>
     <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/build/intermediates/exploded-aar/com.google.android.gms/play-services/6.5.87/res/values/common_strings.xml -->
     <eat-comment/>
@@ -253,9 +281,15 @@
     <string name="create_calendar_message">Allow Ad to create a calendar event?</string>
     <string name="create_calendar_title">Create calendar event</string>
     <string name="decline">Decline</string>
+    <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/src/debug/res/values/strings_activity_login.xml -->
+    <eat-comment/>
+    <string name="error_field_required">This field is required</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
     <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/src/debug/res/values/google_maps_api.xml -->
     <eat-comment/>
-    <string name="google_maps_key" templateMergeStrategy="preserve">AIzaSyBsbgFy-1QuRwI11jbMSUMM_miqYAFtfyA</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve">AIzaSyDkiUwxIOTJ3WLozVj5FdU2h0asd2TDKKU</string>
     <string name="google_maps_key_instructions" templateMergeStrategy="replace"><!--
 
     TODO: Before you run your application, you need a Google Maps API key.
@@ -274,11 +308,24 @@ https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend
     <eat-comment/>
     <string name="list">List</string>
     <string name="menu_settings">Settings</string>
+    <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/src/debug/res/values/strings_activity_login.xml -->
+    <eat-comment/>
+    <string name="prompt_password">Password</string>
+    <string name="prompt_user">Username</string>
+    <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/src/main/res/values/strings.xml -->
+    <eat-comment/>
     <string name="search">Search</string>
     <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/build/intermediates/exploded-aar/com.google.android.gms/play-services/6.5.87/res/values/admob_strings.xml -->
     <eat-comment/>
     <string name="store_picture_message">"Allow Ad to store image in Picture gallery?"</string>
     <string name="store_picture_title">Save image</string>
+    <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/src/main/res/values/strings.xml -->
+    <eat-comment/>
+    <string name="title_activity_admin">Update Deals</string>
+    <string name="title_activity_bar_detail">Detail</string>
+    <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/src/debug/res/values/strings_activity_login.xml -->
+    <eat-comment/>
+    <string name="title_activity_login">Client Sign In</string>
     <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/src/main/res/values/strings.xml -->
     <eat-comment/>
     <string name="title_activity_main">TabSaver</string>

@@ -7,6 +7,33 @@
     <string name="title_activity_main">TabSaver</string>
     <string name="menu_settings">Settings</string>
     <string name="search">Search</string>
+    <string name="action_client">Client Login</string>
     <string name="list">List</string>
+    <string name="title_activity_bar_detail">Detail</string>
+
+
+    <string-array name="days_of_week">
+        <item>Sunday</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+    </string-array>
+
+    <string-array name="daysSpinner">
+        <item>Select...</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
+    </string-array>
+
+    <string name="title_activity_login">Login</string>
+    <string name="title_activity_admin">Update Deals</string>
 
 </resources>

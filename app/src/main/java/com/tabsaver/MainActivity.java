@@ -30,8 +30,10 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         Intent intent = getIntent();
         String jsonArray = intent.getStringExtra("jsonArray");
+
 
         try {
             jsonarray = new JSONArray(jsonArray);
@@ -55,6 +57,7 @@ public class MainActivity extends ActionBarActivity {
                 map.put("Friday", obj.getString("Friday"));
                 map.put("Saturday", obj.getString("Saturday"));
                 map.put("Sunday", obj.getString("Sunday"));
+                map.put("distance", obj.getString("distance"));
 
                 // Set the JSON Objects into the array
                 arraylist.add(map);
@@ -65,8 +68,27 @@ public class MainActivity extends ActionBarActivity {
             e.printStackTrace();
         }
 
+        //Sort the list
+        ArrayList<HashMap<String, String>> newList = new ArrayList<HashMap<String, String>>();
+
+        while (arraylist.isEmpty() != true ) {
+            HashMap<String, String> min = arraylist.get(0);
+
+            for(int j = 0; j < arraylist.size(); j++){
+                HashMap<String, String> current = arraylist.get(j);
+
+                if ( Double.valueOf(min.get("distance")) > Double.valueOf(current.get("distance"))) {
+                    min = current;
+                }
+
+            }
+
+            arraylist.remove(min);
+            newList.add(min);
+        }
+
         listview = (ListView) findViewById(R.id.listview);
-        adapter = new ListArrayAdapter(MainActivity.this, arraylist);
+        adapter = new ListArrayAdapter(MainActivity.this, newList, jsonarray);
         listview.setAdapter(adapter);
 
     }

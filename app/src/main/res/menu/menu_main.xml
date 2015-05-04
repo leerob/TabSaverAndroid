@@ -8,6 +8,10 @@
         search:showAsAction="collapseActionView|ifRoom"
         search:actionViewClass="android.widget.SearchView" />
 
+    <item android:id="@+id/action_client"
+        android:title="@string/action_client"
+        search:showAsAction="never" />
+
 
     <item android:id="@+id/action_list"
         android:title="@string/list"

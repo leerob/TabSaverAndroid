@@ -1,12 +1,15 @@
 package com.tabsaver;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -19,10 +22,13 @@ public class ListArrayAdapter extends BaseAdapter {
     LayoutInflater inflater;
     ArrayList<HashMap<String, String>> data;
     HashMap<String, String> resultp = new HashMap<String, String>();
+    JSONArray jsonarray;
+    String barName;
 
-    public ListArrayAdapter(Context context, ArrayList<HashMap<String, String>> arraylist) {
+    public ListArrayAdapter(Context context, ArrayList<HashMap<String, String>> arraylist, JSONArray json) {
         this.context = context;
         data = arraylist;
+        jsonarray = json;
     }
 
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -33,7 +39,7 @@ public class ListArrayAdapter extends BaseAdapter {
 
         // Set view up
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View itemView = inflater.inflate(R.layout.list_item, parent, false);
+        final View itemView = inflater.inflate(R.layout.list_item, parent, false);
 
         // Get the position in list
         resultp = data.get(position);
@@ -75,9 +81,10 @@ public class ListArrayAdapter extends BaseAdapter {
         String formattedDeals = dealsStr.replace(",", "\n");
 
         // Capture position and set results to the TextViews
-        name.setText(resultp.get("name"));
+        barName = resultp.get("name");
+        name.setText(barName);
         deals.setText(formattedDeals);
-        distance.setText("0.000 mi");
+        distance.setText(resultp.get("distance") + " mi");
 
 
         // Capture ListView item click
@@ -85,10 +92,10 @@ public class ListArrayAdapter extends BaseAdapter {
 
             @Override
             public void onClick(View arg0) {
-                //resultp = data.get(position);
-                //Intent intent = new Intent(context, SingleItemView.class);
-                //intent.putExtra("rank", resultp.get(MainActivity.RANK));
-                //context.startActivity(intent);
+                Intent i = new Intent(context, BarDetail.class);
+                i.putExtra("jsonArray", jsonarray.toString());
+                i.putExtra("bar", data.get(position).get("name"));
+                context.startActivity(i);
 
             }
         });

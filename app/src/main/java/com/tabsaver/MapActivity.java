@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -27,12 +28,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.Parse;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -46,13 +49,23 @@ public class MapActivity extends ActionBarActivity {
     ListArrayAdapter adapter;
     HashMap<String, String> barHashMap = new HashMap<String, String>();
     List<Marker> markers = new ArrayList<Marker>();
+    Location myLocation;
+    Marker myLoc;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        new DownloadJSON().execute();
         setUpMapIfNeeded();
+        mProgressDialog = null;
+        new DownloadJSON().execute();
+
+
+        // Enable Local Datastore.
+        Parse.enableLocalDatastore(getApplicationContext());
+        Parse.initialize(getApplicationContext(), "mZ1wJCdlDowI28IzRpZ9ycIFkm0TXUYA33EoC3n8", "4TaNynj1NN0UDlXMP3iQQb6WGAAE5Gp9IOBcVMkW");
+
     }
 
     // DownloadJSON AsyncTask
@@ -86,6 +99,13 @@ public class MapActivity extends ActionBarActivity {
                     map.put("name", obj.getString("name"));
                     map.put("lat", obj.getString("lat"));
                     map.put("long", obj.getString("long"));
+                    map.put("Monday", obj.getString("Monday"));
+                    map.put("Tuesday", obj.getString("Tuesday"));
+                    map.put("Wednesday", obj.getString("Wednesday"));
+                    map.put("Thursday", obj.getString("Thursday"));
+                    map.put("Friday", obj.getString("Friday"));
+                    map.put("Saturday", obj.getString("Saturday"));
+                    map.put("Sunday", obj.getString("Sunday"));
 
                     // Set the JSON Objects into the array
                     arraylist.add(map);
@@ -111,13 +131,15 @@ public class MapActivity extends ActionBarActivity {
                 double longitude = Double.parseDouble("-" + barHashMap.get("long"));
                 String name = barHashMap.get("name");
 
+                String day = getDayOfWeekStr();
+                String[] dealArr = barHashMap.get(day).split(",");
 
                 Bitmap newImg = scaleImage(getResources(), R.drawable.transparent, 35);
 
                 Marker m = mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(latitude, longitude))
                         .title(name)
-                        .snippet("Deals")
+                        .snippet(dealArr[0])
                         .icon(BitmapDescriptorFactory.fromBitmap(newImg)));
 
                 markers.add((m));
@@ -137,7 +159,11 @@ public class MapActivity extends ActionBarActivity {
                     @Override
                     public void onInfoWindowClick(Marker marker) {
                         // Make new intent to detail view
-                        Toast.makeText(MapActivity.this, marker.getTitle(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(MapActivity.this, marker.getTitle(), Toast.LENGTH_SHORT).show();
+                        Intent i = new Intent(getApplicationContext(), BarDetail.class);
+                        i.putExtra("jsonArray", jsonarray.toString());
+                        i.putExtra("bar", marker.getTitle());
+                        startActivity(i);
                     }
                 });
             }
@@ -149,8 +175,42 @@ public class MapActivity extends ActionBarActivity {
             LatLngBounds bounds = builder.build();
             mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
 
-            mProgressDialog.dismiss();
+            if(mProgressDialog != null)
+                mProgressDialog.dismiss();
         }
+    }
+
+    @Override
+    public void onPause(){
+
+        super.onPause();
+        if(mProgressDialog != null)
+            mProgressDialog.dismiss();
+    }
+
+    public String getDayOfWeekStr(){
+
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+
+        switch (day) {
+            case Calendar.SUNDAY:
+                return "Sunday";
+            case Calendar.MONDAY:
+                return "Monday";
+            case Calendar.TUESDAY:
+                return "Tuesday";
+            case Calendar.WEDNESDAY:
+                return "Wednesday";
+            case Calendar.THURSDAY:
+                return "Thursday";
+            case Calendar.FRIDAY:
+                return "Friday";
+            case Calendar.SATURDAY:
+                return "Saturday";
+        }
+
+        return "";
     }
 
     private Bitmap scaleImage(Resources res, int id, int lessSideSize) {
@@ -186,16 +246,29 @@ public class MapActivity extends ActionBarActivity {
         setUpMapIfNeeded();
     }
 
+    private GoogleMap.OnMyLocationChangeListener myLocationChangeListener = new GoogleMap.OnMyLocationChangeListener() {
+        @Override
+        public void onMyLocationChange(Location  location) {
+            myLocation = location;
+            myLocation.setLongitude(myLocation.getLongitude() * -1);
+        }
+    };
+
     private void setUpMapIfNeeded() {
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
             // Try to obtain the map from the SupportMapFragment.
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                     .getMap();
+
+            mMap.setMyLocationEnabled(true);
+
+            mMap.setOnMyLocationChangeListener(myLocationChangeListener);
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
                 setUpMap();
             }
+
         }
     }
 
@@ -226,8 +299,8 @@ public class MapActivity extends ActionBarActivity {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 for (Marker marker : markers) {
-                    if(marker.getTitle().equals(s)){
-                        Toast.makeText(getApplicationContext(), "Found bar: " + s, Toast.LENGTH_SHORT).show();
+                    if(marker.getTitle().toLowerCase().contains(s)){
+                        Toast.makeText(getApplicationContext(), "Found bar: " + marker.getTitle(), Toast.LENGTH_SHORT).show();
                         float zoom = 18;
                         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(marker.getPosition(), zoom);
                         mMap.animateCamera(update);
@@ -254,11 +327,45 @@ public class MapActivity extends ActionBarActivity {
         switch (item.getItemId()) {
             case R.id.action_list:
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                i.putExtra("jsonArray", jsonarray.toString());
+                String test = addDistances(jsonarray);
+                i.putExtra("jsonArray", test);
                 startActivity(i);
+                return true;
+            case R.id.action_client:
+                Intent clientLogin = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(clientLogin);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public String addDistances(JSONArray json){
+        JSONArray newArray = new JSONArray();
+
+        for( int i = 0; i < json.length(); i++ ) {
+            try {
+                JSONObject obj = json.getJSONObject(i);
+                Location barLoc = new Location("Bar");
+                barLoc.setLatitude(Double.valueOf(obj.getString("lat")));
+                barLoc.setLongitude(Double.valueOf(obj.getString("long")));
+                if ( myLocation == null ) {
+                    obj.put("distance", 0.000);
+                } else {
+                    double distance = myLocation.distanceTo(barLoc);
+                    if ( distance == Double.NaN ) {
+                        obj.put("distance", 0.000);
+                    } else {
+                        obj.put("distance", (double) Math.round((distance / 1609) * 1000) / 1000);
+                    }
+                }
+                newArray.put(obj);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        return newArray.toString();
     }
 }
