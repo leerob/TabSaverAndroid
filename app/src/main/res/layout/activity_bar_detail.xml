@@ -11,7 +11,7 @@
         android:id="@+id/imageView"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/cys"
+        android:src="@drawable/bar"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
         android:cropToPadding="false" />

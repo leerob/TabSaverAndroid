@@ -1,75 +1,73 @@
 package com.tabsaver;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 
 public class DealsArrayAdapter extends BaseAdapter {
 
     // Declare Variables
     Context context;
     LayoutInflater inflater;
-    HashMap<String, String> barHash = new HashMap<String, String>();
-    String[] dealArr;
+    ArrayList<String> listOfDeals;
+    String resultp;
+    ArrayList<String> barAssociation;
+    String name;
+    JSONArray jsonarray;
 
-    public DealsArrayAdapter(Context context, ArrayList<HashMap<String, String>> arraylist) {
+    public DealsArrayAdapter(Context context, ArrayList<String> listOfDeals, ArrayList<String> barAssociation, JSONArray jsonarray) {
         this.context = context;
-        barHash = arraylist.get(0);
-
-        // Determine Day of Week
-        Calendar calendar = Calendar.getInstance();
-        int day = calendar.get(Calendar.DAY_OF_WEEK);
-
-        String dealsStr = "";
-        switch (day) {
-            case Calendar.SUNDAY:
-                dealsStr = barHash.get("Sunday");
-                break;
-            case Calendar.MONDAY:
-                dealsStr = barHash.get("Monday");
-                break;
-            case Calendar.TUESDAY:
-                dealsStr = barHash.get("Tuesday");
-                break;
-            case Calendar.WEDNESDAY:
-                dealsStr = barHash.get("Wednesday");
-                break;
-            case Calendar.THURSDAY:
-                dealsStr = barHash.get("Thursday");
-                break;
-            case Calendar.FRIDAY:
-                dealsStr = barHash.get("Friday");
-                break;
-            case Calendar.SATURDAY:
-                dealsStr = barHash.get("Saturday");
-                break;
-        }
-        dealArr = dealsStr.split(",");
+        this.listOfDeals = listOfDeals;
+        this.barAssociation = barAssociation;
+        this.jsonarray = jsonarray;
     }
 
     public View getView(final int position, View convertView, ViewGroup parent) {
+        // Declare Variables
+        TextView dealName;
+        TextView barName;
 
         // Set view up
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View itemView = inflater.inflate(R.layout.deal_item, parent, false);
+        final View itemView = inflater.inflate(R.layout.deal_item, parent, false);
+
+        // Get the position in list
+        resultp = listOfDeals.get(position);
+        name = barAssociation.get(position);
 
         // Assign TextViews
-        TextView deal = (TextView) itemView.findViewById(R.id.deal);
-        deal.setText(dealArr[position]);
+        dealName = (TextView) itemView.findViewById(R.id.deal);
+        barName = (TextView) itemView.findViewById(R.id.name);
+        dealName.setText(resultp);
+        barName.setText(name);
+
+        // Capture ListView item click
+        itemView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                Intent i = new Intent(context, BarDetail.class);
+                i.putExtra("jsonArray", jsonarray.toString());
+                i.putExtra("bar", barAssociation.get(position));
+                context.startActivity(i);
+
+            }
+        });
 
         return itemView;
     }
 
     @Override
     public int getCount() {
-        return dealArr.length;
+        return listOfDeals.size();
     }
 
     @Override

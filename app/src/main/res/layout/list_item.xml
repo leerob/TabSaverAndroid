@@ -4,12 +4,14 @@
     android:layout_height="fill_parent" >
 
     <TextView
-        android:id="@+id/name"
+        android:id="@+id/deal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Bar Name"
         android:textSize="20dp"
-        android:padding="5dp"
+        android:paddingLeft="15dp"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp"
         android:textColor="@android:color/black"
         android:textStyle="normal" />
 
@@ -19,7 +21,7 @@
         android:layout_height="wrap_content"
         android:text="0.000 mi"
         android:textSize="15dp"
-        android:padding="5dp"
+        android:paddingRight="15dp"
 
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true" />
@@ -30,8 +32,10 @@
         android:layout_height="wrap_content"
         android:text="Deals"
         android:textSize="15dp"
-        android:padding="5dp"
-        android:layout_below="@+id/name"
+        android:paddingLeft="15dp"
+        android:paddingBottom="5dp"
+        android:paddingTop="5dp"
+        android:layout_below="@+id/deal"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:textColor="@android:color/black" />

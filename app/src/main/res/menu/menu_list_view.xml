@@ -3,15 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.tabsaver.ListViewActivity">
 
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
+    <item
+        android:id="@+id/listByBars"
+        android:title="Bars"
+        app:showAsAction="ifRoom"/>
 
     <item
-        android:id="@+id/search"
-        android:title="Search"
-        app:showAsAction="ifRoom"
-        android:actionViewClass="android.widget.SearchView" />
+        android:id="@+id/listByDeals"
+        android:title="Deals"
+        app:showAsAction="ifRoom" />
+
 
 </menu>

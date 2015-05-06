@@ -93,18 +93,20 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
         arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, dealArr);
         listview.setAdapter(arrayAdapter);
 
+
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> spinAdapter = ArrayAdapter.createFromResource(this, R.array.days_of_week, android.R.layout.simple_spinner_item);
-        spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(spinAdapter);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.days_of_week, android.R.layout.simple_spinner_item);
+        spinner.setAdapter(adapter);
         spinner.setSelection(getIndex(spinner, day));
         spinner.setOnItemSelectedListener(this);
+
 
         ratingBar = (RatingBar) findViewById(R.id.ratingBar);
         getCurrentRating();
         addListenerOnRatingBar();
 
     }
+
 
     public void addListenerOnRatingBar() {
 

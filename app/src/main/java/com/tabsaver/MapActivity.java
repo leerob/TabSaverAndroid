@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
@@ -60,7 +59,6 @@ public class MapActivity extends ActionBarActivity {
         setUpMapIfNeeded();
         mProgressDialog = null;
         new DownloadJSON().execute();
-
 
         // Enable Local Datastore.
         Parse.enableLocalDatastore(getApplicationContext());
@@ -134,32 +132,23 @@ public class MapActivity extends ActionBarActivity {
                 String day = getDayOfWeekStr();
                 String[] dealArr = barHashMap.get(day).split(",");
 
-                Bitmap newImg = scaleImage(getResources(), R.drawable.transparent, 35);
+
+                BitmapFactory.Options o = new BitmapFactory.Options();
+                Bitmap img = BitmapFactory.decodeResource(getResources(), R.drawable.ic_mug, o);
 
                 Marker m = mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(latitude, longitude))
                         .title(name)
                         .snippet(dealArr[0])
-                        .icon(BitmapDescriptorFactory.fromBitmap(newImg)));
+                        .icon(BitmapDescriptorFactory.fromBitmap(img)));
 
                 markers.add((m));
 
-//                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
-//                {
-//                    @Override
-//                    public boolean onMarkerClick(Marker arg0) {
-//                        //if(arg0.getTitle().equals("MyHome")) // if marker source is clicked
-//                            Toast.makeText(MapActivity.this, arg0.getTitle(), Toast.LENGTH_SHORT).show();// display toast
-//                        return true;
-//                    }
-//
-//                });
                 mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
 
                     @Override
                     public void onInfoWindowClick(Marker marker) {
                         // Make new intent to detail view
-                        //Toast.makeText(MapActivity.this, marker.getTitle(), Toast.LENGTH_SHORT).show();
                         Intent i = new Intent(getApplicationContext(), BarDetail.class);
                         i.putExtra("jsonArray", jsonarray.toString());
                         i.putExtra("bar", marker.getTitle());
@@ -213,33 +202,6 @@ public class MapActivity extends ActionBarActivity {
         return "";
     }
 
-    private Bitmap scaleImage(Resources res, int id, int lessSideSize) {
-        Bitmap b = null;
-        BitmapFactory.Options o = new BitmapFactory.Options();
-        o.inJustDecodeBounds = true;
-
-        BitmapFactory.decodeResource(res, id, o);
-
-        float sc = 0.0f;
-        int scale = 1;
-        // if image height is greater than width
-        if (o.outHeight > o.outWidth) {
-            sc = o.outHeight / lessSideSize;
-            scale = Math.round(sc);
-        }
-        // if image width is greater than height
-        else {
-            sc = o.outWidth / lessSideSize;
-            scale = Math.round(sc);
-        }
-
-        // Decode with inSampleSize
-        BitmapFactory.Options o2 = new BitmapFactory.Options();
-        o2.inSampleSize = scale;
-        b = BitmapFactory.decodeResource(res, id, o2);
-        return b;
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -291,7 +253,7 @@ public class MapActivity extends ActionBarActivity {
         final SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
-        searchView.setQueryHint("Enter bar name");
+        searchView.setQueryHint("Search for a bar");
         searchView.setIconifiedByDefault(false);
 
 
@@ -304,6 +266,10 @@ public class MapActivity extends ActionBarActivity {
                         float zoom = 18;
                         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(marker.getPosition(), zoom);
                         mMap.animateCamera(update);
+                        marker.showInfoWindow();
+                    }
+                    else{
+                        Toast.makeText(getApplicationContext(), "Bar not found!", Toast.LENGTH_SHORT).show();
                     }
                 }
                 searchView.clearFocus();

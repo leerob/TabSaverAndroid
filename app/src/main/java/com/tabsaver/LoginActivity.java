@@ -245,45 +245,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         int IS_PRIMARY = 1;
     }
 
-//    /**
-//     * Use an AsyncTask to fetch the user's email addresses on a background thread, and update
-//     * the email text field with results on the main UI thread.
-//     */
-//    class SetupEmailAutoCompleteTask extends AsyncTask<Void, Void, List<String>> {
-//
-//        @Override
-//        protected List<String> doInBackground(Void... voids) {
-//            ArrayList<String> emailAddressCollection = new ArrayList<String>();
-//
-//            // Get all emails from the user's contacts and copy them to a list.
-//            ContentResolver cr = getContentResolver();
-//            Cursor emailCur = cr.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
-//                    null, null, null);
-//            while (emailCur.moveToNext()) {
-//                String email = emailCur.getString(emailCur.getColumnIndex(ContactsContract
-//                        .CommonDataKinds.Email.DATA));
-//                emailAddressCollection.add(email);
-//            }
-//            emailCur.close();
-//
-//            return emailAddressCollection;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(List<String> emailAddressCollection) {
-//            addEmailsToAutoComplete(emailAddressCollection);
-//        }
-//    }
-//
-//    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-//        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-//        ArrayAdapter<String> adapter =
-//                new ArrayAdapter<String>(LoginActivity.this,
-//                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-//
-//        mEmailView.setAdapter(adapter);
-//    }
-
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
@@ -322,8 +283,9 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
                 //Return true on success
                 if ( success.equals("1") ) {
-                    //TODO: add token json response to session variable
 
+                    ClientSessionManager session = new ClientSessionManager(getApplicationContext());
+                    session.login(mEmail, requestProps.getString("Token"), requestProps.getString("Bar"), requestProps.getString("City"));
 
                     return true;
 
@@ -365,6 +327,3 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
 
 }
-
-
-

@@ -8,12 +8,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="$3 Shots"
-        android:textSize="15dp"
-        android:padding="5dp"
+        android:textSize="20dp"
+        android:paddingLeft="15dp"
+        android:paddingBottom="3dp"
+        android:paddingTop="5dp"
+        android:textColor="@android:color/black"
+        android:textStyle="normal" />
 
-        android:layout_centerVertical="true"
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Es Tas Bar &amp; Grill"
+        android:textSize="15dp"
+        android:paddingLeft="15dp"
+        android:paddingBottom="5dp"
+        android:layout_below="@+id/deal"
         android:layout_alignParentLeft="true"
-        />
+        android:layout_alignParentStart="true"
+        android:textColor="@android:color/black" />
 
 
 </RelativeLayout>

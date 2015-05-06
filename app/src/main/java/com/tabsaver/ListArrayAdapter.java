@@ -45,7 +45,7 @@ public class ListArrayAdapter extends BaseAdapter {
         resultp = data.get(position);
 
         // Assign TextViews
-        name = (TextView) itemView.findViewById(R.id.name);
+        name = (TextView) itemView.findViewById(R.id.deal);
         distance = (TextView) itemView.findViewById(R.id.distance);
         deals = (TextView) itemView.findViewById(R.id.deals);
 

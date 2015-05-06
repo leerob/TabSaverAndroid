@@ -1,5 +1,6 @@
 package com.tabsaver;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -45,13 +46,19 @@ public class AdminActivity extends ActionBarActivity implements AdapterView.OnIt
 
 
     public int currentDay = -1;
-
+    private ClientSessionManager session;
     private View mProgressView;
+    private String bar;
+    private String city;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
+
+        session = new ClientSessionManager(getApplicationContext());
+        bar = session.getBar();
+        city = session.getCity();
 
         Spinner spinner = (Spinner) findViewById(R.id.daySpinner);
 
@@ -72,13 +79,16 @@ public class AdminActivity extends ActionBarActivity implements AdapterView.OnIt
         button.setOnClickListener(
                 new Button.OnClickListener() {
                     public void onClick(View v) {
-                        Toast.makeText(AdminActivity.this, "Submiting deals!", Toast.LENGTH_SHORT).show();// display
+                        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.dayView);
+                        mProgressView.setVisibility(View.VISIBLE);
+                        linearLayout.setVisibility(View.INVISIBLE);
+                        ArrayList<String> newOptions = new ArrayList<String>();
                         for (int i = 0; i < currentOptions.size(); i++ ) {
-                            if ( currentOptions.get(i).contains("    ")) {
-                                currentOptions.remove(i);
+                            if ( !currentOptions.get(i).toUpperCase().contains("NONE") && currentOptions.get(i) != "") {
+                                newOptions.add(currentOptions.get(i));
                             }
                         }
-                        SubmitDealUpdate SDU = new SubmitDealUpdate("Sips", "ames", dayOptions.get(currentDay), currentOptions);
+                        SubmitDealUpdate SDU = new SubmitDealUpdate(bar, city, dayOptions.get(currentDay), newOptions);
                         SDU.execute();
                     }
                 }
@@ -227,17 +237,18 @@ public class AdminActivity extends ActionBarActivity implements AdapterView.OnIt
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.clientLogout:
+                Intent i = new Intent(getApplicationContext(), MapActivity.class);
+                startActivity(i);
+                finish();
+                return true;
+            case R.id.action_settings:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
 
@@ -248,7 +259,7 @@ public class AdminActivity extends ActionBarActivity implements AdapterView.OnIt
         if ( id != 0 ) {
             mProgressView.setVisibility(View.VISIBLE);
             linearLayout.setVisibility(View.INVISIBLE);
-            GetDealsForDay grabDeals = new GetDealsForDay("Sips", "ames", dayOptions.get(pos));
+            GetDealsForDay grabDeals = new GetDealsForDay(bar, city, dayOptions.get(pos));
             grabDeals.execute((Void) null);
             currentDay = pos;
 
@@ -425,6 +436,9 @@ public class AdminActivity extends ActionBarActivity implements AdapterView.OnIt
 
 
             if (success) {
+                LinearLayout linearLayout = (LinearLayout) findViewById(R.id.dayView);
+                mProgressView.setVisibility(View.INVISIBLE);
+                linearLayout.setVisibility(View.VISIBLE);
                 Toast.makeText(AdminActivity.this, "Updated deals succesfully!", Toast.LENGTH_LONG).show();// display toast
 
             } else {
