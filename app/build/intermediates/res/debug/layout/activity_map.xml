@@ -6,6 +6,4 @@
     android:id="@+id/map"
     tools:context=".MapActivity"
     android:name="com.google.android.gms.maps.SupportMapFragment" />
-
-
 <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/src/main/res/layout/activity_map.xml -->

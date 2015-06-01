@@ -87,7 +87,7 @@ public class MapActivity extends ActionBarActivity {
 
             try {
                 // Retrieve JSON Objects from the given URL address
-                jsonarray = JSONFunctions.getJSONfromURL("http://tabsaver.info/connectAmes.php");
+                jsonarray = JSONFunctions.getJSONfromURL("http://tabsaver.info/retrieveBars.php");
 
                 for (int i = 0; i < jsonarray.length(); i++) {
                     HashMap<String, String> map = new HashMap<String, String>();
@@ -260,20 +260,25 @@ public class MapActivity extends ActionBarActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
+                boolean barFound = false;
+
                 for (Marker marker : markers) {
                     if(marker.getTitle().toLowerCase().contains(s)){
+                        barFound = true;
+
                         Toast.makeText(getApplicationContext(), "Found bar: " + marker.getTitle(), Toast.LENGTH_SHORT).show();
+                        // Zoom to bar
                         float zoom = 18;
                         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(marker.getPosition(), zoom);
                         mMap.animateCamera(update);
                         marker.showInfoWindow();
-                    }
-                    else{
-                        Toast.makeText(getApplicationContext(), "Bar not found!", Toast.LENGTH_SHORT).show();
+                        break;
                     }
                 }
+                if(!barFound){
+                    Toast.makeText(getApplicationContext(), "Bar not found!", Toast.LENGTH_SHORT).show();
+                }
                 searchView.clearFocus();
-                // Zoom to bar
                 return true;
             }
 

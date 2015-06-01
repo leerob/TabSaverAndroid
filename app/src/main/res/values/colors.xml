@@ -6,5 +6,6 @@
     <drawable name="lightgray">#c0c0c0ff</drawable>
     <drawable name="white">#ffffffff</drawable>
     <drawable name="blue">#3969f7</drawable>
+    <drawable name="darkblue">#ff2d54b3</drawable>
     <drawable name="gray">#808080ff</drawable>
 </resources>

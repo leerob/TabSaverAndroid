@@ -193,6 +193,7 @@
     <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/src/main/res/values/colors.xml -->
     <eat-comment/>
     <drawable name="blue">#3969f7</drawable>
+    <drawable name="darkblue">#ff2d54b3</drawable>
     <drawable name="darkgray">#404040ff</drawable>
     <drawable name="gray">#808080ff</drawable>
     <drawable name="green">#0ff0ff</drawable>
@@ -333,11 +334,6 @@ https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend
     <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/build/intermediates/exploded-aar/com.google.android.gms/play-services/6.5.87/res/values/wallet_strings.xml -->
     <eat-comment/>
     <string name="wallet_buy_button_place_holder" translation_description="Text on a button that allows a user to make a payment with Google Wallet [CHAR LIMIT=30]">Buy with Google</string>
-    <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/src/main/res/values/styles.xml -->
-    <eat-comment/>
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-    </style>
     <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/res/values/values.xml -->
     <eat-comment/>
     <style name="Base.TextAppearance.AppCompat" parent="android:TextAppearance">
@@ -1094,18 +1090,38 @@ https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend
     </style>
     <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/src/main/res/values/themes.xml -->
     <eat-comment/>
-    <style name="CustomActionBarTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+    <style name="CustomActionBarTheme" parent="android:Theme.Material.Light.DarkActionBar">
         <item name="android:actionBarStyle">@style/MyActionBar</item>
 
-        <!-- Support library compatibility -->
-        <item name="actionBarStyle">@style/MyActionBar</item>
+
+
+        <!-- Main theme colors -->
+        <!--   your app branding color for the app bar -->
+        <item name="android:colorPrimary">@drawable/blue</item>
+        <!--   darker variant for the status bar and contextual app bars -->
+        <item name="android:colorPrimaryDark">@drawable/darkblue</item>
+        <!--   theme UI controls like checkboxes and text fields -->
+        <item name="android:colorAccent">@drawable/blue</item>
+
+
     </style>
-    <style name="MyActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+    <style name="MyActionBar" parent="android:Theme.Material">
         <item name="android:background">@drawable/blue</item>
 
         <!-- Support library compatibility -->
         <item name="background">@drawable/blue</item>
 
+    </style>
+    <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/src/main/res/values/styles.xml -->
+    <eat-comment/>
+    <style name="MyMaterialTheme" parent="MyMaterialTheme.Base">
+
+    </style>
+    <style name="MyMaterialTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar">
+
+        <item name="colorPrimary">@drawable/blue</item>
+        <item name="colorPrimaryDark">@drawable/darkblue</item>
+        <item name="colorAccent">@drawable/blue</item>
     </style>
     <!-- From: file:/Users/Lee/AndroidStudioProjects/TabSaver/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/res/values/values.xml -->
     <eat-comment/>

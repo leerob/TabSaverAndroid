@@ -2,16 +2,25 @@
 <resources>
     <!-- the theme applied to the application or activity -->
     <style name="CustomActionBarTheme"
-        parent="@style/Theme.AppCompat.Light.DarkActionBar">
+        parent="android:Theme.Material.Light.DarkActionBar">
         <item name="android:actionBarStyle">@style/MyActionBar</item>
 
-        <!-- Support library compatibility -->
-        <item name="actionBarStyle">@style/MyActionBar</item>
+
+
+        <!-- Main theme colors -->
+        <!--   your app branding color for the app bar -->
+        <item name="android:colorPrimary">@drawable/blue</item>
+        <!--   darker variant for the status bar and contextual app bars -->
+        <item name="android:colorPrimaryDark">@drawable/darkblue</item>
+        <!--   theme UI controls like checkboxes and text fields -->
+        <item name="android:colorAccent">@drawable/blue</item>
+
+
     </style>
 
     <!-- ActionBar styles -->
     <style name="MyActionBar"
-        parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        parent="android:Theme.Material">
         <item name="android:background">@drawable/blue</item>
 
         <!-- Support library compatibility -->
