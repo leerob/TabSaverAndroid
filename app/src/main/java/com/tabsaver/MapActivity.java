@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -62,6 +63,14 @@ public class MapActivity extends ActionBarActivity {
 
         // Enable Local Datastore.
         Parse.enableLocalDatastore(getApplicationContext());
+
+        //Sleep for just a fraction of a second.. Sometimes the app runs too fast or insequentially or something and gives the following error:
+        //java.lang.IllegalStateException: `Parse#enableLocalDatastore(Context)` must be invoked before `Parse#initialize(Context)
+        try {
+            Thread.sleep(250);
+        } catch (InterruptedException e) {
+
+        }
         Parse.initialize(getApplicationContext(), "mZ1wJCdlDowI28IzRpZ9ycIFkm0TXUYA33EoC3n8", "4TaNynj1NN0UDlXMP3iQQb6WGAAE5Gp9IOBcVMkW");
 
     }
@@ -253,6 +262,14 @@ public class MapActivity extends ActionBarActivity {
         final SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
+        //This is close - but not quite right - on replacing the grey icon.
+        //This is actually a non-public attribute (that little grey search icon in the SearchView) and can't be changed
+        //through typical/simple means
+//        int searchIconId = searchView.getContext().getResources().
+//                getIdentifier("android:id/search_button", null, null);
+//        ImageView searchIcon = (ImageView) searchView.findViewById(searchIconId);
+//        searchIcon.setImageResource(R.drawable.ic_search);
+
         searchView.setQueryHint("Search for a bar");
         searchView.setIconifiedByDefault(false);
 
@@ -266,7 +283,6 @@ public class MapActivity extends ActionBarActivity {
                     if(marker.getTitle().toLowerCase().contains(s)){
                         barFound = true;
 
-                        Toast.makeText(getApplicationContext(), "Found bar: " + marker.getTitle(), Toast.LENGTH_SHORT).show();
                         // Zoom to bar
                         float zoom = 18;
                         CameraUpdate update = CameraUpdateFactory.newLatLngZoom(marker.getPosition(), zoom);
@@ -296,15 +312,15 @@ public class MapActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
+            case R.id.action_settings:
+                Intent settings = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(settings);
+                return true;
             case R.id.action_list:
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
                 String test = addDistances(jsonarray);
                 i.putExtra("jsonArray", test);
                 startActivity(i);
-                return true;
-            case R.id.action_client:
-                Intent clientLogin = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(clientLogin);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

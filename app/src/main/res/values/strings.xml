@@ -9,6 +9,7 @@
     <string name="search">Search</string>
     <string name="action_client">Client Login</string>
     <string name="list">List</string>
+    <string name="contactUs">Contact Us</string>
     <string name="title_activity_bar_detail">Detail</string>
 
 
@@ -35,5 +36,9 @@
 
     <string name="title_activity_login">Login</string>
     <string name="title_activity_admin">Update Deals</string>
+    <string name="title_activity_contact">Contact Us</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_settings">Settings</string>
 
 </resources>

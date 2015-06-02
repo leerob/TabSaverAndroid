@@ -38,7 +38,6 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
     ArrayAdapter<String> arrayAdapter;
     String[] dealArr;
     String bar;
-    RatingBar ratingBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +66,8 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
 
                 JSONObject obj = jsonarray.getJSONObject(i);
 
-                if(obj.getString("name").equals(bar)){
-                    barAddress.setText(obj.getString("address"));
+                if (obj.getString("name").equals(bar)) {
+                    barAddress.setText(obj.getString("address") + ", " + obj.getString("city") + ", " + obj.getString("state"));
 
                     hashMap.put("Monday", obj.getString("Monday"));
                     hashMap.put("Tuesday", obj.getString("Tuesday"));
@@ -99,49 +98,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
         spinner.setAdapter(adapter);
         spinner.setSelection(getIndex(spinner, day));
         spinner.setOnItemSelectedListener(this);
-
-
-        ratingBar = (RatingBar) findViewById(R.id.ratingBar);
-        getCurrentRating();
-        addListenerOnRatingBar();
-
     }
-
-
-    public void addListenerOnRatingBar() {
-
-        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-
-                ParseObject obj = new ParseObject(bar.replace(" ", "").replace("'", ""));
-                obj.put("rating", rating);
-                obj.saveInBackground();
-
-            }
-        });
-    }
-
-    public void getCurrentRating() {
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(bar.replace(" ", "").replace("'", ""));
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    float sum = 0;
-                    for(ParseObject object: objects){
-                        sum += object.getInt("rating");
-                    }
-                    float averageRating = sum / objects.size();
-                    float roundedVal = Math.round(averageRating * 2) / 2.0f;
-                    ratingBar.setRating(roundedVal);
-
-                } else {
-                    // Fail
-                }
-            }
-        });
-    }
-
 
     public String getDayOfWeekStr(){
 

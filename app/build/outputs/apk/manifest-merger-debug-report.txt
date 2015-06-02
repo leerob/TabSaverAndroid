@@ -1,8 +1,6 @@
 -- Merging decision tree log ---
 manifest
 ADDED from AndroidManifest.xml:2:1
-	xmlns:android
-		ADDED from AndroidManifest.xml:2:11
 	package
 		ADDED from AndroidManifest.xml:3:5
 		INJECTED from AndroidManifest.xml:0:0
@@ -10,6 +8,8 @@ ADDED from AndroidManifest.xml:2:1
 	android:versionName
 		INJECTED from AndroidManifest.xml:0:0
 		INJECTED from AndroidManifest.xml:0:0
+	xmlns:android
+		ADDED from AndroidManifest.xml:2:11
 	android:versionCode
 		INJECTED from AndroidManifest.xml:0:0
 		INJECTED from AndroidManifest.xml:0:0
@@ -70,16 +70,16 @@ MERGED from com.android.support:support-v4:21.0.3:16:5
 meta-data#com.google.android.gms.version
 ADDED from AndroidManifest.xml:28:9
 MERGED from com.google.android.gms:play-services:6.5.87:21:9
-	android:name
-		ADDED from AndroidManifest.xml:29:13
 	android:value
 		ADDED from AndroidManifest.xml:30:13
+	android:name
+		ADDED from AndroidManifest.xml:29:13
 meta-data#com.google.android.maps.v2.API_KEY
 ADDED from AndroidManifest.xml:31:9
-	android:name
-		ADDED from AndroidManifest.xml:32:13
 	android:value
 		ADDED from AndroidManifest.xml:33:13
+	android:name
+		ADDED from AndroidManifest.xml:32:13
 activity#com.tabsaver.MapActivity
 ADDED from AndroidManifest.xml:35:9
 	android:label
@@ -122,10 +122,10 @@ ADDED from AndroidManifest.xml:55:9
 		ADDED from AndroidManifest.xml:56:13
 activity#com.tabsaver.LoginActivity
 ADDED from AndroidManifest.xml:59:9
-	android:windowSoftInputMode
-		ADDED from AndroidManifest.xml:62:13
 	android:label
 		ADDED from AndroidManifest.xml:61:13
+	android:windowSoftInputMode
+		ADDED from AndroidManifest.xml:62:13
 	android:name
 		ADDED from AndroidManifest.xml:60:13
 activity#com.tabsaver.AdminActivity
@@ -134,6 +134,18 @@ ADDED from AndroidManifest.xml:64:9
 		ADDED from AndroidManifest.xml:66:13
 	android:name
 		ADDED from AndroidManifest.xml:65:13
+activity#com.tabsaver.ContactActivity
+ADDED from AndroidManifest.xml:68:9
+	android:label
+		ADDED from AndroidManifest.xml:70:13
+	android:name
+		ADDED from AndroidManifest.xml:69:13
+activity#com.tabsaver.SettingsActivity
+ADDED from AndroidManifest.xml:72:9
+	android:label
+		ADDED from AndroidManifest.xml:74:13
+	android:name
+		ADDED from AndroidManifest.xml:73:13
 uses-sdk
 INJECTED from AndroidManifest.xml:0:0 reason: use-sdk injection requested
 MERGED from com.android.support:appcompat-v7:21.0.3:15:5
