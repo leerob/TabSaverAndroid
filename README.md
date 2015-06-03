@@ -12,7 +12,9 @@ About
 -----
 TabSaver is an Android application (in progress) written in Java that helps you find the best deals for your local bars. By using your current location, TabSaver finds the closest deals to you and shows the exact mileage to each bar. Have a favorite bar? Check out their details page to find their address, website, phone number, and every deal they offer.
 
-![Screenshot](http://i.imgur.com/FB7Vlzf.png "Screenshots")
+![Screenshot](http://i.imgur.com/qxuVoM7.jpg "Screenshots")
+![Screenshot2](http://i.imgur.com/1DPDfBj.jpg "Screenshots")
+![Screenshot3](http://i.imgur.com/3ObocRF.jpg "Screenshots")
 
 Supported Cities
 ----
