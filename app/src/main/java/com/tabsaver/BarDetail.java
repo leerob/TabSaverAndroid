@@ -11,14 +11,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.RatingBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,7 +20,6 @@ import org.json.JSONObject;
 
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 
 
 public class BarDetail extends ActionBarActivity implements OnItemSelectedListener {
@@ -67,7 +60,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
                 JSONObject obj = jsonarray.getJSONObject(i);
 
                 if (obj.getString("name").equals(bar)) {
-                    barAddress.setText(obj.getString("address") + ", " + obj.getString("city") + ", " + obj.getString("state"));
+                    barAddress.setText(obj.getString("address") + "\n" + obj.getString("city") + ", " + obj.getString("state"));
 
                     hashMap.put("Monday", obj.getString("Monday"));
                     hashMap.put("Tuesday", obj.getString("Tuesday"));

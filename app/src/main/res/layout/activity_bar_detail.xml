@@ -30,20 +30,15 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="123 Welch Ave"
+        android:textAppearance="@android:style/TextAppearance.Small"
+        android:text="123 Welch Ave\ntefes"
         android:id="@+id/barAddress"
         android:layout_below="@+id/barName"
         android:layout_centerHorizontal="true"
-        android:textSize="20dp" />
-
-    <!--
-    <RatingBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/ratingBar"
-        android:layout_below="@+id/barAddress"
-        android:layout_centerHorizontal="true" /> -->
+        android:textSize="16dp"
+        android:lines="2"
+        android:gravity="center_horizontal"
+        android:paddingBottom="10dp" />
 
     <ListView
         android:layout_width="wrap_content"
@@ -51,13 +46,13 @@
         android:id="@+id/listView"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/barAddress" />
+        android:layout_below="@+id/spinner" />
 
     <Spinner
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/spinner"
-        android:layout_below="@+id/ratingBar"
+        android:layout_below="@+id/barAddress"
         android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
