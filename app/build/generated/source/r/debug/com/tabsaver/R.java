@@ -1940,13 +1940,13 @@ containing a value of this type.
         public static final int action_bar_subtitle=0x7f0b0039;
         public static final int action_bar_title=0x7f0b0038;
         public static final int action_context_bar=0x7f0b0056;
-        public static final int action_list=0x7f0b009c;
+        public static final int action_list=0x7f0b009d;
         public static final int action_menu_divider=0x7f0b0002;
         public static final int action_menu_presenter=0x7f0b0003;
         public static final int action_mode_bar=0x7f0b0052;
         public static final int action_mode_bar_stub=0x7f0b0051;
         public static final int action_mode_close_button=0x7f0b003a;
-        public static final int action_settings=0x7f0b0098;
+        public static final int action_settings=0x7f0b0099;
         public static final int activity_admin=0x7f0b0064;
         public static final int activity_chooser_view_content=0x7f0b003b;
         public static final int adjust_height=0x7f0b0017;
@@ -1965,7 +1965,7 @@ containing a value of this type.
         public static final int buy_with_google=0x7f0b0033;
         public static final int checkbox=0x7f0b004d;
         public static final int classic=0x7f0b0035;
-        public static final int clientLogout=0x7f0b0097;
+        public static final int clientLogout=0x7f0b0098;
         public static final int clientSubmitButton=0x7f0b0067;
         public static final int client_login=0x7f0b008f;
         public static final int collapseActionView=0x7f0b001d;
@@ -2018,8 +2018,8 @@ containing a value of this type.
         public static final int ifRoom=0x7f0b001e;
         public static final int image=0x7f0b003d;
         public static final int imageView=0x7f0b0074;
-        public static final int listByBars=0x7f0b0099;
-        public static final int listByDeals=0x7f0b009a;
+        public static final int listByBars=0x7f0b009a;
+        public static final int listByDeals=0x7f0b009b;
         public static final int listMode=0x7f0b0009;
         public static final int listView=0x7f0b0077;
         public static final int list_item=0x7f0b003f;
@@ -2040,6 +2040,7 @@ containing a value of this type.
         public static final int password=0x7f0b0082;
         public static final int production=0x7f0b002b;
         public static final int progressBar=0x7f0b0073;
+        public static final int progress_bar_loading_bars=0x7f0b0096;
         public static final int progress_circular=0x7f0b0005;
         public static final int progress_horizontal=0x7f0b0006;
         public static final int radio=0x7f0b004f;
@@ -2048,7 +2049,7 @@ containing a value of this type.
         public static final int save_settings=0x7f0b0090;
         public static final int screen=0x7f0b0025;
         public static final int scrollView=0x7f0b0047;
-        public static final int search=0x7f0b009b;
+        public static final int search=0x7f0b009c;
         public static final int search_badge=0x7f0b0059;
         public static final int search_bar=0x7f0b0058;
         public static final int search_button=0x7f0b005a;
@@ -2080,7 +2081,7 @@ containing a value of this type.
         public static final int textView3=0x7f0b008b;
         public static final int title=0x7f0b0041;
         public static final int title_template=0x7f0b0044;
-        public static final int toolbar=0x7f0b0096;
+        public static final int toolbar=0x7f0b0097;
         public static final int topPanel=0x7f0b0043;
         public static final int up=0x7f0b0008;
         public static final int useLogo=0x7f0b0012;

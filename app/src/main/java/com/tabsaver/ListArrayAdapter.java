@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -28,6 +30,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 
 public class ListArrayAdapter extends BaseAdapter {
 
@@ -36,16 +39,37 @@ public class ListArrayAdapter extends BaseAdapter {
     LayoutInflater inflater;
     View itemView;
 
+
     //Storage of our data and the current deals
     ArrayList<HashMap<String, String>> data;
     HashMap<String, String> resultp = new HashMap<String, String>();
     JSONArray jsonarray;
     String barName;
 
+    //Caching images for better performance
+    public LruCache<String, Bitmap> mMemoryCache;
+
     public ListArrayAdapter(Context context, ArrayList<HashMap<String, String>> arraylist, JSONArray json) {
         this.context = context;
         data = arraylist;
         jsonarray = json;
+
+        // Get max available VM memory, exceeding this amount will throw an
+        // OutOfMemory exception. Stored in kilobytes as LruCache takes an
+        // int in its constructor.
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+
+        // Use 1/8th of the available memory for this memory cache.
+        final int cacheSize = maxMemory / 4;
+
+        mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap) {
+                // The cache size will be measured in kilobytes rather than
+                // number of items.
+                return bitmap.getByteCount() / 1024;
+            }
+        };
     }
 
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -54,10 +78,11 @@ public class ListArrayAdapter extends BaseAdapter {
         TextView distance;
         TextView deals;
 
-        // Set view up
+        // Set up our views
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         itemView = inflater.inflate(R.layout.list_item, parent, false);
         final ImageView barImage = (ImageView) itemView.findViewById(R.id.bar_thumbnail);
+        final View mProgressView = itemView.findViewById(R.id.progress_bar_loading_bars);
 
         // Get the position in list
         resultp = data.get(position);
@@ -82,7 +107,6 @@ public class ListArrayAdapter extends BaseAdapter {
         deals.setText(formattedDeals);
         distance.setText(formatter.format(Double.valueOf(resultp.get("distance"))) + " mi");
 
-
         // Capture ListView item click
         itemView.setOnClickListener(new OnClickListener() {
 
@@ -96,36 +120,63 @@ public class ListArrayAdapter extends BaseAdapter {
             }
         });
 
-        ParseQuery findImage = new ParseQuery("BarPhotos");
-        findImage.whereEqualTo("barName", barName);
+        mProgressView.setVisibility(View.VISIBLE);
 
-        try {
-            //Query for barName's photo
-            ArrayList<ParseObject> temp = (ArrayList<ParseObject>) findImage.find();
+        //Try and grab the image from cache
+        final Bitmap bitmap = getBitmapFromMemCache(position + "");
 
-            //now get objectId
-            String objectId = temp.get(0).getObjectId();
+        //If we find it, just use it
+        if (bitmap != null) {
+            barImage.setImageBitmap(bitmap);
 
-            //Do some weird shit and get and cast our image
-            ParseObject imageHolder = findImage.get(objectId);
-            ParseFile image = (ParseFile) imageHolder.get("imageFile");
-            byte[] imageFile = image.getData();
+            //Hide our spinner
+            mProgressView.setVisibility(View.GONE);
+        } else {
+            //query and load up that image.
+            final ParseQuery findImage = new ParseQuery("BarPhotos");
+            findImage.whereEqualTo("barName", barName);
 
-            //Turn it into a bitmap and set our display image
-            Bitmap bmp = BitmapFactory.decodeByteArray(imageFile, 0, imageFile.length);
+            //Now query in the background
+            findImage.findInBackground(new FindCallback<ParseObject>() {
+                public void done(List<ParseObject> objects, ParseException e) {
+                    if (e == null) {
+                        try {
+                            //Grab this image
+                            ArrayList<ParseObject> temp = (ArrayList<ParseObject>) objects;
 
-            bmp = Bitmap.createScaledBitmap(bmp,
-                    128, 128, false);
+                            //now get objectId
+                            String objectId = temp.get(0).getObjectId();
 
-            ByteArrayOutputStream bytearroutstream = new ByteArrayOutputStream();
-            bmp.compress(Bitmap.CompressFormat.JPEG, 5,bytearroutstream);
+                            //Do some weird shit and get and cast our image
+                            ParseObject imageHolder = findImage.get(objectId);
+                            ParseFile image = (ParseFile) imageHolder.get("imageFile");
+                            byte[] imageFile = image.getData();
 
-            barImage.setImageBitmap(bmp);
+                            //Turn it into a bitmap and set our display image
+                            Bitmap bmp = BitmapFactory.decodeByteArray(imageFile, 0, imageFile.length);
 
-        } catch (ParseException e ) {
-            Toast.makeText(context, "Failed to load image.", Toast.LENGTH_SHORT).show();
-        } catch (NullPointerException e ) {
-            Toast.makeText(context, "Failed to load image.", Toast.LENGTH_SHORT).show();
+                            //Scale the image down
+                            bmp = Bitmap.createScaledBitmap(bmp,
+                                    128, 128, false);
+
+                            //Now compress it down to a low quality (5 = quality)
+                            ByteArrayOutputStream bytearroutstream = new ByteArrayOutputStream();
+                            bmp.compress(Bitmap.CompressFormat.JPEG, 5,bytearroutstream);
+
+                            //Set our image and cache it
+                            barImage.setImageBitmap(bmp);
+                            addBitmapToMemoryCache(String.valueOf(position + ""), bmp);
+
+                            //Hide our spinner
+                            mProgressView.setVisibility(View.GONE);
+                        } catch (Exception ex) {
+                            Toast.makeText(context, "Failed to load image.", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        //failed
+                    }
+                }
+            });
         }
 
         return itemView;
@@ -165,6 +216,16 @@ public class ListArrayAdapter extends BaseAdapter {
         }
 
         return dealsStr;
+    }
+
+    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if (getBitmapFromMemCache(key) == null) {
+            mMemoryCache.put(key, bitmap);
+        }
+    }
+
+    public Bitmap getBitmapFromMemCache(String key) {
+        return mMemoryCache.get(key);
     }
 
     @Override
