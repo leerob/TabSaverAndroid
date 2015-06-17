@@ -14,8 +14,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -25,14 +23,18 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.GetCallback;
 import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -42,150 +44,170 @@ import java.util.List;
 public class MapActivity extends ActionBarActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+
+    //Json representations of cities and bars
     JSONArray jsonarray;
-    ProgressDialog mProgressDialog;
-    ArrayList<HashMap<String, String>> arraylist;
-    ListView listview;
-    ListArrayAdapter adapter;
-    HashMap<String, String> barHashMap = new HashMap<String, String>();
+    JSONArray cities;
+
+    //More accessible collection of bar data
+    ArrayList<HashMap<String, String>> arraylist = new ArrayList<HashMap<String, String>>();
+
+    //All of the bar markers on the map
     List<Marker> markers = new ArrayList<Marker>();
+
+    //Our current location
     Location myLocation;
-    Marker myLoc;
+
+    //Keeping track of our state
+    boolean locationUndetermined = true;
+    boolean markersLoaded = false;
+
+    //Storing and retrieving session information
+    ClientSessionManager session;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        session = new ClientSessionManager(getApplicationContext());
         setUpMapIfNeeded();
-        mProgressDialog = null;
-        new DownloadJSON().execute();
 
-        // Enable Local Datastore.
-        Parse.enableLocalDatastore(getApplicationContext());
 
-        //Sleep for just a fraction of a second.. Sometimes the app runs too fast or insequentially or something and gives the following error:
-        //java.lang.IllegalStateException: `Parse#enableLocalDatastore(Context)` must be invoked before `Parse#initialize(Context)
-        try {
-            Thread.sleep(250);
-        } catch (InterruptedException e) {
-
+        //Try and grab our closest city from sessions
+        if ( !session.getCityName().equals("none") ) {
+            zoomToCurrentCity();
+            locationUndetermined = false;
         }
-        Parse.initialize(getApplicationContext(), "mZ1wJCdlDowI28IzRpZ9ycIFkm0TXUYA33EoC3n8", "4TaNynj1NN0UDlXMP3iQQb6WGAAE5Gp9IOBcVMkW");
+
+        //Grab bar and city information online if we have to. TODO: Add a once daily sync.
+        if ( session.getBars().equals("none") ) {
+            new DownloadJSON().execute();
+        } else {
+            try {
+                //grab json
+                jsonarray = new JSONArray(session.getBars());
+                cities = new JSONArray(session.getCities());
+
+                //setup map
+                setupBarsArraylist();
+                setupBarMarkers();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
 
-    // DownloadJSON AsyncTask
+    /**
+     * Sync our bar and city data with the online database
+     */
     private class DownloadJSON extends AsyncTask<Void, Void, Void> {
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // Create a Progress Dialog
-            mProgressDialog = new ProgressDialog(MapActivity.this);
-            mProgressDialog.setTitle("Downloading Bar Data");
-            mProgressDialog.setMessage("Loading...");
-            mProgressDialog.setIndeterminate(false);
-            mProgressDialog.show();
-        }
-
-        @Override
         protected Void doInBackground(Void... params) {
-            // Create an array
-            arraylist = new ArrayList<HashMap<String, String>>();
+            // Retrieve JSON Objects from the given URL address and store them.
+            jsonarray = JSONFunctions.getJSONfromURL("http://tabsaver.info/retrieveBars.php");
+            session.setBars(jsonarray.toString());
 
+            cities = JSONFunctions.getJSONfromURL("http://tabsaver.info/retrieveCities.php");
+            session.setCities(cities.toString());
+
+            //Now setup the hashmap for each bar from the JSON
             try {
-                // Retrieve JSON Objects from the given URL address
-                jsonarray = JSONFunctions.getJSONfromURL("http://tabsaver.info/retrieveBars.php");
-
-                for (int i = 0; i < jsonarray.length(); i++) {
-                    HashMap<String, String> map = new HashMap<String, String>();
-                    JSONObject obj = jsonarray.getJSONObject(i);
-                    // Retrieve JSON Objects
-                    map.put("id",  String.valueOf(i));
-                    map.put("name", obj.getString("name"));
-                    map.put("lat", obj.getString("lat"));
-                    map.put("long", obj.getString("long"));
-                    map.put("Monday", obj.getString("Monday"));
-                    map.put("Tuesday", obj.getString("Tuesday"));
-                    map.put("Wednesday", obj.getString("Wednesday"));
-                    map.put("Thursday", obj.getString("Thursday"));
-                    map.put("Friday", obj.getString("Friday"));
-                    map.put("Saturday", obj.getString("Saturday"));
-                    map.put("Sunday", obj.getString("Sunday"));
-
-                    // Set the JSON Objects into the array
-                    arraylist.add(map);
-                }
-
+                setupBarsArraylist();
             } catch (JSONException e) {
-                Log.e("Error", e.getMessage());
                 e.printStackTrace();
             }
+
             return null;
         }
 
 
         @Override
         protected void onPostExecute(Void args) {
-
-            // Add markers to the map
-            for(int i = 0; i < arraylist.size(); i++){
-                // Get the current bar HashMap
-                barHashMap = arraylist.get(i);
-
-                double latitude = Double.parseDouble(barHashMap.get("lat"));
-                double longitude = Double.parseDouble("-" + barHashMap.get("long"));
-                String name = barHashMap.get("name");
-
-                String day = getDayOfWeekStr();
-                String[] dealArr = barHashMap.get(day).split(",");
-
-
-                BitmapFactory.Options o = new BitmapFactory.Options();
-                Bitmap img = BitmapFactory.decodeResource(getResources(), R.drawable.ic_mug, o);
-
-                Marker m = mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(latitude, longitude))
-                        .title(name)
-                        .snippet(dealArr[0])
-                        .icon(BitmapDescriptorFactory.fromBitmap(img)));
-
-                markers.add((m));
-
-                mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
-
-                    @Override
-                    public void onInfoWindowClick(Marker marker) {
-                        // Make new intent to detail view
-                        Intent i = new Intent(getApplicationContext(), BarDetail.class);
-                        i.putExtra("jsonArray", jsonarray.toString());
-                        i.putExtra("bar", marker.getTitle());
-                        startActivity(i);
-                    }
-                });
-            }
-            // Zoom in camera to Ames, will have to have separate arrays of markers to zoom to based on location
-            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-            for (Marker marker : markers) {
-                builder.include(marker.getPosition());
-            }
-            LatLngBounds bounds = builder.build();
-            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 0));
-
-            if(mProgressDialog != null)
-                mProgressDialog.dismiss();
+            setupBarMarkers();
         }
     }
 
-    @Override
-    public void onPause(){
+    /**
+     * Translate JSON array into something useful and efficient
+     * @throws JSONException
+     */
+    public void setupBarsArraylist() throws JSONException {
+        for (int i = 0; i < jsonarray.length(); i++) {
+            HashMap<String, String> map = new HashMap<String, String>();
+            JSONObject obj = jsonarray.getJSONObject(i);
+            // Retrieve JSON Objects
+            map.put("id",  String.valueOf(i));
+            map.put("name", obj.getString("name"));
+            map.put("lat", obj.getString("lat"));
+            map.put("long", obj.getString("long"));
+            map.put("Monday", obj.getString("Monday"));
+            map.put("Tuesday", obj.getString("Tuesday"));
+            map.put("Wednesday", obj.getString("Wednesday"));
+            map.put("Thursday", obj.getString("Thursday"));
+            map.put("Friday", obj.getString("Friday"));
+            map.put("Saturday", obj.getString("Saturday"));
+            map.put("Sunday", obj.getString("Sunday"));
 
-        super.onPause();
-        if(mProgressDialog != null)
-            mProgressDialog.dismiss();
+            // Set the JSON Objects into the array
+            arraylist.add(map);
+        }
+
     }
 
+    /**
+     * Setup and place the markers
+     */
+    public void setupBarMarkers(){
+        String[] bars = new String[arraylist.size()];
+
+        // Add markers to the map
+        for(int i = 0; i < arraylist.size(); i++){
+            // Get the current bar HashMap
+            HashMap<String, String> barHashMap = arraylist.get(i);
+
+            double latitude = Double.parseDouble(barHashMap.get("lat"));
+            double longitude = Double.parseDouble("-" + barHashMap.get("long"));
+            String name = barHashMap.get("name");
+
+            String day = getDayOfWeekStr();
+            String[] dealArr = barHashMap.get(day).split(",");
+
+            bars[i] = name;
+
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            Bitmap img = BitmapFactory.decodeResource(getResources(), R.drawable.ic_mug, o);
+
+            Marker m = mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(latitude, longitude))
+                    .title(name)
+                    .snippet(dealArr[0])
+                    .icon(BitmapDescriptorFactory.fromBitmap(img)));
+            markers.add((m));
+
+            mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+
+                @Override
+                public void onInfoWindowClick(Marker marker) {
+                    // Make new intent to detail view
+                    Intent i = new Intent(getApplicationContext(), BarDetail.class);
+                    i.putExtra("jsonArray", jsonarray.toString());
+                    i.putExtra("bar", marker.getTitle());
+                    startActivity(i);
+                }
+            });
+
+        }
+
+        markersLoaded = true;
+    }
+
+    /**
+     * Determines the day of the week
+     * @return
+     */
     public String getDayOfWeekStr(){
 
         Calendar calendar = Calendar.getInstance();
@@ -217,14 +239,36 @@ public class MapActivity extends ActionBarActivity {
         setUpMapIfNeeded();
     }
 
+    /**
+     * Constantly update our location.
+     */
     private GoogleMap.OnMyLocationChangeListener myLocationChangeListener = new GoogleMap.OnMyLocationChangeListener() {
         @Override
         public void onMyLocationChange(Location  location) {
             myLocation = location;
             myLocation.setLongitude(myLocation.getLongitude() * -1);
+
+            if ( locationUndetermined && markersLoaded) {
+                determineClosestCity();
+                zoomToCurrentCity();
+            }
         }
     };
 
+    /**
+     * Zoom the map to the current city once
+     */
+    private void zoomToCurrentCity(){
+        LatLng currentCityLocation = new LatLng(session.getLat(), session.getLong());
+        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentCityLocation, 10);
+        mMap.animateCamera(update);
+
+        locationUndetermined = false;
+    }
+
+    /**
+     * Google maps default config setup
+     */
     private void setUpMapIfNeeded() {
         // Do a null check to confirm that we have not already instantiated the map.
         if (mMap == null) {
@@ -232,25 +276,17 @@ public class MapActivity extends ActionBarActivity {
             mMap = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map))
                     .getMap();
 
+            //setup our listeners
             mMap.setMyLocationEnabled(true);
-
             mMap.setOnMyLocationChangeListener(myLocationChangeListener);
-            // Check if we were successful in obtaining the map.
-            if (mMap != null) {
-                setUpMap();
-            }
-
         }
     }
 
-    private void setUpMap() {
-        // Zoom in, animating the camera.
-        //mMap.animateCamera(CameraUpdateFactory.zoomIn());
-
-        // Zoom out to zoom level 10, animating with a duration of 2 seconds.
-        //mMap.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
-    }
-
+    /**
+     * Setup our menu items
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
@@ -260,6 +296,7 @@ public class MapActivity extends ActionBarActivity {
         // Associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         final SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
 
         //This is close - but not quite right - on replacing the grey icon.
@@ -280,7 +317,7 @@ public class MapActivity extends ActionBarActivity {
                 boolean barFound = false;
 
                 for (Marker marker : markers) {
-                    if(marker.getTitle().toLowerCase().contains(s)){
+                    if(s.toLowerCase().contains(marker.getTitle().toLowerCase())){
                         barFound = true;
 
                         // Zoom to bar
@@ -300,6 +337,7 @@ public class MapActivity extends ActionBarActivity {
 
             @Override
             public boolean onQueryTextChange(String s) {
+
                 return false;
             }
 
@@ -308,6 +346,11 @@ public class MapActivity extends ActionBarActivity {
         return true;
     }
 
+    /**
+     * Handling menu item selection
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
@@ -319,7 +362,7 @@ public class MapActivity extends ActionBarActivity {
             case R.id.action_list:
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
                 String test = addDistances(jsonarray);
-                i.putExtra("jsonArray", test);
+                session.setBars(test);
                 startActivity(i);
                 return true;
             default:
@@ -327,6 +370,57 @@ public class MapActivity extends ActionBarActivity {
         }
     }
 
+    /**
+     * Determining the closest city to us
+     */
+    public void determineClosestCity()  {
+
+        //Error handling
+        if ( session.getCityName().equals("none") || cities.length() == 0) {
+            return;
+        }
+
+        try {
+
+            Location cur = new Location("BS");
+            Location min = new Location("BS");
+            String name = "None";
+            int minIndex = 0;
+
+            JSONObject o = cities.getJSONObject(0);
+            cur.setLatitude(o.getDouble("lat"));
+            cur.setLongitude(o.getDouble("long"));
+            min.setLatitude(o.getDouble("lat"));
+            min.setLongitude(o.getDouble("long"));
+
+            for(int i = 0; i < cities.length(); i++ ) {
+                o = cities.getJSONObject(i);
+                cur.setLatitude(o.getDouble("lat"));
+                cur.setLongitude(o.getDouble("long"));
+
+                if (myLocation.distanceTo(cur) <= myLocation.distanceTo(min) ) {
+                    minIndex = i;
+                    min.setLatitude(cur.getLatitude());
+                    min.setLongitude(cur.getLongitude());
+                    name = o.getString("name");
+                }
+            }
+
+            min.setLongitude(min.getLongitude());
+
+            session.setCity(name, min.getLatitude(), min.getLongitude());
+
+        } catch (JSONException e) {
+            Toast.makeText(getApplicationContext(), "Failed to determine closest city.", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    /**
+     * Appending distances to our bars.. TODO: Can we move this into another method?
+     * @param json
+     * @return
+     */
     public String addDistances(JSONArray json){
         JSONArray newArray = new JSONArray();
 

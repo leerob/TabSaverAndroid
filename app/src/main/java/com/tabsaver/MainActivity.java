@@ -9,6 +9,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ListView;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.parse.Parse;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,30 +23,40 @@ import java.util.HashMap;
 
 public class MainActivity extends ActionBarActivity {
 
+    //Array representing the bars
     JSONArray jsonarray;
+
+    //More efficient strucutre with the bars
     ArrayList<HashMap<String, String>> arraylist;
+
+    //Listview
     ListView listview;
+
+    //Storing and retrieving session information
+    ClientSessionManager session;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //get JSON information on bars
-        Intent intent = getIntent();
-        String jsonArray = intent.getStringExtra("jsonArray");
+        //Setup the session
+        session = new ClientSessionManager(getApplicationContext());
 
-
+        //Get our bars
         try {
-            jsonarray = new JSONArray(jsonArray);
+            jsonarray = new JSONArray(session.getBars());
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         displayListView(false);
-
     }
 
+    /**
+     * Add each of our items to the view
+     * @param sortByDeals
+     */
     public void displayListView(boolean sortByDeals) {
 
         //Sort by bar
@@ -148,9 +161,6 @@ public class MainActivity extends ActionBarActivity {
                 e.printStackTrace();
             }
 
-
-
-
             listview = (ListView) findViewById(R.id.listview);
             DealsArrayAdapter adapter = new DealsArrayAdapter(MainActivity.this, newListOfDeals, barAssociation, jsonarray);
             listview.setAdapter(adapter);
@@ -158,6 +168,11 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+    /**
+     * Setting up our settings menu
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu items for use in the action bar
@@ -166,6 +181,11 @@ public class MainActivity extends ActionBarActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * Handle settings menu interactions
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
@@ -183,6 +203,10 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    /**
+     * Return the current day of the week
+     * @return
+     */
     public String getDayOfWeek(){
         // Determine Day of Week
         Calendar calendar = Calendar.getInstance();

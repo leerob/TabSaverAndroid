@@ -13,7 +13,10 @@
         android:paddingTop="5dp"
         android:textColor="@android:color/primary_text_light"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-        android:textStyle="normal" />
+        android:textStyle="normal"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/deals"
+        android:layout_alignStart="@+id/deals" />
 
     <TextView
         android:id="@+id/distance"
@@ -22,10 +25,11 @@
         android:text="0.000 mi"
         android:paddingRight="15dp"
 
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textColor="@android:color/secondary_text_light_nodisable" />
+        android:textColor="@android:color/secondary_text_light_nodisable"
+        android:layout_alignBottom="@+id/deals"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:id="@+id/deals"
@@ -34,11 +38,25 @@
         android:text="Deals"
         android:paddingLeft="15dp"
         android:paddingBottom="5dp"
+        android:textColor="@android:color/secondary_text_light"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:layout_marginLeft="103dp"
+        android:layout_marginStart="103dp"
         android:layout_below="@+id/deal"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bar_thumbnail"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:textColor="@android:color/secondary_text_light"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/deal"
+        android:layout_toStartOf="@+id/deal" />
 
 
 </RelativeLayout>

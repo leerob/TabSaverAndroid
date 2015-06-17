@@ -44,6 +44,56 @@ public class ClientSessionManager {
 
     }
 
+    //Sets the city setting item
+    public void setCity(String city, double lat, double lon){
+        edit.putString("city", city);
+        edit.putString("lat" , "" + lat);
+        edit.putString("lon", "" + lon);
+        edit.commit();
+    }
+
+    public void setBars(String cityJson) {
+        edit.putString("bars", cityJson);
+        edit.commit();
+    }
+
+    public void setCities(String citiesJson) {
+        edit.putString("cities", citiesJson);
+        edit.commit();
+    }
+
+    public String getCities(){
+        return pref.getString("cities", "none");
+    }
+
+    public String getBars(){
+        return pref.getString("bars", "none");
+    }
+
+    /**
+     * Get name of saved closest city
+     * @return
+     */
+    public String getCityName() {
+        return pref.getString("city", "none");
+    }
+
+    /**
+     * Get the latitude setting of city
+     * @return
+     */
+    public Double getLat(){
+        return Double.valueOf(pref.getString("lat", "" + 0.0));
+    }
+
+    /**
+     * Get the longitude setting of city
+     * @return
+     */
+    public Double getLong(){
+        return Double.valueOf(pref.getString("lon", "" + 0.0)) * -1;
+    }
+
 
     /**
      * Returns the user name that is currently logged in

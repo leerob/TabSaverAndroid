@@ -1,6 +1,8 @@
 package com.tabsaver;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -10,16 +12,29 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.GetDataCallback;
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class BarDetail extends ActionBarActivity implements OnItemSelectedListener {
@@ -32,28 +47,37 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
     String[] dealArr;
     String bar;
 
+    //Views
+    TextView barName;
+    TextView barAddress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bar_detail);
 
-        // Create TextViews
+        //assign textviews
         TextView barName = (TextView) findViewById(R.id.barName);
         TextView barAddress = (TextView) findViewById(R.id.barAddress);
 
-
+        //Grab some passed along data
         Intent intent = getIntent();
         String jsonArray = intent.getStringExtra("jsonArray");
-        bar = intent.getStringExtra("bar");
-        barName.setText(bar);
 
+        //convert to json
         try {
             jsonarray = new JSONArray(jsonArray);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
+        bar = intent.getStringExtra("bar");
 
+        //assign image and text
+        barName.setText(bar);
+        loadImage();
+
+        //Grab our deal info
         try {
             for (int i = 0; i < jsonarray.length(); i++) {
 
@@ -91,6 +115,37 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
         spinner.setAdapter(adapter);
         spinner.setSelection(getIndex(spinner, day));
         spinner.setOnItemSelectedListener(this);
+    }
+
+    public void loadImage(){
+        final ImageView barImage = (ImageView) findViewById(R.id.imageView);
+
+        ParseQuery findImage = new ParseQuery("BarPhotos");
+        findImage.whereEqualTo("barName", bar);
+
+
+        try {
+            //Query for barName's photo
+            ArrayList<ParseObject> temp = (ArrayList<ParseObject>) findImage.find();
+
+            //now get objectId
+            String objectId = temp.get(0).getObjectId();
+
+            //Do some weird shit and get and cast our image
+            ParseObject imageHolder = findImage.get(objectId);
+            ParseFile image = (ParseFile) imageHolder.get("imageFile");
+            byte[] imageFile = image.getData();
+
+            //Turn it into a bitmap and set our display image
+            Bitmap bmp = BitmapFactory.decodeByteArray(imageFile, 0, imageFile.length);
+            barImage.setImageBitmap(bmp);
+
+        } catch (ParseException e ) {
+            Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
+        } catch (NullPointerException e ) {
+            Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     public String getDayOfWeekStr(){
