@@ -4,13 +4,13 @@
     tools:context="com.tabsaver.ListViewActivity">
 
     <item
-        android:id="@+id/listByBars"
-        android:title="Bars"
+        android:id="@+id/showListView"
+        android:title="List"
         app:showAsAction="ifRoom"/>
 
     <item
-        android:id="@+id/listByDeals"
-        android:title="Deals"
+        android:id="@+id/showMapView"
+        android:title="Map"
         app:showAsAction="ifRoom" />
 
 

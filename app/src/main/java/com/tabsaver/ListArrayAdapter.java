@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +21,6 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.io.ByteArrayOutputStream;
 import java.text.DecimalFormat;
@@ -96,7 +94,7 @@ public class ListArrayAdapter extends BaseAdapter {
         String dealsStr = getDealsString();
 
         //TODO: Replace this god damn comma stuff
-        String formattedDeals = dealsStr.replace(",", "\n");
+        String formattedDeals = dealsStr.replace(",", ", ");
 
         //setup formater for distance
         NumberFormat formatter = new DecimalFormat("#0.0");

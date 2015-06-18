@@ -9,9 +9,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ListView;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.parse.Parse;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,113 +56,55 @@ public class MainActivity extends ActionBarActivity {
      */
     public void displayListView(boolean sortByDeals) {
 
-        //Sort by bar
-        if ( !sortByDeals ) {
-            arraylist = new ArrayList<HashMap<String, String>>();
+        arraylist = new ArrayList<HashMap<String, String>>();
 
-            try {
-                for (int i = 0; i < jsonarray.length(); i++) {
-                    HashMap<String, String> map = new HashMap<String, String>();
-                    JSONObject obj = jsonarray.getJSONObject(i);
-                    // Retrieve JSON Objects
-                    map.put("id",  String.valueOf(i));
-                    map.put("name", obj.getString("name"));
-                    map.put("Monday", obj.getString("Monday"));
-                    map.put("Tuesday", obj.getString("Tuesday"));
-                    map.put("Wednesday", obj.getString("Wednesday"));
-                    map.put("Thursday", obj.getString("Thursday"));
-                    map.put("Friday", obj.getString("Friday"));
-                    map.put("Saturday", obj.getString("Saturday"));
-                    map.put("Sunday", obj.getString("Sunday"));
-                    map.put("distance", obj.getString("distance"));
+        try {
+            for (int i = 0; i < jsonarray.length(); i++) {
+                HashMap<String, String> map = new HashMap<String, String>();
+                JSONObject obj = jsonarray.getJSONObject(i);
+                // Retrieve JSON Objects
+                map.put("id",  String.valueOf(i));
+                map.put("name", obj.getString("name"));
+                map.put("Monday", obj.getString("Monday"));
+                map.put("Tuesday", obj.getString("Tuesday"));
+                map.put("Wednesday", obj.getString("Wednesday"));
+                map.put("Thursday", obj.getString("Thursday"));
+                map.put("Friday", obj.getString("Friday"));
+                map.put("Saturday", obj.getString("Saturday"));
+                map.put("Sunday", obj.getString("Sunday"));
+                map.put("distance", obj.getString("distance"));
 
-                    // Set the JSON Objects into the array
-                    arraylist.add(map);
-                }
-
-            } catch (JSONException e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
+                // Set the JSON Objects into the array
+                arraylist.add(map);
             }
 
-            //Sort the list
-            ArrayList<HashMap<String, String>> newList = new ArrayList<HashMap<String, String>>();
-
-            while (arraylist.isEmpty() != true) {
-                HashMap<String, String> min = arraylist.get(0);
-
-                for (int j = 0; j < arraylist.size(); j++) {
-                    HashMap<String, String> current = arraylist.get(j);
-
-                    if (Double.valueOf(min.get("distance")) > Double.valueOf(current.get("distance"))) {
-                        min = current;
-                    }
-
-                }
-
-                arraylist.remove(min);
-                newList.add(min);
-            }
-
-            listview = (ListView) findViewById(R.id.listview);
-            ListArrayAdapter adapter = new ListArrayAdapter(MainActivity.this, newList, jsonarray);
-            listview.setAdapter(adapter);
-            //Sort by deals
-        } else {
-            //Sort the list by deals
-
-            String deals = "";
-            String day = getDayOfWeek();
-            ArrayList<String> barAssociation = new ArrayList<String>();
-            ArrayList<String> newListOfDeals = new ArrayList<String>(10);
-
-            //Make an arraylist of the deals for this week
-            try {
-                for (int i = 0; i < jsonarray.length(); i++) {
-                    String cur = jsonarray.getJSONObject(i).getString(day) ;
-                    String thisBar = jsonarray.getJSONObject(i).getString("name");
-                    String[] theseDeals = cur.split(",");
-                    for(int j = 0; j < theseDeals.length; j++ ) {
-                        if ( theseDeals[j].contains("$")) {
-                            newListOfDeals.add(theseDeals[j]);
-                            barAssociation.add(thisBar);
-                        }
-                    }
-                }
-
-                for(int i = 0; i < newListOfDeals.size(); i++ ) {
-                    double minVal = Double.valueOf(newListOfDeals.get(i).split(" ")[0].replace("$", ""));
-                    int min = i;
-                    for(int j = i + 1; j < newListOfDeals.size(); j++){
-                        double curVal = Double.valueOf(newListOfDeals.get(j).split(" ")[0].replace("$", ""));
-                        if ( curVal < minVal ) {
-                            minVal = curVal;
-                            min = j;
-                        }
-
-                    }
-
-                    //Switch deal
-                    String temp = newListOfDeals.get(i);
-                    newListOfDeals.set(i, newListOfDeals.get(min));
-                    newListOfDeals.set(min, temp);
-
-                    //Switch bar association
-                    temp = barAssociation.get(i);
-                    barAssociation.set(i, barAssociation.get(min));
-                    barAssociation.set(min, temp);
-
-                }
-            } catch (JSONException e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-
-            listview = (ListView) findViewById(R.id.listview);
-            DealsArrayAdapter adapter = new DealsArrayAdapter(MainActivity.this, newListOfDeals, barAssociation, jsonarray);
-            listview.setAdapter(adapter);
+        } catch (JSONException e) {
+            Log.e("Error", e.getMessage());
+            e.printStackTrace();
         }
 
+        //Sort the list
+        ArrayList<HashMap<String, String>> newList = new ArrayList<HashMap<String, String>>();
+
+        while (arraylist.isEmpty() != true) {
+            HashMap<String, String> min = arraylist.get(0);
+
+            for (int j = 0; j < arraylist.size(); j++) {
+                HashMap<String, String> current = arraylist.get(j);
+
+                if (Double.valueOf(min.get("distance")) > Double.valueOf(current.get("distance"))) {
+                    min = current;
+                }
+
+            }
+
+            arraylist.remove(min);
+            newList.add(min);
+        }
+
+        listview = (ListView) findViewById(R.id.listview);
+        ListArrayAdapter adapter = new ListArrayAdapter(MainActivity.this, newList, jsonarray);
+        listview.setAdapter(adapter);
     }
 
     /**
@@ -190,13 +129,14 @@ public class MainActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
-            case R.id.listByDeals:
-                displayListView(true);
+            case R.id.showListView:
+//                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+//                startActivity(i);
                 return true;
-            case R.id.listByBars:
-                displayListView(false);
-                return true;
-            case R.id.action_settings:
+            case R.id.showMapView:
+                Intent map = new Intent(getApplicationContext(), MapActivity.class);
+                startActivity(map);
+                overridePendingTransition(0, 0);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
