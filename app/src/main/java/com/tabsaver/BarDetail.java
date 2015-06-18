@@ -138,6 +138,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
 
             //Turn it into a bitmap and set our display image
             Bitmap bmp = BitmapFactory.decodeByteArray(imageFile, 0, imageFile.length);
+
             barImage.setImageBitmap(bmp);
 
         } catch (ParseException e ) {

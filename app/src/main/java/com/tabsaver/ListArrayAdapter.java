@@ -149,19 +149,15 @@ public class ListArrayAdapter extends BaseAdapter {
 
                             //Do some weird shit and get and cast our image
                             ParseObject imageHolder = findImage.get(objectId);
-                            ParseFile image = (ParseFile) imageHolder.get("imageFile");
+                            ParseFile image = (ParseFile) imageHolder.get("thumbnail");
                             byte[] imageFile = image.getData();
 
                             //Turn it into a bitmap and set our display image
                             Bitmap bmp = BitmapFactory.decodeByteArray(imageFile, 0, imageFile.length);
 
-                            //Scale the image down
-                            bmp = Bitmap.createScaledBitmap(bmp,
-                                    128, 128, false);
-
                             //Now compress it down to a low quality (5 = quality)
                             ByteArrayOutputStream bytearroutstream = new ByteArrayOutputStream();
-                            bmp.compress(Bitmap.CompressFormat.JPEG, 5,bytearroutstream);
+                            bmp.compress(Bitmap.CompressFormat.JPEG, 100,bytearroutstream);
 
                             //Set our image and cache it
                             barImage.setImageBitmap(bmp);
