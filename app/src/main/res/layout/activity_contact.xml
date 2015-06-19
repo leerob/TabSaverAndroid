@@ -15,15 +15,29 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
 
-        <TextView
+        <CheckedTextView
             android:layout_width="wrap_content"
-            android:layout_height="29dp"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Email"
-            android:id="@+id/contact_email_label"
+            android:id="@+id/general_settings_header"
+            android:textStyle="bold"
             android:layout_alignParentTop="true"
-            android:layout_alignRight="@+id/contact_message_label"
-            android:layout_alignEnd="@+id/contact_message_label" />
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:checked="false" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="#c0c0c0"
+            android:id="@+id/view2"
+            android:checked="false"
+            android:layout_below="@+id/general_settings_header"
+            android:layout_marginBottom="10dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
 
         <EditText
             android:layout_width="wrap_content"
@@ -32,23 +46,35 @@
             android:ems="10"
             android:id="@+id/contact_email"
             android:autoText="false"
-            android:layout_gravity="center_horizontal"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true" />
+            android:layout_below="@+id/view2"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
-        <TextView
+        <CheckedTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Message"
-            android:id="@+id/contact_message_label"
-            android:layout_alignTop="@+id/contact_message"
+            android:id="@+id/messageHeader"
+            android:textStyle="bold"
+            android:layout_alignParentLeft="true"
+            android:paddingTop="20dp"
+            android:layout_below="@+id/contact_email"
+            android:checked="false" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="#c0c0c0"
+            android:id="@+id/view3"
+            android:checked="false"
+            android:layout_below="@+id/messageHeader"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
         <EditText
             android:layout_width="fill_parent"
-            android:layout_height="75dp"
+            android:layout_height="125dp"
             android:inputType="textMultiLine"
             android:ems="10"
             android:id="@+id/contact_message"
@@ -57,13 +83,14 @@
             android:layout_below="@+id/contact_email"
             android:layout_alignLeft="@+id/contact_email"
             android:layout_alignStart="@+id/contact_email"
-            android:layout_alignRight="@+id/contact_email"
-            android:layout_alignEnd="@+id/contact_email" />
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:nestedScrollingEnabled="false" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Send"
+            android:text="Send Message"
             android:id="@+id/contact_send"
             android:layout_gravity="center_horizontal"
             android:clickable="true"
