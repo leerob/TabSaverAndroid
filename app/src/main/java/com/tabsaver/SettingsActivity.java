@@ -1,19 +1,16 @@
 package com.tabsaver;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.parse.ParseObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -88,17 +85,38 @@ public class SettingsActivity extends ActionBarActivity {
                 startActivity(contactUs);
             }
         });
+    }
 
-        //Saving our settings
-        ((Button) findViewById(R.id.save_settings)).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+    /**
+     * Setting up our settings menu
+     * @param menu
+     * @return
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_settings, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    /**
+     * Handle settings menu interactions
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.saveSettings:
 
                 for(int i = 0; i < fullCities.length(); i++ ){
                     try {
                         JSONObject temp  = fullCities.getJSONObject(i);
 
                         if ( temp.getString("name").toLowerCase().contains(location.getText().toString().toLowerCase()) ) {
-                              session.setCity(temp.getString("name"), temp.getDouble("lat"), temp.getDouble("long"));
+                            session.setCity(temp.getString("name"), temp.getDouble("lat"), temp.getDouble("long"));
                         }
 
                     } catch (JSONException e) {
@@ -110,8 +128,12 @@ public class SettingsActivity extends ActionBarActivity {
 
                 Intent map = new Intent(getApplicationContext(), MapActivity.class);
                 startActivity(map);
-            }
-        });
+
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 }

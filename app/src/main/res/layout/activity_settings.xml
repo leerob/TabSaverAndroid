@@ -45,24 +45,28 @@
             android:id="@+id/view3" />
 
         <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Location:"
-                android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Location:"
+            android:id="@+id/textView3"
             android:layout_below="@+id/view2"
+            android:paddingRight="20dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_marginTop="12dp" />
+            android:layout_marginTop="15dp"
+            android:textSize="20sp" />
 
         <AutoCompleteTextView
             android:id="@+id/autoCompleteTextView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:layout_alignTop="@+id/textView3"
-            android:layout_alignLeft="@+id/contact_us"
-            android:layout_alignStart="@+id/contact_us" />
+            android:layout_toRightOf="@+id/textView3"
+            android:layout_toEndOf="@+id/textView3"
+            android:paddingTop="15dp"
+            android:layout_below="@+id/view2"
+            android:maxLines="1" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -71,17 +75,17 @@
             android:text="Other"
             android:id="@+id/textView"
             android:textStyle="bold"
-            android:layout_below="@+id/view2"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_marginTop="87dp" />
+            android:layout_marginTop="25dp"
+            android:layout_below="@+id/autoCompleteTextView1" />
 
         <View
             android:layout_width="fill_parent"
             android:layout_height="2dp"
             android:background="#E0E0E0"
             android:id="@+id/view"
-            android:layout_above="@+id/contact_us"
+            android:layout_below="@+id/client_login"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
@@ -91,9 +95,11 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Contact Us"
             android:id="@+id/contact_us"
+            android:paddingTop="10dp"
             android:layout_gravity="bottom|center_horizontal"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true" />
+            android:layout_below="@+id/view"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
 
 
@@ -103,19 +109,12 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Client Login"
             android:id="@+id/client_login"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:layout_below="@+id/view3"
-            android:layout_alignRight="@+id/contact_us"
-            android:layout_alignEnd="@+id/contact_us"
-            android:layout_marginTop="12dp" />
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
-        <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Save"
-            android:id="@+id/save_settings"
-            android:layout_above="@+id/view"
-            android:layout_centerHorizontal="true" />
     </RelativeLayout>
 
 
