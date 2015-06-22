@@ -3,6 +3,7 @@ package com.tabsaver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -51,14 +52,20 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
     TextView barName;
     TextView barAddress;
 
+    //Values
+    String barPhoneNumber;
+    String barWebsiteAddress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bar_detail);
 
-        //assign textviews
+        //Setup our textviews
         TextView barName = (TextView) findViewById(R.id.barName);
         TextView barAddress = (TextView) findViewById(R.id.barAddress);
+        final TextView barWebsite = (TextView) findViewById(R.id.barWebsite);
+        final TextView barPhone = (TextView) findViewById(R.id.barPhone);
 
         //Grab some passed along data
         Intent intent = getIntent();
@@ -84,8 +91,18 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
                 JSONObject obj = jsonarray.getJSONObject(i);
 
                 if (obj.getString("name").equals(bar)) {
+                    //Setup bar address
                     barAddress.setText(obj.getString("address") + "\n" + obj.getString("city") + ", " + obj.getString("state"));
 
+                    //Setup our phone number
+                    barPhoneNumber = obj.getString("number");
+                    barPhone.setText("(" + barPhoneNumber.substring(0,3) + ") " + barPhoneNumber.substring(3,6) + " - " + barPhoneNumber.substring(6,10));
+
+                    //Setup our website address
+                    barWebsiteAddress = obj.getString("website");
+                    barWebsite.setText(barWebsiteAddress);
+
+                    //Store our deals
                     hashMap.put("Monday", obj.getString("Monday"));
                     hashMap.put("Tuesday", obj.getString("Tuesday"));
                     hashMap.put("Wednesday", obj.getString("Wednesday"));
@@ -93,6 +110,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
                     hashMap.put("Friday", obj.getString("Friday"));
                     hashMap.put("Saturday", obj.getString("Saturday"));
                     hashMap.put("Sunday", obj.getString("Sunday"));
+
 
                 }
             }
@@ -102,14 +120,36 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
             e.printStackTrace();
         }
 
+        //Set our phone number listener and intent
+        barPhone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + barPhoneNumber));
+                startActivity(intent);
+            }
+        });
 
+        //Set our website listener and intent
+        barWebsite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if ( !barWebsiteAddress.startsWith("http://") ) {
+                    barWebsiteAddress = "http://" + barWebsiteAddress;
+                }
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(barWebsiteAddress));
+                startActivity(browserIntent);
+            }
+        });
+
+        //Parse and display the current deals for the day
         listview = (ListView) findViewById(R.id.listView);
         String day = getDayOfWeekStr();
         dealArr = hashMap.get(day).split(",");
         arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, dealArr);
         listview.setAdapter(arrayAdapter);
 
-
+        //Setup the spinner selection listener
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.days_of_week, android.R.layout.simple_spinner_item);
         spinner.setAdapter(adapter);
