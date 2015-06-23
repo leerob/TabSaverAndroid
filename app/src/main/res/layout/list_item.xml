@@ -63,16 +63,9 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/deal"
-        android:layout_toStartOf="@+id/deal" />
-
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/progress_bar_loading_bars"
-        android:layout_below="@+id/bar_thumbnail"
-        android:layout_toLeftOf="@+id/deal"
         android:layout_toStartOf="@+id/deal"
-        android:layout_marginRight="25dp"
-        android:layout_marginEnd="25dp" />
+        android:src="@drawable/loading" />
+
+
 
 </RelativeLayout>

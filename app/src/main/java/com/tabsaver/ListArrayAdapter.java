@@ -80,7 +80,6 @@ public class ListArrayAdapter extends BaseAdapter {
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         itemView = inflater.inflate(R.layout.list_item, parent, false);
         final ImageView barImage = (ImageView) itemView.findViewById(R.id.bar_thumbnail);
-        final View mProgressView = itemView.findViewById(R.id.progress_bar_loading_bars);
 
         // Get the position in list
         resultp = data.get(position);
@@ -118,8 +117,6 @@ public class ListArrayAdapter extends BaseAdapter {
             }
         });
 
-        mProgressView.setVisibility(View.VISIBLE);
-
         //Try and grab the image from cache
         final Bitmap bitmap = getBitmapFromMemCache(position + "");
 
@@ -127,8 +124,6 @@ public class ListArrayAdapter extends BaseAdapter {
         if (bitmap != null) {
             barImage.setImageBitmap(bitmap);
 
-            //Hide our spinner
-            mProgressView.setVisibility(View.GONE);
         } else {
             //query and load up that image.
             final ParseQuery findImage = new ParseQuery("BarPhotos");
@@ -161,8 +156,6 @@ public class ListArrayAdapter extends BaseAdapter {
                             barImage.setImageBitmap(bmp);
                             addBitmapToMemoryCache(String.valueOf(position + ""), bmp);
 
-                            //Hide our spinner
-                            mProgressView.setVisibility(View.GONE);
                         } catch (Exception ex) {
                             Toast.makeText(context, "Failed to load image.", Toast.LENGTH_SHORT).show();
                         }

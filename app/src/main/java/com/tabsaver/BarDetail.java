@@ -19,10 +19,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.parse.FindCallback;
-import com.parse.GetCallback;
-import com.parse.GetDataCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -35,7 +31,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 
 
 public class BarDetail extends ActionBarActivity implements OnItemSelectedListener {
@@ -62,7 +57,6 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
         setContentView(R.layout.activity_bar_detail);
 
         //Setup our textviews
-        TextView barName = (TextView) findViewById(R.id.barName);
         TextView barAddress = (TextView) findViewById(R.id.barAddress);
         final TextView barWebsite = (TextView) findViewById(R.id.barWebsite);
         final TextView barPhone = (TextView) findViewById(R.id.barPhone);
@@ -79,9 +73,9 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
         }
 
         bar = intent.getStringExtra("bar");
+        setTitle(bar);
 
-        //assign image and text
-        barName.setText(bar);
+
         loadImage();
 
         //Grab our deal info
@@ -92,11 +86,17 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
 
                 if (obj.getString("name").equals(bar)) {
                     //Setup bar address
-                    barAddress.setText(obj.getString("address") + "\n" + obj.getString("city") + ", " + obj.getString("state"));
+                    barAddress.setText(obj.getString("address") + ", " + obj.getString("city") + ", " + obj.getString("state"));
 
                     //Setup our phone number
                     barPhoneNumber = obj.getString("number");
-                    barPhone.setText("(" + barPhoneNumber.substring(0,3) + ") " + barPhoneNumber.substring(3,6) + " - " + barPhoneNumber.substring(6,10));
+                    if(!barPhoneNumber.equals("No Number")){
+                        Log.d("PHONE", barPhoneNumber);
+                        barPhone.setText("(" + barPhoneNumber.substring(0,3) + ") " + barPhoneNumber.substring(3,6) + " - " + barPhoneNumber.substring(6,10));
+                    }
+                    else{
+                        barPhone.setText("No Number");
+                    }
 
                     //Setup our website address
                     barWebsiteAddress = obj.getString("website");
@@ -124,9 +124,11 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
         barPhone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:" + barPhoneNumber));
-                startActivity(intent);
+                if(!barPhoneNumber.equals("No Number")){
+                    Intent intent = new Intent(Intent.ACTION_DIAL);
+                    intent.setData(Uri.parse("tel:" + barPhoneNumber));
+                    startActivity(intent);
+                }
             }
         });
 
