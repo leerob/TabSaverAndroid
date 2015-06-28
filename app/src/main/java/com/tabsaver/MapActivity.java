@@ -251,9 +251,12 @@ public class MapActivity extends ActionBarActivity {
      * Zoom the map to the current city once
      */
     private void zoomToCurrentCity(){
-        LatLng currentCityLocation = new LatLng(session.getLat(), session.getLong());
-        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentCityLocation, 10);
-        mMap.animateCamera(update);
+//        LatLng currentCityLocation = new LatLng(session.getLat(), session.getLong());
+//        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentCityLocation, 10);
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(session.getLat(), session.getLong()), 10.0f));
+
+//        mMap.animateCamera(update);
 
         locationUndetermined = false;
     }
@@ -354,8 +357,8 @@ public class MapActivity extends ActionBarActivity {
                 return true;
             case R.id.action_list:
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                String test = addDistances(jsonarray);
-                session.setBars(test);
+                String distances = addDistances(jsonarray);
+                session.setBars(distances);
                 startActivity(i);
                 return true;
             default:

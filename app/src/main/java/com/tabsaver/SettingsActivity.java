@@ -128,6 +128,7 @@ public class SettingsActivity extends ActionBarActivity {
 
                 Intent map = new Intent(getApplicationContext(), MapActivity.class);
                 startActivity(map);
+                finish();
 
                 return true;
 

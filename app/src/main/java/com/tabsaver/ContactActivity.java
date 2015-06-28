@@ -1,5 +1,6 @@
 package com.tabsaver;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
@@ -22,21 +23,21 @@ public class ContactActivity extends ActionBarActivity {
                 TextView message = (TextView) findViewById(R.id.contact_message);
 
                 if(isEmailValid(email.getText())){
-//                    Intent i = new Intent(Intent.ACTION_SEND);
-//                    i.setType("message/rfc822");
-//                    i.putExtra(Intent.EXTRA_EMAIL  , email.getText());
-//                    i.putExtra(Intent.EXTRA_SUBJECT, "TabSaver Contact Us");
-//                    i.putExtra(Intent.EXTRA_TEXT   , message.getText());
-//                    try {
-//                        startActivity(Intent.createChooser(i, "Send mail..."));
-//
-//                        //Now finish and navigate back to settings
-//                        finish();
-//                        Intent settings = new Intent(getApplicationContext(), SettingsActivity.class);
-//                        startActivity(settings);
-//                    } catch (android.content.ActivityNotFoundException ex) {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("message/rfc822");
+                    i.putExtra(Intent.EXTRA_EMAIL  , email.getText());
+                    i.putExtra(Intent.EXTRA_SUBJECT, "TabSaver Contact Us");
+                    i.putExtra(Intent.EXTRA_TEXT   , message.getText());
+                    try {
+                        startActivity(Intent.createChooser(i, "Send mail..."));
+
+                        //Now finish and navigate back to settings
+                        finish();
+                        Intent settings = new Intent(getApplicationContext(), SettingsActivity.class);
+                        startActivity(settings);
+                    } catch (android.content.ActivityNotFoundException ex) {
                        Toast.makeText(ContactActivity.this, "Unable to send message. You don't have any email clients!", Toast.LENGTH_SHORT).show();
-//                    }
+                    }
                 }
                 else{
                     email.setError(getString(R.string.error_invalid_email));

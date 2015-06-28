@@ -130,13 +130,13 @@ public class MainActivity extends ActionBarActivity {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.showListView:
-//                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-//                startActivity(i);
+                //List button
                 return true;
             case R.id.showMapView:
                 Intent map = new Intent(getApplicationContext(), MapActivity.class);
                 startActivity(map);
                 overridePendingTransition(0, 0);
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
