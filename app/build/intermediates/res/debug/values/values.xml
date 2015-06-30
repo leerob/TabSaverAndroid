@@ -266,7 +266,7 @@
     <string name="accept">Accept</string>
     <!-- From: file:/C:/proj/tabsaverandroid/app/src/main/res/values/strings.xml -->
     <eat-comment/>
-    <string name="action_client">Client Login</string>
+    <string name="action_client"><u>Client Login</u></string>
     <string name="action_settings">Settings</string>
     <!-- From: file:/C:/proj/tabsaverandroid/app/src/debug/res/values/strings_activity_login.xml -->
     <eat-comment/>
@@ -307,7 +307,7 @@
     <string name="common_signin_button_text_long">Sign in with Google</string>
     <!-- From: file:/C:/proj/tabsaverandroid/app/src/main/res/values/strings.xml -->
     <eat-comment/>
-    <string name="contactUs">Contact Us</string>
+    <string name="contactUs"><u>Contact Us</u></string>
     <!-- From: file:/C:/proj/tabsaverandroid/app/build/intermediates/exploded-aar/com.google.android.gms/play-services/6.5.87/res/values/admob_strings.xml -->
     <eat-comment/>
     <string name="create_calendar_message">Allow Ad to create a calendar event?</string>

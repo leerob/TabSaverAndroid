@@ -2420,7 +2420,7 @@
         <item>Thursday</item>
         <item>Friday</item>
         <item>Saturday</item>
-    </string-array><string name="hello_world">Hello world!</string><string name="title_activity_login">Login</string><string name="action_settings">Settings</string><string name="app_name">TabSaver</string><string name="contactUs">Contact Us</string><string-array name="daysSpinner">
+    </string-array><string name="hello_world">Hello world!</string><string name="title_activity_login">Login</string><string name="action_settings">Settings</string><string name="app_name">TabSaver</string><string name="contactUs"><u>Contact Us</u></string><string-array name="daysSpinner">
         <item>Select...</item>
         <item>Monday</item>
         <item>Tuesday</item>
@@ -2429,31 +2429,7 @@
         <item>Friday</item>
         <item>Saturday</item>
         <item>Sunday</item>
-    </string-array><string name="title_activity_main">TabSaver</string><string name="list">List</string><string name="title_activity_bar_detail">Detail</string><string name="title_activity_map">TabSaver</string><string name="menu_settings">Settings</string><string name="action_client">Client Login</string><string name="search">Search</string><string name="title_activity_contact">Contact Us</string><string name="title_activity_admin">Update Deals</string></file><file path="C:\proj\tabsaverandroid\app\src\main\res\values\strings_activity_settings.xml" qualifiers=""><string name="pref_header_notifications">Notifications</string><string name="pref_title_system_sync_settings">System sync settings</string><string name="pref_default_display_name">John Smith</string><string name="pref_description_social_recommendations">Recommendations for people to contact
-        based on your message history
-    </string><string name="pref_title_add_friends_to_messages">Add friends to messages</string><string name="pref_title_vibrate">Vibrate</string><string name="pref_header_data_sync">Data &amp; sync</string><string name="pref_title_sync_frequency">Sync frequency</string><string-array name="pref_example_list_values">
-        <item>1</item>
-        <item>0</item>
-        <item>-1</item>
-    </string-array><string name="title_activity_settings">Settings</string><string-array name="pref_example_list_titles">
-        <item>Always</item>
-        <item>When possible</item>
-        <item>Never</item>
-    </string-array><string name="pref_ringtone_silent">Silent</string><string name="pref_title_social_recommendations">Enable social recommendations</string><string name="pref_title_ringtone">Ringtone</string><string-array name="pref_sync_frequency_titles">
-        <item>15 minutes</item>
-        <item>30 minutes</item>
-        <item>1 hour</item>
-        <item>3 hours</item>
-        <item>6 hours</item>
-        <item>Never</item>
-    </string-array><string name="pref_header_general">General</string><string name="pref_title_display_name">Display name</string><string-array name="pref_sync_frequency_values">
-        <item>15</item>
-        <item>30</item>
-        <item>60</item>
-        <item>180</item>
-        <item>360</item>
-        <item>-1</item>
-    </string-array><string name="pref_title_new_message_notifications">New message notifications</string></file><file path="C:\proj\tabsaverandroid\app\src\main\res\values\styles.xml" qualifiers=""><style name="MyMaterialTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar">
+    </string-array><string name="title_activity_main">TabSaver</string><string name="list">List</string><string name="title_activity_bar_detail">Detail</string><string name="title_activity_map">TabSaver</string><string name="menu_settings">Settings</string><string name="action_client"><u>Client Login</u></string><string name="search">Search</string><string name="title_activity_contact">Contact Us</string><string name="title_activity_admin">Update Deals</string></file><file path="C:\proj\tabsaverandroid\app\src\main\res\values\styles.xml" qualifiers=""><style name="MyMaterialTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar">
 
         <item name="colorPrimary">@drawable/blue</item>
         <item name="colorPrimaryDark">@drawable/darkblue</item>
@@ -2486,7 +2462,31 @@
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="android:windowSharedElementEnterTransition">@android:transition/move</item>
         <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
-    </style></file><file path="C:\proj\tabsaverandroid\app\src\main\res\values-w820dp\dimens.xml" qualifiers="w820dp-v13"><dimen name="activity_horizontal_margin">64dp</dimen></file><file name="pref_data_sync" path="C:\proj\tabsaverandroid\app\src\main\res\xml\pref_data_sync.xml" qualifiers="" type="xml"/><file name="pref_general" path="C:\proj\tabsaverandroid\app\src\main\res\xml\pref_general.xml" qualifiers="" type="xml"/><file name="pref_headers" path="C:\proj\tabsaverandroid\app\src\main\res\xml\pref_headers.xml" qualifiers="" type="xml"/><file name="pref_notification" path="C:\proj\tabsaverandroid\app\src\main\res\xml\pref_notification.xml" qualifiers="" type="xml"/><file name="searchable" path="C:\proj\tabsaverandroid\app\src\main\res\xml\searchable.xml" qualifiers="" type="xml"/></source><source path="C:\proj\tabsaverandroid\app\build\generated\res\rs\debug"/><source path="C:\proj\tabsaverandroid\app\build\generated\res\generated\debug"/></dataSet><dataSet config="debug"><source path="C:\proj\tabsaverandroid\app\src\debug\res"><file path="C:\proj\tabsaverandroid\app\src\debug\res\values\google_maps_api.xml" qualifiers=""><string name="google_maps_key_instructions" templateMergeStrategy="replace"><!--
+    </style></file><file path="C:\proj\tabsaverandroid\app\src\main\res\values-w820dp\dimens.xml" qualifiers="w820dp-v13"><dimen name="activity_horizontal_margin">64dp</dimen></file><file name="pref_data_sync" path="C:\proj\tabsaverandroid\app\src\main\res\xml\pref_data_sync.xml" qualifiers="" type="xml"/><file name="pref_general" path="C:\proj\tabsaverandroid\app\src\main\res\xml\pref_general.xml" qualifiers="" type="xml"/><file name="pref_headers" path="C:\proj\tabsaverandroid\app\src\main\res\xml\pref_headers.xml" qualifiers="" type="xml"/><file name="pref_notification" path="C:\proj\tabsaverandroid\app\src\main\res\xml\pref_notification.xml" qualifiers="" type="xml"/><file name="searchable" path="C:\proj\tabsaverandroid\app\src\main\res\xml\searchable.xml" qualifiers="" type="xml"/><file name="ic_settings_black_24dp" path="C:\proj\tabsaverandroid\app\src\main\res\drawable-xhdpi\ic_settings_black_24dp.png" qualifiers="xhdpi-v4" type="drawable"/><file name="ic_settings_black_24dp" path="C:\proj\tabsaverandroid\app\src\main\res\drawable-mdpi\ic_settings_black_24dp.png" qualifiers="mdpi-v4" type="drawable"/><file name="ic_settings_black_24dp" path="C:\proj\tabsaverandroid\app\src\main\res\drawable-xxhdpi\ic_settings_black_24dp.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="ic_settings_black_24dp" path="C:\proj\tabsaverandroid\app\src\main\res\drawable-hdpi\ic_settings_black_24dp.png" qualifiers="hdpi-v4" type="drawable"/><file name="ic_list_black_24dp" path="C:\proj\tabsaverandroid\app\src\main\res\drawable-mdpi\ic_list_black_24dp.png" qualifiers="mdpi-v4" type="drawable"/><file name="ic_list_black_24dp" path="C:\proj\tabsaverandroid\app\src\main\res\drawable-xhdpi\ic_list_black_24dp.png" qualifiers="xhdpi-v4" type="drawable"/><file name="ic_list_black_24dp" path="C:\proj\tabsaverandroid\app\src\main\res\drawable-hdpi\ic_list_black_24dp.png" qualifiers="hdpi-v4" type="drawable"/><file name="ic_list_black_24dp" path="C:\proj\tabsaverandroid\app\src\main\res\drawable-xxhdpi\ic_list_black_24dp.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="ic_map_white_24dp" path="C:\proj\tabsaverandroid\app\src\main\res\drawable-mdpi\ic_map_white_24dp.png" qualifiers="mdpi-v4" type="drawable"/><file name="ic_map_white_24dp" path="C:\proj\tabsaverandroid\app\src\main\res\drawable-xxhdpi\ic_map_white_24dp.png" qualifiers="xxhdpi-v4" type="drawable"/><file name="ic_map_white_24dp" path="C:\proj\tabsaverandroid\app\src\main\res\drawable-xxxhdpi\ic_map_white_24dp.png" qualifiers="xxxhdpi-v4" type="drawable"/><file name="ic_map_white_24dp" path="C:\proj\tabsaverandroid\app\src\main\res\drawable-hdpi\ic_map_white_24dp.png" qualifiers="hdpi-v4" type="drawable"/><file name="ic_map_white_24dp" path="C:\proj\tabsaverandroid\app\src\main\res\drawable-xhdpi\ic_map_white_24dp.png" qualifiers="xhdpi-v4" type="drawable"/><file path="C:\proj\tabsaverandroid\app\src\main\res\values\strings_activity_settings.xml" qualifiers=""><string name="pref_header_notifications">Notifications</string><string name="pref_title_system_sync_settings">System sync settings</string><string name="pref_default_display_name">John Smith</string><string name="pref_description_social_recommendations">Recommendations for people to contact
+        based on your message history
+    </string><string name="pref_title_add_friends_to_messages">Add friends to messages</string><string name="pref_title_vibrate">Vibrate</string><string name="pref_header_data_sync">Data &amp; sync</string><string name="pref_title_sync_frequency">Sync frequency</string><string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array><string name="title_activity_settings">Settings</string><string-array name="pref_example_list_titles">
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+    </string-array><string name="pref_ringtone_silent">Silent</string><string name="pref_title_social_recommendations">Enable social recommendations</string><string name="pref_title_ringtone">Ringtone</string><string-array name="pref_sync_frequency_titles">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>Never</item>
+    </string-array><string name="pref_header_general">General</string><string name="pref_title_display_name">Display name</string><string-array name="pref_sync_frequency_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array><string name="pref_title_new_message_notifications">New message notifications</string></file></source><source path="C:\proj\tabsaverandroid\app\build\generated\res\rs\debug"/><source path="C:\proj\tabsaverandroid\app\build\generated\res\generated\debug"/></dataSet><dataSet config="debug"><source path="C:\proj\tabsaverandroid\app\src\debug\res"><file path="C:\proj\tabsaverandroid\app\src\debug\res\values\google_maps_api.xml" qualifiers=""><string name="google_maps_key_instructions" templateMergeStrategy="replace"><!--
 
     TODO: Before you run your application, you need a Google Maps API key.
 

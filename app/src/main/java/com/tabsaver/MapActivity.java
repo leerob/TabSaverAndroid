@@ -1,5 +1,6 @@
 package com.tabsaver;
 
+import android.app.ActionBar;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -9,9 +10,13 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -293,15 +298,6 @@ public class MapActivity extends ActionBarActivity {
         final SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
 
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
-        //This is close - but not quite right - on replacing the grey icon.
-        //This is actually a non-public attribute (that little grey search icon in the SearchView) and can't be changed
-        //through typical/simple means
-//        int searchIconId = searchView.getContext().getResources().
-//                getIdentifier("android:id/search_button", null, null);
-//        ImageView searchIcon = (ImageView) searchView.findViewById(searchIconId);
-//        searchIcon.setImageResource(R.drawable.ic_search);
-
         searchView.setQueryHint("Search for a bar");
         searchView.setIconifiedByDefault(false);
 

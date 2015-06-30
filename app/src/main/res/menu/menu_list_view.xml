@@ -4,12 +4,8 @@
     tools:context="com.tabsaver.ListViewActivity">
 
     <item
-        android:id="@+id/showListView"
-        android:title="List"
-        app:showAsAction="ifRoom"/>
-
-    <item
         android:id="@+id/showMapView"
+        android:icon="@drawable/ic_map_white_24dp"
         android:title="Map"
         app:showAsAction="ifRoom" />
 
