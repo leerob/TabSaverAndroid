@@ -7,8 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -56,10 +54,12 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bar_detail);
 
+
         //Setup our textviews
         TextView barAddress = (TextView) findViewById(R.id.barAddress);
         final TextView barWebsite = (TextView) findViewById(R.id.barWebsite);
         final TextView barPhone = (TextView) findViewById(R.id.barPhone);
+        final TextView barName = (TextView) findViewById(R.id.barName);
 
         //Grab some passed along data
         Intent intent = getIntent();
@@ -73,7 +73,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
         }
 
         bar = intent.getStringExtra("bar");
-        setTitle(bar);
+        barName.setText(bar);
 
 
         loadImage();
@@ -86,7 +86,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
 
                 if (obj.getString("name").equals(bar)) {
                     //Setup bar address
-                    barAddress.setText(obj.getString("address") + ", " + obj.getString("city") + ", " + obj.getString("state"));
+                    barAddress.setText(obj.getString("address") + ", " + obj.getString("town") + ", " + obj.getString("state"));
 
                     //Setup our phone number
                     barPhoneNumber = obj.getString("number");
@@ -153,10 +153,13 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
 
         //Setup the spinner selection listener
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.days_of_week, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.days_of_week, R.layout.custom_spinner);
+        adapter.setDropDownViewResource(R.layout.custom_dropdown);
         spinner.setAdapter(adapter);
         spinner.setSelection(getIndex(spinner, day));
         spinner.setOnItemSelectedListener(this);
+
+        getSupportActionBar().hide();
     }
 
     public void loadImage(){
@@ -263,25 +266,25 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
         return index;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_bar_detail, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_bar_detail, menu);
+//        return true;
+//    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        int id = item.getItemId();
+//
+//        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 }

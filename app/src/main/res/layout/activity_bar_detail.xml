@@ -21,7 +21,7 @@
 
         <ImageView
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="350dp"
             android:id="@+id/imageView"
             android:src="@drawable/bar"
             android:adjustViewBounds="true"
@@ -29,69 +29,103 @@
             android:layout_weight="0.01" />
 
 
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp">
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="70dp"
+                android:background="@drawable/blue"
+                android:id="@+id/bg" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@android:style/TextAppearance.Small"
+                android:text="Bar Name Here"
+                android:id="@+id/barName"
+                android:layout_centerVertical="true"
+                android:paddingLeft="15dp"
+                android:textSize="20sp"
+                android:textColor="@drawable/white" />
+
+            <Spinner
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/spinner"
+                android:layout_gravity="left"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="115dp"
+                android:layout_marginStart="115dp"
+                android:backgroundTint="#ffffffff" />
+
+
+        </RelativeLayout>
+
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="10dp"
-            android:paddingLeft="15dp"
+            android:paddingLeft="10dp"
             android:orientation="horizontal" >
 
-            <TextView
+            <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@android:style/TextAppearance.Small"
-                android:text="Website    "
-                android:id="@+id/websiteLabel"
-                android:layout_marginTop="10dp"
-                android:textSize="16sp"
-                android:textColor="@drawable/blue"
-                android:layout_gravity="center_horizontal" />
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:paddingRight="5dp"
+                android:id="@+id/navIcon"
+                android:src="@drawable/ic_nav_icon"
+                android:tint="@drawable/blue" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@android:style/TextAppearance.Small"
-                android:text="Website"
-                android:id="@+id/barWebsite"
-                android:layout_marginTop="10dp"
-                android:textStyle="italic"
+                android:text="123 Welch Ave, Cedar Falls, IA"
+                android:id="@+id/barAddress"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
                 android:textSize="16sp"
-                android:lines="1"
-                android:ellipsize="end"
                 android:layout_gravity="center_horizontal" />
 
             </LinearLayout>
 
             <View
                 android:layout_width="fill_parent"
-                android:layout_height="1dp"
+                android:layout_height="0.5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:background="#c0c0c0"
                 android:id="@+id/view" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingTop="10dp"
-                android:paddingLeft="15dp"
+                android:paddingLeft="10dp"
                 android:orientation="horizontal" >
 
-                <TextView
+                <ImageView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@android:style/TextAppearance.Small"
-                    android:text="Phone      "
-                    android:id="@+id/phoneLabel"
-                    android:layout_marginTop="10dp"
-                    android:textColor="@drawable/blue"
-                    android:textSize="16sp"
-                    android:layout_gravity="center_horizontal" />
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingRight="5dp"
+                    android:id="@+id/phoneIcon"
+                    android:src="@drawable/ic_phone_icon"
+                    android:tint="@drawable/blue" />
+
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="@android:style/TextAppearance.Small"
                     android:text="(555) 555 - 5555"
                     android:id="@+id/barPhone"
-                    android:layout_marginTop="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
                     android:textSize="16sp"
                     android:layout_gravity="center_horizontal" />
 
@@ -99,68 +133,50 @@
 
             <View
                 android:layout_width="fill_parent"
-                android:layout_height="1dp"
+                android:layout_height="0.5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:background="#c0c0c0"
                 android:id="@+id/view2" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingTop="10dp"
-                android:paddingLeft="15dp"
+                android:paddingLeft="10dp"
                 android:orientation="horizontal" >
 
-                <TextView
+                <ImageView
                     android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:id="@+id/websiteIcon"
+                    android:paddingRight="5dp"
+                    android:src="@drawable/ic_mouse_icon"
+                    android:tint="@drawable/blue" />
+
+                <TextView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="@android:style/TextAppearance.Small"
-                    android:text="Address   "
-                    android:id="@+id/adressLabel"
+                    android:text="Website"
+                    android:id="@+id/barWebsite"
                     android:layout_marginTop="10dp"
+                    android:textStyle="italic"
+                    android:paddingTop="10dp"
                     android:textSize="16sp"
-                    android:textColor="@drawable/blue"
-                    android:gravity="center_horizontal"
+                    android:lines="1"
+                    android:ellipsize="end"
                     android:layout_gravity="center_horizontal" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@android:style/TextAppearance.Small"
-                    android:text="123 Welch Ave, Cedar Falls, IA"
-                    android:id="@+id/barAddress"
-                    android:textSize="16sp"
-                    android:gravity="center_horizontal"
-                    android:paddingBottom="10dp"
-                    android:layout_gravity="center_horizontal" />
+
             </LinearLayout>
 
             <View
                 android:layout_width="fill_parent"
-                android:layout_height="1dp"
+                android:layout_height="0.5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:background="#c0c0c0"
                 android:id="@+id/view3" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="10dp"
-            android:paddingLeft="15dp"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@android:style/TextAppearance.Small"
-                android:text="Day         "
-                android:id="@+id/dayOfWeekLabel"
-                android:textSize="16sp"
-                android:textColor="@drawable/blue"/>
-
-            <Spinner
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/spinner"
-                android:layout_gravity="left" />
-        </LinearLayout>
 
 
         <ListView
