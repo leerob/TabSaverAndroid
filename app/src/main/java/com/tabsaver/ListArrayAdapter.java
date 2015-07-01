@@ -117,19 +117,19 @@ public class ListArrayAdapter extends BaseAdapter {
             }
         });
 
-        //Try and grab the image from cache
+        //Try and grab bar display image from cache
         final Bitmap bitmap = getBitmapFromMemCache(position + "");
 
-        //If we find it, just use it
+        //If we find the bitmap - use it
         if (bitmap != null) {
             barImage.setImageBitmap(bitmap);
 
+            //Download the photo
         } else {
             //query and load up that image.
             final ParseQuery findImage = new ParseQuery("BarPhotos");
             findImage.whereEqualTo("barName", barName);
 
-            //Now query in the background
             findImage.findInBackground(new FindCallback<ParseObject>() {
                 public void done(List<ParseObject> objects, ParseException e) {
                     if (e == null) {
@@ -142,7 +142,7 @@ public class ListArrayAdapter extends BaseAdapter {
 
                             //Do some weird shit and get and cast our image
                             ParseObject imageHolder = findImage.get(objectId);
-                            ParseFile image = (ParseFile) imageHolder.get("thumbnail");
+                            ParseFile image = (ParseFile) imageHolder.get("imageFile");
                             byte[] imageFile = image.getData();
 
                             //Turn it into a bitmap and set our display image

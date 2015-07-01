@@ -1724,7 +1724,7 @@ containing a value of this type.
         public static final int action_bar_subtitle=0x7f0b0033;
         public static final int action_bar_title=0x7f0b0032;
         public static final int action_context_bar=0x7f0b0046;
-        public static final int action_list=0x7f0b008e;
+        public static final int action_list=0x7f0b008f;
         public static final int action_menu_divider=0x7f0b0002;
         public static final int action_menu_presenter=0x7f0b0003;
         public static final int action_mode_bar=0x7f0b0042;
@@ -1822,10 +1822,11 @@ containing a value of this type.
         public static final int radio=0x7f0b003f;
         public static final int sandbox=0x7f0b0026;
         public static final int satellite=0x7f0b0019;
-        public static final int saveSettings=0x7f0b008f;
+        public static final int saveSettings=0x7f0b0090;
         public static final int scrollView=0x7f0b0056;
         public static final int scrollView2=0x7f0b0064;
-        public static final int search=0x7f0b008d;
+        public static final int search=0x7f0b008c;
+        public static final int searchList=0x7f0b008e;
         public static final int search_badge=0x7f0b0049;
         public static final int search_bar=0x7f0b0048;
         public static final int search_button=0x7f0b004a;
@@ -1840,7 +1841,7 @@ containing a value of this type.
         public static final int shortcut=0x7f0b003e;
         public static final int showCustom=0x7f0b000f;
         public static final int showHome=0x7f0b0010;
-        public static final int showMapView=0x7f0b008c;
+        public static final int showMapView=0x7f0b008d;
         public static final int showTitle=0x7f0b0011;
         public static final int spinner=0x7f0b0070;
         public static final int split_action_bar=0x7f0b0007;

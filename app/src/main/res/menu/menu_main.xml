@@ -2,7 +2,7 @@
     <menu xmlns:android="http://schemas.android.com/apk/res/android"
           xmlns:search="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/search"
+    <item android:id="@+id/searchList"
         android:title="@string/search"
         android:icon="@drawable/ic_search"
         search:showAsAction="collapseActionView|ifRoom"

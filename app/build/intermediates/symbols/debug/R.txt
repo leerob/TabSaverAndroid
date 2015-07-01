@@ -460,7 +460,7 @@ int id action_bar_spinner 0x7f0b0001
 int id action_bar_subtitle 0x7f0b0033
 int id action_bar_title 0x7f0b0032
 int id action_context_bar 0x7f0b0046
-int id action_list 0x7f0b008e
+int id action_list 0x7f0b008f
 int id action_menu_divider 0x7f0b0002
 int id action_menu_presenter 0x7f0b0003
 int id action_mode_bar 0x7f0b0042
@@ -558,10 +558,11 @@ int id progress_horizontal 0x7f0b0006
 int id radio 0x7f0b003f
 int id sandbox 0x7f0b0026
 int id satellite 0x7f0b0019
-int id saveSettings 0x7f0b008f
+int id saveSettings 0x7f0b0090
 int id scrollView 0x7f0b0056
 int id scrollView2 0x7f0b0064
-int id search 0x7f0b008d
+int id search 0x7f0b008c
+int id searchList 0x7f0b008e
 int id search_badge 0x7f0b0049
 int id search_bar 0x7f0b0048
 int id search_button 0x7f0b004a
@@ -576,7 +577,7 @@ int id selectionDetails 0x7f0b0029
 int id shortcut 0x7f0b003e
 int id showCustom 0x7f0b000f
 int id showHome 0x7f0b0010
-int id showMapView 0x7f0b008c
+int id showMapView 0x7f0b008d
 int id showTitle 0x7f0b0011
 int id spinner 0x7f0b0070
 int id split_action_bar 0x7f0b0007

@@ -295,7 +295,7 @@ public class MapActivity extends ActionBarActivity {
 
         // Associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        final SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        final SearchView searchView = (SearchView) menu.findItem(R.id.searchList).getActionView();
 
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setQueryHint("Search for a bar");
@@ -353,6 +353,9 @@ public class MapActivity extends ActionBarActivity {
                 return true;
             case R.id.action_list:
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivityForResult(i, 0);
+                overridePendingTransition(0, 0); //0 for no animation
                 String distances = addDistances(jsonarray);
                 session.setBars(distances);
                 startActivity(i);

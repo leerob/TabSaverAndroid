@@ -2420,7 +2420,7 @@
         <item>Thursday</item>
         <item>Friday</item>
         <item>Saturday</item>
-    </string-array><string name="hello_world">Hello world!</string><string name="title_activity_login">Login</string><string name="action_settings">Settings</string><string name="app_name">TabSaver</string><string name="contactUs"><u>Contact Us</u></string><string-array name="daysSpinner">
+    </string-array><string name="hello_world">Hello world!</string><string name="title_activity_login">Login</string><string name="action_settings">Settings</string><string name="app_name">TabSaver</string><string name="contactUs">Contact Us</string><string-array name="daysSpinner">
         <item>Select...</item>
         <item>Monday</item>
         <item>Tuesday</item>
@@ -2429,7 +2429,7 @@
         <item>Friday</item>
         <item>Saturday</item>
         <item>Sunday</item>
-    </string-array><string name="title_activity_main">TabSaver</string><string name="list">List</string><string name="title_activity_bar_detail">Detail</string><string name="title_activity_map">TabSaver</string><string name="menu_settings">Settings</string><string name="action_client"><u>Client Login</u></string><string name="search">Search</string><string name="title_activity_contact">Contact Us</string><string name="title_activity_admin">Update Deals</string></file><file path="C:\proj\tabsaverandroid\app\src\main\res\values\styles.xml" qualifiers=""><style name="MyMaterialTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar">
+    </string-array><string name="title_activity_main">TabSaver</string><string name="list">List</string><string name="title_activity_bar_detail">Detail</string><string name="title_activity_map">TabSaver</string><string name="menu_settings">Settings</string><string name="action_client">Client Login</string><string name="search">Search</string><string name="title_activity_contact">Contact Us</string><string name="title_activity_admin">Update Deals</string></file><file path="C:\proj\tabsaverandroid\app\src\main\res\values\styles.xml" qualifiers=""><style name="MyMaterialTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar">
 
         <item name="colorPrimary">@drawable/blue</item>
         <item name="colorPrimaryDark">@drawable/darkblue</item>
