@@ -23,13 +23,6 @@
         <dex dex="C:\proj\tabsaverandroid\app\build\intermediates\pre-dexed\debug\bolts-android-1.2.0-e69dd23aa902bc19463a3546fc81df33fb9696f2.jar" />
     </item>
     <item
-        jar="C:\proj\tabsaverandroid\app\build\intermediates\exploded-aar\com.google.android.gms\play-services\6.5.87\classes.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="dd9247ea0fabe8ee479638c4b4a23e93752be256">
-        <dex dex="C:\proj\tabsaverandroid\app\build\intermediates\pre-dexed\debug\classes-7a00b6c4a21899aa1899e9afc12ee06d48605d93.jar" />
-    </item>
-    <item
         jar="C:\proj\tabsaverandroid\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\libs\internal_impl-21.0.3.jar"
         jumboMode="false"
         revision="21.1.2"
@@ -49,6 +42,13 @@
         revision="21.1.2"
         sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
         <dex dex="C:\proj\tabsaverandroid\app\build\intermediates\pre-dexed\debug\classes-3cdd1836eeb334c4e3438d11ab8c73c957597f5b.jar" />
+    </item>
+    <item
+        jar="C:\proj\tabsaverandroid\app\build\intermediates\exploded-aar\com.google.android.gms\play-services\6.5.87\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="dd9247ea0fabe8ee479638c4b4a23e93752be256">
+        <dex dex="C:\proj\tabsaverandroid\app\build\intermediates\pre-dexed\debug\classes-7a00b6c4a21899aa1899e9afc12ee06d48605d93.jar" />
     </item>
 
 </items>

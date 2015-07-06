@@ -16,23 +16,20 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
 
 public class BarDetail extends ActionBarActivity implements OnItemSelectedListener {
-
+//TODO: refactor Everything
 
     JSONArray jsonarray;
     HashMap<String, String> hashMap = new HashMap<String, String>();
@@ -53,7 +50,6 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bar_detail);
-
 
         //Setup our textviews
         TextView barAddress = (TextView) findViewById(R.id.barAddress);

@@ -1,6 +1,5 @@
 package com.tabsaver;
 
-import android.app.ActionBar;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -10,13 +9,9 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -43,14 +38,11 @@ public class MapActivity extends ActionBarActivity {
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
     //Json representations of cities and bars
-    JSONArray jsonarray;
-    JSONArray cities;
-
-    //More accessible collection of bar data
-    ArrayList<HashMap<String, String>> arraylist = new ArrayList<HashMap<String, String>>();
+    ArrayList<HashMap<String, String>> bars = new ArrayList<>();
+    ArrayList<HashMap<String, String>> cities = new ArrayList<>();
 
     //All of the bar markers on the map
-    List<Marker> markers = new ArrayList<Marker>();
+    List<Marker> markers = new ArrayList<>();
 
     //Our current location
     Location myLocation;
@@ -61,7 +53,6 @@ public class MapActivity extends ActionBarActivity {
 
     //Storing and retrieving session information
     ClientSessionManager session;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,20 +68,23 @@ public class MapActivity extends ActionBarActivity {
             locationUndetermined = false;
         }
 
-        //Grab bar and city information online if we have to. TODO: Add a once daily sync.
+        //Grab bar and city information from online if we have to. TODO: Add a once daily sync.
         if ( session.getBars().equals("none") ) {
             new DownloadJSON().execute();
         } else {
             try {
-                //grab json
-                jsonarray = new JSONArray(session.getBars());
-                cities = new JSONArray(session.getCities());
+                //grab bar and cities json
+                JSONArray citiesJSON = new JSONArray(session.getCities());
+                JSONArray barsJSON = new JSONArray(session.getBars());
 
-                //setup map
-                setupBarsArraylist();
+                //Setup hashmaps for efficient data access
+                setupBarsHashmap(barsJSON);
+                setupCitiesHashmap(citiesJSON);
+
+                //Load our markers up
                 setupBarMarkers();
             } catch (JSONException e) {
-                e.printStackTrace();
+                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -103,23 +97,24 @@ public class MapActivity extends ActionBarActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            // Retrieve JSON Objects from the given URL address and store them.
-            jsonarray = JSONFunctions.getJSONfromURL("http://tabsaver.info/retrieveBars.php");
-            session.setBars(jsonarray.toString());
+            //Grab bar information and store it
+            JSONArray barsJSON = JSONFunctions.getJSONfromURL("http://tabsaver.info/retrieveBars.php");
+            session.setBars(barsJSON.toString());
 
-            cities = JSONFunctions.getJSONfromURL("http://tabsaver.info/retrieveCities.php");
-            session.setCities(cities.toString());
+            //Grab city information and store it
+            JSONArray citiesJSON = JSONFunctions.getJSONfromURL("http://tabsaver.info/retrieveCities.php");
+            session.setCities(citiesJSON.toString());
 
             //Now setup the hashmap for each bar from the JSON
             try {
-                setupBarsArraylist();
+                setupBarsHashmap(barsJSON);
+                setupCitiesHashmap(citiesJSON);
             } catch (JSONException e) {
-                e.printStackTrace();
+                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
             return null;
         }
-
 
         @Override
         protected void onPostExecute(Void args) {
@@ -128,28 +123,48 @@ public class MapActivity extends ActionBarActivity {
     }
 
     /**
-     * Translate JSON array into something useful and efficient
+     * Translate Bars JSON array into something useful
      * @throws JSONException
      */
-    public void setupBarsArraylist() throws JSONException {
-        for (int i = 0; i < jsonarray.length(); i++) {
-            HashMap<String, String> map = new HashMap<String, String>();
-            JSONObject obj = jsonarray.getJSONObject(i);
-            // Retrieve JSON Objects
-            map.put("id",  String.valueOf(i));
-            map.put("name", obj.getString("name"));
-            map.put("lat", obj.getString("lat"));
-            map.put("long", obj.getString("long"));
-            map.put("Monday", obj.getString("Monday"));
-            map.put("Tuesday", obj.getString("Tuesday"));
-            map.put("Wednesday", obj.getString("Wednesday"));
-            map.put("Thursday", obj.getString("Thursday"));
-            map.put("Friday", obj.getString("Friday"));
-            map.put("Saturday", obj.getString("Saturday"));
-            map.put("Sunday", obj.getString("Sunday"));
+    public void setupBarsHashmap(JSONArray barsJSON) throws JSONException {
+        for (int i = 0; i < barsJSON.length(); i++) {
+            //Grab the bar objects
+            HashMap<String, String> bar = new HashMap<>();
+            JSONObject barJSON = barsJSON.getJSONObject(i);
 
-            // Set the JSON Objects into the array
-            arraylist.add(map);
+            //Set all the bar info
+            bar.put("id",  barJSON.getString("BarId")); //TODO: Not getting this value
+            bar.put("name", barJSON.getString("name"));
+            bar.put("lat", barJSON.getString("lat"));
+            bar.put("long", barJSON.getString("long"));
+            bar.put("Monday", barJSON.getString("Monday"));
+            bar.put("Tuesday", barJSON.getString("Tuesday"));
+            bar.put("Wednesday", barJSON.getString("Wednesday"));
+            bar.put("Thursday", barJSON.getString("Thursday"));
+            bar.put("Friday", barJSON.getString("Friday"));
+            bar.put("Saturday", barJSON.getString("Saturday"));
+            bar.put("Sunday", barJSON.getString("Sunday"));
+
+            bars.add(bar);
+        }
+
+    }
+
+    /**
+     * Translate Cities JSON array into something useful
+     * @throws JSONException
+     */
+    public void setupCitiesHashmap(JSONArray citiesJSON) throws JSONException {
+        for (int i = 0; i < citiesJSON.length(); i++) {
+            //Grab the bar objects
+            HashMap<String, String> city = new HashMap<>();
+            JSONObject cityJSON = citiesJSON.getJSONObject(i);
+
+            city.put("Name", cityJSON.getString("Name"));
+            city.put("lat", cityJSON.getString("lat"));
+            city.put("long", cityJSON.getString("long"));
+
+            cities.add(city);
         }
 
     }
@@ -158,25 +173,29 @@ public class MapActivity extends ActionBarActivity {
      * Setup and place the markers
      */
     public void setupBarMarkers(){
-        String[] bars = new String[arraylist.size()];
 
         // Add markers to the map
-        for(int i = 0; i < arraylist.size(); i++){
+        for(int i = 0; i < bars.size(); i++){
             // Get the current bar HashMap
-            HashMap<String, String> barHashMap = arraylist.get(i);
+            HashMap<String, String> barHashMap = bars.get(i);
 
+            //Set name and location
             double latitude = Double.parseDouble(barHashMap.get("lat"));
             double longitude = Double.parseDouble("-" + barHashMap.get("long"));
             String name = barHashMap.get("name");
 
+            //Set day
             String day = getDayOfWeekStr();
+
+            //Set deals TODO: Change this comma delimmited shit
             String[] dealArr = barHashMap.get(day).split(",");
 
-            bars[i] = name;
 
+            //Set bar image
             BitmapFactory.Options o = new BitmapFactory.Options();
             Bitmap img = BitmapFactory.decodeResource(getResources(), R.drawable.ic_mug, o);
 
+            //Create the bar marker and place it on the map
             Marker m = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(latitude, longitude))
                     .title(name)
@@ -184,13 +203,14 @@ public class MapActivity extends ActionBarActivity {
                     .icon(BitmapDescriptorFactory.fromBitmap(img)));
             markers.add((m));
 
+            //Listener to load bar detail
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
 
                 @Override
                 public void onInfoWindowClick(Marker marker) {
                     // Make new intent to detail view
                     Intent i = new Intent(getApplicationContext(), BarDetail.class);
-                    i.putExtra("jsonArray", jsonarray.toString());
+                    i.putExtra("bars", bars.toString());
                     i.putExtra("bar", marker.getTitle());
                     startActivity(i);
                 }
@@ -203,7 +223,7 @@ public class MapActivity extends ActionBarActivity {
 
     /**
      * Determines the day of the week
-     * @return
+     * @return The string representation of the current day of the week
      */
     public String getDayOfWeekStr(){
 
@@ -256,13 +276,7 @@ public class MapActivity extends ActionBarActivity {
      * Zoom the map to the current city once
      */
     private void zoomToCurrentCity(){
-//        LatLng currentCityLocation = new LatLng(session.getLat(), session.getLong());
-//        CameraUpdate update = CameraUpdateFactory.newLatLngZoom(currentCityLocation, 10);
-
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(session.getLat(), session.getLong()), 10.0f));
-
-//        mMap.animateCamera(update);
-
         locationUndetermined = false;
     }
 
@@ -284,8 +298,8 @@ public class MapActivity extends ActionBarActivity {
 
     /**
      * Setup our menu items
-     * @param menu
-     * @return
+     * @param menu Menu for this page
+     * @return Not sure
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -297,11 +311,12 @@ public class MapActivity extends ActionBarActivity {
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         final SearchView searchView = (SearchView) menu.findItem(R.id.searchList).getActionView();
 
+        //Setup the search view
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setQueryHint("Search for a bar");
         searchView.setIconifiedByDefault(false);
 
-
+        //Simple search mechanism.. TODO: Want to do autocomplete recommendations
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -320,9 +335,11 @@ public class MapActivity extends ActionBarActivity {
                         break;
                     }
                 }
+
                 if(!barFound){
                     Toast.makeText(getApplicationContext(), "Bar not found!", Toast.LENGTH_SHORT).show();
                 }
+
                 searchView.clearFocus();
                 return true;
             }
@@ -340,24 +357,31 @@ public class MapActivity extends ActionBarActivity {
 
     /**
      * Handling menu item selection
-     * @param item
-     * @return
+     * @param item Selected menu item
+     * @return not sure
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
+            //Go to settings
             case R.id.action_settings:
                 Intent settings = new Intent(getApplicationContext(), SettingsActivity.class);
                 startActivity(settings);
                 return true;
+
+            //Go to list view
             case R.id.action_list:
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
+
+                //Disabling animation
                 i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivityForResult(i, 0);
-                overridePendingTransition(0, 0); //0 for no animation
-                String distances = addDistances(jsonarray);
-                session.setBars(distances);
+                overridePendingTransition(0, 0);
+
+                //Tack on our distance and show the list
+                String distances = calculateDistances();
+                session.setBars(distances); //TODO: We are storing distances in sessions which will lead to the distances not updating because the session doesn't update??
                 startActivity(i);
                 return true;
             default:
@@ -371,77 +395,80 @@ public class MapActivity extends ActionBarActivity {
     public void determineClosestCity()  {
 
         //Error handling
-        if ( session.getCityName().equals("none") || cities.length() == 0) {
+        if ( session.getCityName().equals("none") || cities.size() == 0) {
             return;
         }
 
-        try {
+        //Current location
+        Location cur = new Location("BS");
 
-            Location cur = new Location("BS");
-            Location min = new Location("BS");
-            String name = "None";
-            int minIndex = 0;
+        //Minimum location
+        Location min = new Location("BS");
 
-            JSONObject o = cities.getJSONObject(0);
-            cur.setLatitude(o.getDouble("lat"));
-            cur.setLongitude(o.getDouble("long"));
-            min.setLatitude(o.getDouble("lat"));
-            min.setLongitude(o.getDouble("long"));
+        //City name and min index
+        String name = "None";
 
-            for(int i = 0; i < cities.length(); i++ ) {
-                o = cities.getJSONObject(i);
-                cur.setLatitude(o.getDouble("lat"));
-                cur.setLongitude(o.getDouble("long"));
+        //Set our minimum city to the first
+        HashMap<String, String> city = cities.get(0);
+        min.setLatitude(Double.valueOf(city.get("lat")));
+        min.setLongitude(Double.valueOf(city.get("long")));
 
-                if (myLocation.distanceTo(cur) <= myLocation.distanceTo(min) ) {
-                    minIndex = i;
-                    min.setLatitude(cur.getLatitude());
-                    min.setLongitude(cur.getLongitude());
-                    name = o.getString("name");
-                }
+        for(int i = 0; i < cities.size(); i++ ) {
+            //Setting up our current city
+            HashMap<String, String> thisCity = cities.get(0);
+            cur.setLatitude(Double.valueOf(city.get("lat")));
+            cur.setLongitude(Double.valueOf(city.get("long")));
+
+            if (myLocation.distanceTo(cur) <= myLocation.distanceTo(min) ) {
+                min.setLatitude(cur.getLatitude());
+                min.setLongitude(cur.getLongitude());
+                name = thisCity.get("name");
             }
-
-            min.setLongitude(min.getLongitude());
-
-            session.setCity(name, min.getLatitude(), min.getLongitude());
-
-        } catch (JSONException e) {
-            Toast.makeText(getApplicationContext(), "Failed to determine closest city.", Toast.LENGTH_SHORT).show();
         }
 
+        //Set our minimum city in the session
+        session.setCity(name, min.getLatitude(), min.getLongitude());
     }
 
     /**
-     * Appending distances to our bars.. TODO: Can we move this into another method?
-     * @param json
-     * @return
+     * Appending distances to our bars
+     * @return a JSON String repesenting the bars
      */
-    public String addDistances(JSONArray json){
-        JSONArray newArray = new JSONArray();
+    public String calculateDistances(){
+        try {
+            //Setup our arrays
+            JSONArray barsWithoutDistances = new JSONArray(session.getBars());
+            JSONArray barsWithDistances = new JSONArray();
 
-        for( int i = 0; i < json.length(); i++ ) {
-            try {
-                JSONObject obj = json.getJSONObject(i);
+            for( int i = 0; i < barsWithoutDistances.length(); i++ ) {
+
+                //Grab bar and setup the barLocation
+                JSONObject bar = barsWithoutDistances.getJSONObject(i);
                 Location barLoc = new Location("Bar");
-                barLoc.setLatitude(Double.valueOf(obj.getString("lat")));
-                barLoc.setLongitude(Double.valueOf(obj.getString("long")));
+                barLoc.setLatitude(bar.getDouble("lat"));
+                barLoc.setLongitude(bar.getDouble("long"));
+
+                //Set location if valid
                 if ( myLocation == null ) {
-                    obj.put("distance", 0.000);
+                    bar.put("distance", 0.000);
                 } else {
                     double distance = myLocation.distanceTo(barLoc);
                     if ( distance == Double.NaN ) {
-                        obj.put("distance", 0.000);
+                        bar.put("distance", 0.000);
                     } else {
-                        obj.put("distance", (double) Math.round((distance / 1609) * 1000) / 1000);
+                        bar.put("distance", (double) Math.round((distance / 1609) * 1000) / 1000);
                     }
                 }
-                newArray.put(obj);
-            } catch (JSONException e) {
-                e.printStackTrace();
+
+                //Add this bar to the array
+                barsWithDistances.put(bar);
             }
 
-        }
+            return barsWithDistances.toString();
 
-        return newArray.toString();
+        } catch (JSONException e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            return null;
+        }
     }
 }
