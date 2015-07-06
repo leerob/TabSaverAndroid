@@ -48,13 +48,16 @@ public class ListArrayAdapter extends BaseAdapter {
         this.barData = barData;
         barDataBackupForSearchFiltering = new ArrayList<>();
         barDataBackupForSearchFiltering.addAll(barData);
+
+        //TODO: Views are loading all messed up with lots of deals.
+        //TODO: Getting out of memory errors
     }
 
     public View getView(final int position, View convertView, ViewGroup parent) {
         //Grab bar information
         HashMap<String, String> currentBar = barData.get(position);
         String barName = currentBar.get("name");
-        int barId = Integer.valueOf(currentBar.get("id"));
+        final int barId = Integer.valueOf(currentBar.get("id"));
 
         //Get our view
         inflater = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE));
@@ -87,8 +90,7 @@ public class ListArrayAdapter extends BaseAdapter {
             @Override
             public void onClick(View arg0) {
                 Intent i = new Intent(context, BarDetail.class);
-                i.putExtra("jsonArray", barData.toString());
-                i.putExtra("bar", barData.get(position).get("name"));
+                i.putExtra("BarId", barId + "");
                 context.startActivity(i);
             }
         });

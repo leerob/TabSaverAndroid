@@ -61,13 +61,6 @@ public class MapActivity extends ActionBarActivity {
         session = new ClientSessionManager(getApplicationContext());
         setUpMapIfNeeded();
 
-
-        //Try and grab our closest city from sessions
-        if ( !session.getCityName().equals("none") ) {
-            zoomToCurrentCity();
-            locationUndetermined = false;
-        }
-
         //Grab bar and city information from online if we have to. TODO: Add a once daily sync.
         if ( session.getBars().equals("none") ) {
             new DownloadJSON().execute();
@@ -160,7 +153,7 @@ public class MapActivity extends ActionBarActivity {
             HashMap<String, String> city = new HashMap<>();
             JSONObject cityJSON = citiesJSON.getJSONObject(i);
 
-            city.put("Name", cityJSON.getString("Name"));
+            city.put("name", cityJSON.getString("name"));
             city.put("lat", cityJSON.getString("lat"));
             city.put("long", cityJSON.getString("long"));
 
@@ -177,18 +170,18 @@ public class MapActivity extends ActionBarActivity {
         // Add markers to the map
         for(int i = 0; i < bars.size(); i++){
             // Get the current bar HashMap
-            HashMap<String, String> barHashMap = bars.get(i);
+            final HashMap<String, String> bar = bars.get(i);
 
             //Set name and location
-            double latitude = Double.parseDouble(barHashMap.get("lat"));
-            double longitude = Double.parseDouble("-" + barHashMap.get("long"));
-            String name = barHashMap.get("name");
+            double latitude = Double.parseDouble(bar.get("lat"));
+            double longitude = Double.parseDouble("-" + bar.get("long"));
+            String name = bar.get("name");
 
             //Set day
             String day = getDayOfWeekStr();
 
             //Set deals TODO: Change this comma delimmited shit
-            String[] dealArr = barHashMap.get(day).split(",");
+            String[] dealArr = bar.get(day).split(",");
 
 
             //Set bar image
@@ -210,8 +203,7 @@ public class MapActivity extends ActionBarActivity {
                 public void onInfoWindowClick(Marker marker) {
                     // Make new intent to detail view
                     Intent i = new Intent(getApplicationContext(), BarDetail.class);
-                    i.putExtra("bars", bars.toString());
-                    i.putExtra("bar", marker.getTitle());
+                    i.putExtra("BarId", bar.get("BarId"));
                     startActivity(i);
                 }
             });
@@ -393,19 +385,13 @@ public class MapActivity extends ActionBarActivity {
      * Determining the closest city to us
      */
     public void determineClosestCity()  {
-
-        //Error handling
-        if ( session.getCityName().equals("none") || cities.size() == 0) {
-            return;
-        }
-
         //Current location
         Location cur = new Location("BS");
 
         //Minimum location
         Location min = new Location("BS");
 
-        //City name and min index
+        //City name
         String name = "None";
 
         //Set our minimum city to the first
@@ -415,9 +401,9 @@ public class MapActivity extends ActionBarActivity {
 
         for(int i = 0; i < cities.size(); i++ ) {
             //Setting up our current city
-            HashMap<String, String> thisCity = cities.get(0);
-            cur.setLatitude(Double.valueOf(city.get("lat")));
-            cur.setLongitude(Double.valueOf(city.get("long")));
+            HashMap<String, String> thisCity = cities.get(i);
+            cur.setLatitude(Double.valueOf(thisCity.get("lat")));
+            cur.setLongitude(Double.valueOf(thisCity.get("long")));
 
             if (myLocation.distanceTo(cur) <= myLocation.distanceTo(min) ) {
                 min.setLatitude(cur.getLatitude());

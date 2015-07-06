@@ -48,7 +48,7 @@ public class MainActivity extends ActionBarActivity {
                 //grab bar and cities json
                 JSONArray barsJSON = new JSONArray(session.getBars());
 
-                //Setup hashmaps for efficient data access
+                //Setup hash maps for efficient data access
                 setupBarsHashmap(barsJSON);
                 sortBarsByDistance();
             } catch (JSONException e) {
@@ -56,6 +56,8 @@ public class MainActivity extends ActionBarActivity {
             }
         }
 
+        //TODO: Abstract data syncing into it's own class? We also should grab images there and cache them when we open them
+        //TODO: Weird behaviour when going back
         displayListView();
     }
 
@@ -114,12 +116,7 @@ public class MainActivity extends ActionBarActivity {
                 bar.put("Friday", barJSON.getString("Friday"));
                 bar.put("Saturday", barJSON.getString("Saturday"));
                 bar.put("Sunday", barJSON.getString("Sunday"));
-
-                if ( !barJSON.getString("distance").isEmpty() ) {
-                    bar.put("distance", barJSON.getString("distance"));
-                } else {
-                    bar.put("distance", 0.000 + "");
-                }
+               bar.put("distance", 0.00 + ""); //TODO: We have to determine distance before loading this screen somehow..
 
                 // Set the JSON Objects into the array
                 bars.add(bar);
@@ -144,7 +141,7 @@ public class MainActivity extends ActionBarActivity {
             for (int j = 0; j < bars.size(); j++) {
                 HashMap<String, String> currentBar = bars.get(j);
 
-                if (Double.valueOf(closestBar.get("distance")) > Double.valueOf(currentBar.get("distance"))) {
+                if (Double.valueOf(closestBar.get("distance")) >= Double.valueOf(currentBar.get("distance"))) {
                     closestBar = currentBar;
                 }
 
