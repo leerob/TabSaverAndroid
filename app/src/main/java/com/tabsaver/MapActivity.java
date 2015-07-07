@@ -84,7 +84,7 @@ public class MapActivity extends ActionBarActivity {
     }
 
     /**
-     * Sync our bar and city data with the online database
+     * Sync our bar and city data with the database
      */
     private class DownloadJSON extends AsyncTask<Void, Void, Void> {
 
@@ -126,7 +126,7 @@ public class MapActivity extends ActionBarActivity {
             JSONObject barJSON = barsJSON.getJSONObject(i);
 
             //Set all the bar info
-            bar.put("id",  barJSON.getString("BarId")); //TODO: Not getting this value
+            bar.put("id",  barJSON.getString("BarId"));
             bar.put("name", barJSON.getString("name"));
             bar.put("lat", barJSON.getString("lat"));
             bar.put("long", barJSON.getString("long"));
@@ -257,6 +257,7 @@ public class MapActivity extends ActionBarActivity {
             myLocation = location;
             myLocation.setLongitude(myLocation.getLongitude() * -1);
 
+            //Zoom to our current location once.
             if ( locationUndetermined && markersLoaded) {
                 determineClosestCity();
                 zoomToCurrentCity();
@@ -265,7 +266,7 @@ public class MapActivity extends ActionBarActivity {
     };
 
     /**
-     * Zoom the map to the current city once
+     * Zoom the map to the current city
      */
     private void zoomToCurrentCity(){
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(session.getLat(), session.getLong()), 10.0f));

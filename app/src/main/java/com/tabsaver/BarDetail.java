@@ -16,6 +16,8 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -23,128 +25,103 @@ import com.parse.ParseQuery;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class BarDetail extends ActionBarActivity implements OnItemSelectedListener {
-//TODO: refactor Everything
 
-    JSONArray jsonarray;
-    HashMap<String, String> hashMap = new HashMap<String, String>();
+    //All of the bars information
+    HashMap<String, String> bar = new HashMap<>();
+
+    //For filling in the deals array
     ListView listview;
     ArrayAdapter<String> arrayAdapter;
-    String[] dealArr;
-    String bar;
+    String[] dealsForSelectedDay;
 
-    //Views
-    TextView barName;
-    TextView barAddress;
-
-    //Values
-    String barPhoneNumber;
-    String barWebsiteAddress;
+    //Storing and retrieving session information
+    ClientSessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bar_detail);
 
-        //Setup our textviews
-        TextView barAddress = (TextView) findViewById(R.id.barAddress);
+        //Setup the session
+        session = new ClientSessionManager(getApplicationContext());
+
+        //Grab our barID
+        Intent intent = getIntent();
+        int barId = Integer.valueOf(intent.getStringExtra("BarId"));
+
+        //Load this bars information
+        getBarHashmap(barId);
+
+        //Now display everything
+        setupViews();
+    }
+
+    public void setupViews(){
+        //Setup our views
         final TextView barWebsite = (TextView) findViewById(R.id.barWebsite);
         final TextView barPhone = (TextView) findViewById(R.id.barPhone);
-        final TextView barName = (TextView) findViewById(R.id.barName);
+        listview = (ListView) findViewById(R.id.listView);
 
-        //Grab some passed along data
-        Intent intent = getIntent();
-        String jsonArray = intent.getStringExtra("jsonArray");
+        //Set the bar's name
+        ((TextView) findViewById(R.id.barName)).setText(bar.get("name"));
 
-        //convert to json
-        try {
-            jsonarray = new JSONArray(jsonArray);
-        } catch (JSONException e) {
-            e.printStackTrace();
+        //Set the bar's address
+        ((TextView) findViewById(R.id.barAddress)).setText(bar.get("address") + ", " + bar.get("town") + ", " + bar.get("state"));
+
+        //Setup the bar's phone number
+        if(bar.get("number").equals("No Number")){
+            barPhone.setText("No Number");
+        } else {
+            Log.d("PHONE", bar.get("number"));
+            barPhone.setText("(" + bar.get("number").substring(0, 3) + ") " + bar.get("number").substring(3, 6) + " - " + bar.get("number").substring(6, 10));
         }
 
-        bar = intent.getStringExtra("bar");
-        barName.setText(bar);
+        //Set the bar's website URL
+        barWebsite.setText(bar.get("website"));
 
-
+        //Load our image from cache or main memory
         loadImage();
 
-        //Grab our deal info
-        try {
-            for (int i = 0; i < jsonarray.length(); i++) {
-
-                JSONObject obj = jsonarray.getJSONObject(i);
-
-                if (obj.getString("name").equals(bar)) {
-                    //Setup bar address
-                    barAddress.setText(obj.getString("address") + ", " + obj.getString("town") + ", " + obj.getString("state"));
-
-                    //Setup our phone number
-                    barPhoneNumber = obj.getString("number");
-                    if(!barPhoneNumber.equals("No Number")){
-                        Log.d("PHONE", barPhoneNumber);
-                        barPhone.setText("(" + barPhoneNumber.substring(0,3) + ") " + barPhoneNumber.substring(3,6) + " - " + barPhoneNumber.substring(6,10));
-                    }
-                    else{
-                        barPhone.setText("No Number");
-                    }
-
-                    //Setup our website address
-                    barWebsiteAddress = obj.getString("website");
-                    barWebsite.setText(barWebsiteAddress);
-
-                    //Store our deals
-                    hashMap.put("Monday", obj.getString("Monday"));
-                    hashMap.put("Tuesday", obj.getString("Tuesday"));
-                    hashMap.put("Wednesday", obj.getString("Wednesday"));
-                    hashMap.put("Thursday", obj.getString("Thursday"));
-                    hashMap.put("Friday", obj.getString("Friday"));
-                    hashMap.put("Saturday", obj.getString("Saturday"));
-                    hashMap.put("Sunday", obj.getString("Sunday"));
-
-
-                }
-            }
-
-        } catch (JSONException e) {
-            Log.e("Error", e.getMessage());
-            e.printStackTrace();
-        }
-
-        //Set our phone number listener and intent
+        //Listener to dial the number on click
         barPhone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!barPhoneNumber.equals("No Number")){
+                if(!bar.get("number").equals("No Number")){
                     Intent intent = new Intent(Intent.ACTION_DIAL);
-                    intent.setData(Uri.parse("tel:" + barPhoneNumber));
+                    intent.setData(Uri.parse("tel:" + bar.get("number")));
                     startActivity(intent);
                 }
             }
         });
 
-        //Set our website listener and intent
+        //Listener to navigate to a site on click
         barWebsite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if ( !barWebsiteAddress.startsWith("http://") ) {
-                    barWebsiteAddress = "http://" + barWebsiteAddress;
-                }
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(barWebsiteAddress));
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(bar.get("website")));
                 startActivity(browserIntent);
             }
         });
 
         //Parse and display the current deals for the day
-        listview = (ListView) findViewById(R.id.listView);
-        String day = getDayOfWeekStr();
-        dealArr = hashMap.get(day).split(",");
-        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, dealArr);
+        String day = getDayOfWeekAsString();
+        dealsForSelectedDay = bar.get(day).split(","); //TODO: Get rid of this damn comma stuff
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, dealsForSelectedDay);
         listview.setAdapter(arrayAdapter);
 
         //Setup the spinner selection listener
@@ -161,36 +138,80 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
     public void loadImage(){
         final ImageView barImage = (ImageView) findViewById(R.id.imageView);
 
-        ParseQuery findImage = new ParseQuery("BarPhotos");
-        findImage.whereEqualTo("barName", bar);
+        //Setup to read the file
+        String imageFilePath = getApplicationContext().getFilesDir() + "/" + bar.get("id");
+        File imageFile = new File( imageFilePath );
+        int size = (int) imageFile.length();
+        byte[] bytesForImageFile = new byte[size];
 
-
+        //Try and read it in
         try {
-            //Query for barName's photo
-            ArrayList<ParseObject> temp = (ArrayList<ParseObject>) findImage.find();
+            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(imageFile));
+            buf.read(bytesForImageFile, 0, bytesForImageFile.length);
+            buf.close();
+        } catch (IOException e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
 
-            //now get objectId
-            String objectId = temp.get(0).getObjectId();
+        //Turn it into an image file
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bytesForImageFile, 0, bytesForImageFile.length);
 
-            //Do some weird shit and get and cast our image
-            ParseObject imageHolder = findImage.get(objectId);
-            ParseFile image = (ParseFile) imageHolder.get("imageFile");
-            byte[] imageFile = image.getData();
+        //If we find the bitmap - use it
+        if (bitmap != null) {
+            barImage.setImageBitmap(bitmap);
 
-            //Turn it into a bitmap and set our display image
-            Bitmap bmp = BitmapFactory.decodeByteArray(imageFile, 0, imageFile.length);
+            //Otherwise we have to download the photo
+        } else {
+            //query and load up that image.
+            final ParseQuery findImage = new ParseQuery("BarPhotos");
+            findImage.whereEqualTo("barName", bar.get("name"));
 
-            barImage.setImageBitmap(bmp);
+            findImage.findInBackground(new FindCallback<ParseObject>() {
+                public void done(List<ParseObject> objects, ParseException e) { //TODO: what is this warning? What to do
+                    if (e == null) {
+                        try {
+                            //Grab the image
+                            ArrayList<ParseObject> temp = (ArrayList<ParseObject>) objects;
 
-        } catch (ParseException e ) {
-            Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
-        } catch (NullPointerException e ) {
-            Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
+                            //now get objectId
+                            String objectId = temp.get(0).getObjectId();
+
+                            //Do some weird shit and cast our image to a byte array
+                            ParseObject imageHolder = findImage.get(objectId);
+                            ParseFile image = (ParseFile) imageHolder.get("imageFile");
+                            byte[] imageFile = image.getData();
+
+                            //Now store the file locally
+                            File storedImage = new File(getApplicationContext().getFilesDir(), bar.get("id"));
+                            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(storedImage));
+                            bos.write(imageFile);
+                            bos.flush();
+                            bos.close();
+
+                            //Turn it into a bitmap and set our display image
+                            Bitmap bmp = BitmapFactory.decodeByteArray(imageFile, 0, imageFile.length);
+
+                            //Now compress it down to a low quality (5 = quality)
+                            ByteArrayOutputStream bytearroutstream = new ByteArrayOutputStream();
+                            bmp.compress(Bitmap.CompressFormat.JPEG, 100, bytearroutstream);
+
+                            //Set our image
+                            barImage.setImageBitmap(bmp);
+
+                        } catch (Exception ex) {
+                            Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
 
     }
 
-    public String getDayOfWeekStr(){
+
+    public String getDayOfWeekAsString(){
 
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_WEEK);
@@ -219,29 +240,29 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
 
         switch (parent.getItemAtPosition(pos).toString()) {
             case "Sunday":
-                dealArr = hashMap.get("Sunday").split(",");
+                dealsForSelectedDay = bar.get("Sunday").split(",");
                 break;
             case "Monday":
-                dealArr = hashMap.get("Monday").split(",");
+                dealsForSelectedDay = bar.get("Monday").split(",");
                 break;
             case "Tuesday":
-                dealArr = hashMap.get("Tuesday").split(",");
+                dealsForSelectedDay = bar.get("Tuesday").split(",");
                 break;
             case "Wednesday":
-                dealArr = hashMap.get("Wednesday").split(",");
+                dealsForSelectedDay = bar.get("Wednesday").split(",");
                 break;
             case "Thursday":
-                dealArr = hashMap.get("Thursday").split(",");
+                dealsForSelectedDay = bar.get("Thursday").split(",");
                 break;
             case "Friday":
-                dealArr = hashMap.get("Friday").split(",");
+                dealsForSelectedDay = bar.get("Friday").split(",");
                 break;
             case "Saturday":
-                dealArr = hashMap.get("Saturday").split(",");
+                dealsForSelectedDay = bar.get("Saturday").split(",");
                 break;
         }
 
-        arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, dealArr);
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, dealsForSelectedDay);
         listview.setAdapter(arrayAdapter);
         arrayAdapter.notifyDataSetChanged();
 
@@ -260,6 +281,50 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
             }
         }
         return index;
+    }
+
+    /**
+     * Create the hashmap representation of this bar
+     * @param barId the current bar
+     */
+    public void getBarHashmap(int barId) {
+
+        try {
+            //Grab bars from session
+            JSONArray allBars = new JSONArray(session.getBars());
+
+            //Find our bar in the mix
+            for (int i = 0; i < allBars.length(); i++) {
+                JSONObject barJSON = allBars.getJSONObject(i);
+
+                //Setup the hashmap
+                if (barJSON.getInt("BarId") == barId) {
+                    bar.put("id", barId + "");
+                    bar.put("name", barJSON.getString("name"));
+                    bar.put("address", barJSON.getString("address"));
+                    bar.put("town", barJSON.getString("town"));
+                    bar.put("state", barJSON.getString("state"));
+                    bar.put("number", barJSON.getString("number"));
+                    bar.put("website", barJSON.getString("website"));
+
+                    //Make sure the website is navigable
+                    if ( !bar.get("website").startsWith("http://") ) {
+                        bar.put("website", "http://" + bar.get("website"));
+                    }
+
+                    bar.put("Monday", barJSON.getString("Monday"));
+                    bar.put("Tuesday", barJSON.getString("Tuesday"));
+                    bar.put("Wednesday", barJSON.getString("Wednesday"));
+                    bar.put("Thursday", barJSON.getString("Thursday"));
+                    bar.put("Friday", barJSON.getString("Friday"));
+                    bar.put("Saturday", barJSON.getString("Saturday"));
+                    bar.put("Sunday", barJSON.getString("Sunday"));
+                }
+            }
+
+        } catch (JSONException e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
 //    @Override

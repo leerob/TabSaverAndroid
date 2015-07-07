@@ -98,6 +98,29 @@ public class ListArrayAdapter extends BaseAdapter {
         return itemView;
     }
 
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
+
     /**
      * Setup the image for a bar
      * @param barId the ID of this bar (for image storing/retrieving purposes)
@@ -122,8 +145,17 @@ public class ListArrayAdapter extends BaseAdapter {
             Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
-        //Turn it into an image file
-        Bitmap bitmap = BitmapFactory.decodeByteArray(bytesForImageFile, 0, bytesForImageFile.length);
+        //Setting up the image to create a bitmap of an appropriate size
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeByteArray(bytesForImageFile, 0, bytesForImageFile.length, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, 150, 150);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bytesForImageFile, 0, bytesForImageFile.length, options);
 
         //If we find the bitmap - use it
         if (bitmap != null) {
@@ -157,8 +189,17 @@ public class ListArrayAdapter extends BaseAdapter {
                             bos.flush();
                             bos.close();
 
-                            //Turn it into a bitmap and set our display image
-                            Bitmap bmp = BitmapFactory.decodeByteArray(imageFile, 0, imageFile.length);
+                            //Setting up the image to create a bitmap of an appropriate size
+                            final BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inJustDecodeBounds = true;
+                            BitmapFactory.decodeByteArray(imageFile, 0, imageFile.length);
+
+                            // Calculate inSampleSize
+                            options.inSampleSize = calculateInSampleSize(options, 150, 150);
+
+                            // Decode bitmap with inSampleSize set
+                            options.inJustDecodeBounds = false;
+                            Bitmap bmp = BitmapFactory.decodeByteArray(imageFile, 0, imageFile.length, options);
 
                             //Now compress it down to a low quality (5 = quality)
                             ByteArrayOutputStream bytearroutstream = new ByteArrayOutputStream();
