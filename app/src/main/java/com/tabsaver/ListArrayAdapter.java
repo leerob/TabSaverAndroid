@@ -136,29 +136,32 @@ public class ListArrayAdapter extends BaseAdapter {
         int size = (int) imageFile.length();
         byte[] bytesForImageFile = new byte[size];
 
-        //Try and read it in
-        try {
-            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(imageFile));
-            buf.read(bytesForImageFile, 0, bytesForImageFile.length);
-            buf.close();
-        } catch (IOException e) {
-            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
+        //Set our bitmap
+        Bitmap bitmap = null;
 
-        //Setting up the image to create a bitmap of an appropriate size
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeByteArray(bytesForImageFile, 0, bytesForImageFile.length, options);
+        //If the file exists
+        if ( size != 0 ) {
+            //Try and read it in
+            try {
+                BufferedInputStream buf = new BufferedInputStream(new FileInputStream(imageFile));
+                buf.read(bytesForImageFile, 0, bytesForImageFile.length);
+                buf.close();
+            } catch (IOException e) {
+                Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
 
-        // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options, 150, 150);
+            //Setting up the image to create a bitmap of an appropriate size
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeByteArray(bytesForImageFile, 0, bytesForImageFile.length, options);
 
-        // Decode bitmap with inSampleSize set
-        options.inJustDecodeBounds = false;
-        Bitmap bitmap = BitmapFactory.decodeByteArray(bytesForImageFile, 0, bytesForImageFile.length, options);
+            // Calculate inSampleSize
+            options.inSampleSize = calculateInSampleSize(options, 150, 150);
 
-        //If we find the bitmap - use it
-        if (bitmap != null) {
+            // Decode bitmap with inSampleSize set
+            options.inJustDecodeBounds = false;
+            bitmap = BitmapFactory.decodeByteArray(bytesForImageFile, 0, bytesForImageFile.length, options);
+
             barImage.setImageBitmap(bitmap);
 
         //Otherwise we have to download the photo

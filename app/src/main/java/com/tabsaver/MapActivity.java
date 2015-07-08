@@ -49,7 +49,6 @@ public class MapActivity extends ActionBarActivity {
 
     //Keeping track of our state
     boolean locationUndetermined = true;
-    boolean markersLoaded = false;
 
     //Storing and retrieving session information
     ClientSessionManager session;
@@ -210,7 +209,6 @@ public class MapActivity extends ActionBarActivity {
 
         }
 
-        markersLoaded = true;
     }
 
     /**
@@ -256,12 +254,6 @@ public class MapActivity extends ActionBarActivity {
         public void onMyLocationChange(Location  location) {
             myLocation = location;
             myLocation.setLongitude(myLocation.getLongitude() * -1);
-
-            //Zoom to our current location once.
-            if ( locationUndetermined && markersLoaded) {
-                determineClosestCity();
-                zoomToCurrentCity();
-            }
         }
     };
 
@@ -269,7 +261,7 @@ public class MapActivity extends ActionBarActivity {
      * Zoom the map to the current city
      */
     private void zoomToCurrentCity(){
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(session.getLat(), session.getLong()), 10.0f));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(session.getLat(), session.getLong()), 12.0f));
         locationUndetermined = false;
     }
 
@@ -286,6 +278,16 @@ public class MapActivity extends ActionBarActivity {
             //setup our listeners
             mMap.setMyLocationEnabled(true);
             mMap.setOnMyLocationChangeListener(myLocationChangeListener);
+
+            //Zoom to our current location once.
+            if ( locationUndetermined ) {
+                if ( session.getCity().equals("none") ) {
+                    determineClosestCity();
+                }
+
+                locationUndetermined = false;
+                zoomToCurrentCity();
+            }
         }
     }
 
