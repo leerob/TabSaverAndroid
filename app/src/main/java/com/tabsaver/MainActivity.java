@@ -3,6 +3,8 @@ package com.tabsaver;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -13,11 +15,23 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -125,6 +139,9 @@ public class MainActivity extends ActionBarActivity {
         } catch (JSONException e) {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+
+
+        downloadBarImages();
     }
 
     /**
@@ -152,6 +169,61 @@ public class MainActivity extends ActionBarActivity {
         }
 
         bars.addAll(sortedListByDistance);
+    }
+
+    public void downloadBarImages(){
+        for(int i = 0; i < bars.size() ; i++ ) {
+            String barName = bars.get(i).get("name");
+            final String barId = bars.get(i).get("id");
+
+            //Setup to read the file
+            String imageFilePath = getApplicationContext().getFilesDir() + "/" + barId;
+            File imageFile = new File( imageFilePath );
+            int size = (int) imageFile.length();
+            byte[] bytesForImageFile = new byte[size];
+
+            //Set our bitmap
+            Bitmap bitmap = null;
+
+            //If the file exists
+            if ( size == 0 ) {
+
+                //query and load up that image.
+                final ParseQuery findImage = new ParseQuery("BarPhotos");
+                findImage.whereEqualTo("barName", barName);
+
+                findImage.findInBackground(new FindCallback<ParseObject>() {
+                    public void done(List<ParseObject> objects, ParseException e) { //TODO: what is this error? What to do
+                        if (e == null) {
+                            try {
+                                //Grab the image
+                                ArrayList<ParseObject> temp = (ArrayList<ParseObject>) objects;
+
+                                //now get objectId
+                                String objectId = temp.get(0).getObjectId();
+
+                                //Do some weird shit and cast our image to a byte array
+                                ParseObject imageHolder = findImage.get(objectId);
+                                ParseFile image = (ParseFile) imageHolder.get("imageFile");
+                                byte[] imageFile = image.getData();
+
+                                //Now store the file locally
+                                File storedImage = new File(getApplicationContext().getFilesDir(), barId + "");
+                                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(storedImage));
+                                bos.write(imageFile);
+                                bos.flush();
+                                bos.close();
+
+                            } catch (Exception ex) {
+                                Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        }
     }
 
     /**

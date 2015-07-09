@@ -164,61 +164,6 @@ public class ListArrayAdapter extends BaseAdapter {
 
             barImage.setImageBitmap(bitmap);
 
-        //Otherwise we have to download the photo
-        } else {
-            //query and load up that image.
-            final ParseQuery findImage = new ParseQuery("BarPhotos");
-            findImage.whereEqualTo("barName", barName);
-
-            findImage.findInBackground(new FindCallback<ParseObject>() {
-                public void done(List<ParseObject> objects, ParseException e) { //TODO: what is this error? What to do
-                    if (e == null) {
-                        try {
-                            //Grab the image
-                            ArrayList<ParseObject> temp = (ArrayList<ParseObject>) objects;
-
-                            //now get objectId
-                            String objectId = temp.get(0).getObjectId();
-
-                            //Do some weird shit and cast our image to a byte array
-                            ParseObject imageHolder = findImage.get(objectId);
-                            ParseFile image = (ParseFile) imageHolder.get("imageFile");
-                            byte[] imageFile = image.getData();
-
-                            //Now store the file locally
-                            File storedImage = new File(context.getFilesDir(), barId + "");
-                            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(storedImage));
-                            bos.write(imageFile);
-                            bos.flush();
-                            bos.close();
-
-                            //Setting up the image to create a bitmap of an appropriate size
-                            final BitmapFactory.Options options = new BitmapFactory.Options();
-                            options.inJustDecodeBounds = true;
-                            BitmapFactory.decodeByteArray(imageFile, 0, imageFile.length);
-
-                            // Calculate inSampleSize
-                            options.inSampleSize = calculateInSampleSize(options, 150, 150);
-
-                            // Decode bitmap with inSampleSize set
-                            options.inJustDecodeBounds = false;
-                            Bitmap bmp = BitmapFactory.decodeByteArray(imageFile, 0, imageFile.length, options);
-
-                            //Now compress it down to a low quality (5 = quality)
-                            ByteArrayOutputStream bytearroutstream = new ByteArrayOutputStream();
-                            bmp.compress(Bitmap.CompressFormat.JPEG, 100, bytearroutstream);
-
-                            //Set our image
-                            barImage.setImageBitmap(bmp);
-
-                        } catch (Exception ex) {
-                            Toast.makeText(context, "Failed to load image.", Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
         }
     }
 
