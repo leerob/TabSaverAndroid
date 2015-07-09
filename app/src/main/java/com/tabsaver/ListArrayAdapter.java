@@ -76,10 +76,10 @@ public class ListArrayAdapter extends BaseAdapter {
         ((TextView) itemView.findViewById(R.id.deal)).setText(barName);
 
         //Set the deals
-        ((TextView) itemView.findViewById(R.id.distance)).setText(formattedDeals);
+        ((TextView) itemView.findViewById(R.id.deals)).setText(formattedDeals);
 
         //Set the distance
-        ((TextView) itemView.findViewById(R.id.deals)).setText(formatter.format(Double.valueOf(currentBar.get("distance"))) + " mi");
+        ((TextView) itemView.findViewById(R.id.distance)).setText(formatter.format(Double.valueOf(currentBar.get("distance"))) + " mi");
 
         //Now set the image for the bar
         setBarImage(barId, barName, itemView);
