@@ -202,7 +202,7 @@ public class MapActivity extends ActionBarActivity {
                 public void onInfoWindowClick(Marker marker) {
                     // Make new intent to detail view
                     Intent i = new Intent(getApplicationContext(), BarDetail.class);
-                    i.putExtra("BarId", bar.get("BarId"));
+                    i.putExtra("BarId", bar.get("id"));
                     startActivity(i);
                 }
             });
