@@ -40,7 +40,7 @@
 
 
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="38dp"
             android:inputType="textEmailAddress"
             android:ems="10"
@@ -78,6 +78,7 @@
             android:inputType="textAutoCorrect|textMultiLine"
             android:ems="10"
             android:id="@+id/contact_message"
+            android:gravity="top"
             android:singleLine="false"
             android:layout_marginTop="42dp"
             android:layout_below="@+id/contact_email"
@@ -85,18 +86,20 @@
             android:layout_alignStart="@+id/contact_email"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:nestedScrollingEnabled="false" />
+            android:nestedScrollingEnabled="false"
+            android:focusable="true" />
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="Send Message"
             android:id="@+id/contact_send"
             android:layout_gravity="center_horizontal"
             android:clickable="true"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="15dp"
             android:layout_below="@+id/contact_message"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true"
+            style="@style/Base.TextAppearance.AppCompat.Caption" />
 
     </RelativeLayout>
 </ScrollView>

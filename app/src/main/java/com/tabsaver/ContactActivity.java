@@ -1,16 +1,27 @@
 package com.tabsaver;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 
 public class ContactActivity extends ActionBarActivity {
+
+    //Contact information
+    TextView email;
+    TextView message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,25 +30,11 @@ public class ContactActivity extends ActionBarActivity {
 
         ((Button) findViewById(R.id.contact_send)).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                TextView email = (TextView) findViewById(R.id.contact_email);
-                TextView message = (TextView) findViewById(R.id.contact_message);
+                email = (TextView) findViewById(R.id.contact_email);
+                message = (TextView) findViewById(R.id.contact_message);
 
-                if(isEmailValid(email.getText())){
-                    Intent i = new Intent(Intent.ACTION_SEND);
-                    i.setType("message/rfc822");
-                    i.putExtra(Intent.EXTRA_EMAIL  , email.getText());
-                    i.putExtra(Intent.EXTRA_SUBJECT, "TabSaver Contact Us");
-                    i.putExtra(Intent.EXTRA_TEXT   , message.getText());
-                    try {
-                        startActivity(Intent.createChooser(i, "Send mail..."));
-
-                        //Now finish and navigate back to settings
-                        finish();
-                        Intent settings = new Intent(getApplicationContext(), SettingsActivity.class);
-                        startActivity(settings);
-                    } catch (android.content.ActivityNotFoundException ex) {
-                       Toast.makeText(ContactActivity.this, "Unable to send message. You don't have any email clients!", Toast.LENGTH_SHORT).show();
-                    }
+                if( isEmailValid( email.getText() ) ) {
+                    new SendContactEmail().execute();
                 }
                 else{
                     email.setError(getString(R.string.error_invalid_email));
@@ -46,13 +43,34 @@ public class ContactActivity extends ActionBarActivity {
         });
     }
 
+    private class SendContactEmail extends AsyncTask<Void, Void, Void> {
+
+        JSONArray result;
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            result = JSONFunctions.getJSONfromURL("http://tabsaver.info/tabsaver/contactForm.php?email=" + email.getText().toString() + "&message=" + message.getText().toString());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void args) {
+            if ( true ) {
+                Toast.makeText(ContactActivity.this, "Message sent! We'll try and respond within 2 business days.", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(ContactActivity.this, "Message send failed.. Please try again later!", Toast.LENGTH_SHORT).show();
+            }
+
+            finish();
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+
+        if (id == R.id.closeContact) {
+            finish();
             return true;
         }
 
@@ -62,5 +80,19 @@ public class ContactActivity extends ActionBarActivity {
     boolean isEmailValid(CharSequence email) {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
+
+    /**
+     * Setup our menu items
+     * @param menu Menu for this page
+     * @return Not sure
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_contact, menu);
+        return true;
+    }
+
 
 }

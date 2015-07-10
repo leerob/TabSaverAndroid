@@ -141,7 +141,7 @@ public class MainActivity extends ActionBarActivity {
                 bar.put("Friday", barJSON.getString("Friday"));
                 bar.put("Saturday", barJSON.getString("Saturday"));
                 bar.put("Sunday", barJSON.getString("Sunday"));
-                bar.put("distance", 125.00 + ""); //TODO: We have to determine distance before loading this screen somehow..
+                bar.put("distance", 00.00 + ""); //TODO: We have to determine distance before loading this screen somehow..
 
                 // Set the JSON Objects into the array
                 bars.add(bar);
