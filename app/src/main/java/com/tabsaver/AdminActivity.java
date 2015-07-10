@@ -240,8 +240,6 @@ public class AdminActivity extends ActionBarActivity implements AdapterView.OnIt
 
         switch (item.getItemId()) {
             case R.id.clientLogout:
-                Intent i = new Intent(getApplicationContext(), MapActivity.class);
-                startActivity(i);
                 finish();
                 return true;
             case R.id.action_settings:
