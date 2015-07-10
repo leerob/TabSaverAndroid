@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -41,8 +43,8 @@ public class ListArrayAdapter extends BaseAdapter {
     ArrayList<HashMap<String, String>> barData;
     ArrayList<HashMap<String, String>> barDataBackupForSearchFiltering;
 
-    //Storing the images for fast access
-    HashMap<String, Bitmap> barImages;
+    //Caching images
+    private LruCache<String, Bitmap> mMemoryCache;
 
     //Storing and retrieving session information
     ClientSessionManager session;
@@ -61,8 +63,25 @@ public class ListArrayAdapter extends BaseAdapter {
         //Now filter the visible data by distance
         filterByDistancePreference();
 
+        // Get max available VM memory, exceeding this amount will throw an
+        // OutOfMemory exception. Stored in kilobytes as LruCache takes an
+        // int in its constructor.
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+
+        // Use 1/8th of the available memory for this memory cache.
+        final int cacheSize = maxMemory / 2;
+
+        mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap) {
+                // The cache size will be measured in kilobytes rather than
+                // number of items.
+                return bitmap.getByteCount() / 1024;
+            }
+        };
+
         //Store images in a hashmap for fast access
-        createBarImageHashmap();
+//        createBarImageHashmap();
     }
 
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -94,7 +113,7 @@ public class ListArrayAdapter extends BaseAdapter {
         ((TextView) itemView.findViewById(R.id.distance)).setText(formatter.format(Double.valueOf(currentBar.get("distance"))) + " mi");
 
         //Now set the image for the bar
-        ((ImageView) itemView.findViewById(R.id.bar_thumbnail)).setImageBitmap(barImages.get(barId));
+        loadBitmap(barId, ((ImageView) itemView.findViewById(R.id.bar_thumbnail)));
 
         //Set listener
         itemView.setOnClickListener(new OnClickListener() {
@@ -110,6 +129,28 @@ public class ListArrayAdapter extends BaseAdapter {
         return itemView;
     }
 
+    public void loadBitmap(int barId, ImageView barImage) {
+
+        Bitmap bitmap = getBitmapFromMemCache(barId+"");
+
+        if (bitmap != null) {
+            barImage.setImageBitmap(bitmap);
+        } else {
+            bitmap = getImage(barId+"");
+            barImage.setImageBitmap(bitmap);
+            addBitmapToMemoryCache(barId+"",bitmap);
+        }
+    }
+
+    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if (getBitmapFromMemCache(key) == null) {
+            mMemoryCache.put(key, bitmap);
+        }
+    }
+
+    public Bitmap getBitmapFromMemCache(String key) {
+        return mMemoryCache.get(key);
+    }
     public static int calculateInSampleSize(
             BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image
@@ -134,7 +175,7 @@ public class ListArrayAdapter extends BaseAdapter {
     }
 
 
-    public Bitmap getImage(final String barId, String barName) {
+    public Bitmap getImage(final String barId) {
         //Setup to read the file
         String imageFilePath = context.getFilesDir() + "/" + barId;
         File imageFile = new File( imageFilePath );
@@ -173,15 +214,15 @@ public class ListArrayAdapter extends BaseAdapter {
         }
     }
 
-    public void createBarImageHashmap(){
-        barImages = new HashMap<>();
-
-        for(int i = 0; i < barData.size(); i++ ) {
-            String name = barData.get(i).get("name");
-            String id = barData.get(i).get("id");
-            barImages.put(id, getImage(id, name));
-        }
-    }
+//    public void createBarImageHashmap(){
+//        barImages = new HashMap<>();
+//
+//        for(int i = 0; i < barData.size(); i++ ) {
+//            String name = barData.get(i).get("name");
+//            String id = barData.get(i).get("id");
+//            barImages.put(id, getImage(id, name));
+//        }
+//    }
 
     /**
      * Determine the deals for the day

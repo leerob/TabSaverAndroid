@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/closeLogin"
-        android:title="Cancel"
+        android:title="Back"
         app:showAsAction="always"/>
 
 
