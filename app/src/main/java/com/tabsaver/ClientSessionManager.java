@@ -62,6 +62,11 @@ public class ClientSessionManager {
         edit.commit();
     }
 
+    public void setDistancePreference(int distance){
+        edit.putInt("distance", distance);
+        edit.commit();
+    }
+
     public String getCities(){
         return pref.getString("cities", "none");
     }
@@ -135,6 +140,13 @@ public class ClientSessionManager {
         return pref.getString("city", null);
     }
 
+    /**
+     * Returns the distance preference
+     * @return
+     */
+    public int getDistancePreference(){
+        return pref.getInt("distance", 250);
+    }
 
     /**
      * Logout the user

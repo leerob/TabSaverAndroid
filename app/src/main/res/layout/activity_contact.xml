@@ -75,7 +75,7 @@
         <EditText
             android:layout_width="fill_parent"
             android:layout_height="125dp"
-            android:inputType="textMultiLine"
+            android:inputType="textAutoCorrect|textMultiLine"
             android:ems="10"
             android:id="@+id/contact_message"
             android:singleLine="false"

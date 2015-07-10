@@ -41,16 +41,28 @@ public class ListArrayAdapter extends BaseAdapter {
     ArrayList<HashMap<String, String>> barData;
     ArrayList<HashMap<String, String>> barDataBackupForSearchFiltering;
 
+    //Storing the images for fast access
+    HashMap<String, Bitmap> barImages;
+
+    //Storing and retrieving session information
+    ClientSessionManager session;
+
     public ListArrayAdapter(Context context, ArrayList<HashMap<String, String>> barData) {
         this.context = context;
+
+        //Setup the session
+        session = new ClientSessionManager(context);
 
         //Store our bar data
         this.barData = barData;
         barDataBackupForSearchFiltering = new ArrayList<>();
         barDataBackupForSearchFiltering.addAll(barData);
 
-        //TODO: Views are loading all messed up with lots of deals.
-        //TODO: Getting out of memory errors
+        //Now filter the visible data by distance
+        filterByDistancePreference();
+
+        //Store images in a hashmap for fast access
+        createBarImageHashmap();
     }
 
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -67,7 +79,7 @@ public class ListArrayAdapter extends BaseAdapter {
         String dealsStr = getDealsString(currentBar);
 
         //TODO: Replace this god damn comma stuff
-        String formattedDeals = dealsStr.replace(",", ", ");
+        String formattedDeals = dealsStr.replace(",", "\n");
 
         //setup formater for distance
         NumberFormat formatter = new DecimalFormat("#0.0");
@@ -82,7 +94,7 @@ public class ListArrayAdapter extends BaseAdapter {
         ((TextView) itemView.findViewById(R.id.distance)).setText(formatter.format(Double.valueOf(currentBar.get("distance"))) + " mi");
 
         //Now set the image for the bar
-        setBarImage(barId, barName, itemView);
+        ((ImageView) itemView.findViewById(R.id.bar_thumbnail)).setImageBitmap(barImages.get(barId));
 
         //Set listener
         itemView.setOnClickListener(new OnClickListener() {
@@ -121,15 +133,8 @@ public class ListArrayAdapter extends BaseAdapter {
         return inSampleSize;
     }
 
-    /**
-     * Setup the image for a bar
-     * @param barId the ID of this bar (for image storing/retrieving purposes)
-     * @param barName the name of this bar
-     */
-    private void setBarImage(final int barId, String barName, View itemView) {
-        //Grab the specific imageView
-        final ImageView barImage = (ImageView) itemView.findViewById(R.id.bar_thumbnail);
 
+    public Bitmap getImage(final String barId, String barName) {
         //Setup to read the file
         String imageFilePath = context.getFilesDir() + "/" + barId;
         File imageFile = new File( imageFilePath );
@@ -162,8 +167,19 @@ public class ListArrayAdapter extends BaseAdapter {
             options.inJustDecodeBounds = false;
             bitmap = BitmapFactory.decodeByteArray(bytesForImageFile, 0, bytesForImageFile.length, options);
 
-            barImage.setImageBitmap(bitmap);
+            return bitmap;
+        } else {
+            return null;
+        }
+    }
 
+    public void createBarImageHashmap(){
+        barImages = new HashMap<>();
+
+        for(int i = 0; i < barData.size(); i++ ) {
+            String name = barData.get(i).get("name");
+            String id = barData.get(i).get("id");
+            barImages.put(id, getImage(id, name));
         }
     }
 
@@ -215,16 +231,35 @@ public class ListArrayAdapter extends BaseAdapter {
 
         if (text.length() == 0) {
             barData.addAll(barDataBackupForSearchFiltering);
+            filterByDistancePreference();
         }
         else {
             for (HashMap<String, String> bar : barDataBackupForSearchFiltering)
             {
-                if (bar.get("name").toLowerCase().contains(text))
+                if (bar.get("name").toLowerCase().contains(text) && Double.valueOf(bar.get("distance")) <= session.getDistancePreference())
                 {
                     barData.add(bar);
                 }
             }
         }
+        notifyDataSetChanged();
+    }
+
+    /**
+     * Filtering by the distance preference
+     */
+    public void filterByDistancePreference(){
+
+        for (HashMap<String, String> bar : barDataBackupForSearchFiltering) {
+
+            if ( barData.contains(bar) &&  Double.valueOf(bar.get("distance")) > session.getDistancePreference()) {
+                barData.remove(bar);
+            } else if ( !barData.contains(bar) && Double.valueOf(bar.get("distance")) <= session.getDistancePreference() ) {
+                barData.add(bar);
+            }
+
+        }
+
         notifyDataSetChanged();
     }
 

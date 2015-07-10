@@ -11,8 +11,10 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -75,6 +77,15 @@ public class MainActivity extends ActionBarActivity {
         displayListView();
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        if ( adapter != null ) {
+            adapter.filterByDistancePreference();
+        }
+    }
+
     /**
      * Sync our bar and city data with the online database
      */
@@ -91,7 +102,6 @@ public class MainActivity extends ActionBarActivity {
             session.setCities(citiesJSON.toString());
 
             setupBarsHashmap(barsJSON);
-
             return null;
         }
 
@@ -109,6 +119,7 @@ public class MainActivity extends ActionBarActivity {
         listview = (ListView) findViewById(R.id.listview);
         adapter = new ListArrayAdapter(MainActivity.this, bars);
         listview.setAdapter(adapter);
+        listview.setEmptyView((TextView) findViewById(R.id.emptyListViewText));
     }
 
     public void setupBarsHashmap(JSONArray barsJSON){
@@ -130,7 +141,7 @@ public class MainActivity extends ActionBarActivity {
                 bar.put("Friday", barJSON.getString("Friday"));
                 bar.put("Saturday", barJSON.getString("Saturday"));
                 bar.put("Sunday", barJSON.getString("Sunday"));
-               bar.put("distance", 0.00 + ""); //TODO: We have to determine distance before loading this screen somehow..
+                bar.put("distance", 125.00 + ""); //TODO: We have to determine distance before loading this screen somehow..
 
                 // Set the JSON Objects into the array
                 bars.add(bar);

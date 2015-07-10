@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +25,7 @@ public class SettingsActivity extends ActionBarActivity {
 
     //List of cities
     JSONArray fullCities;
+    int distancePreference;
 
     //Session information
     ClientSessionManager session;
@@ -85,6 +87,28 @@ public class SettingsActivity extends ActionBarActivity {
                 startActivity(contactUs);
             }
         });
+
+        //Setup the distance seekBar listener
+        ((SeekBar)findViewById(R.id.locationDistanceBar)).setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                ((TextView) findViewById(R.id.currentDistanceDisplay)).setText(progress + " mi");
+                distancePreference = progress;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        //Set the distance seekbar default value
+        ((SeekBar) findViewById(R.id.locationDistanceBar)).setProgress(session.getDistancePreference());
     }
 
     /**
@@ -111,6 +135,7 @@ public class SettingsActivity extends ActionBarActivity {
         switch (item.getItemId()) {
             case R.id.saveSettings:
 
+                //Save the city
                 for(int i = 0; i < fullCities.length(); i++ ){
                     try {
                         JSONObject temp  = fullCities.getJSONObject(i);
@@ -124,14 +149,17 @@ public class SettingsActivity extends ActionBarActivity {
                     }
                 }
 
+                //Save the distance
+                session.setDistancePreference(distancePreference);
+
+                //Alert of success
                 Toast.makeText(SettingsActivity.this, "Saved settings!", Toast.LENGTH_SHORT).show();
 
-                Intent map = new Intent(getApplicationContext(), MapActivity.class);
-                startActivity(map);
                 finish();
-
                 return true;
-
+            case R.id.cancelSettings:
+                finish();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

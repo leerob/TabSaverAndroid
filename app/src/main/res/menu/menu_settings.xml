@@ -4,6 +4,11 @@
     tools:context="com.tabsaver.ListViewActivity">
 
     <item
+        android:id="@+id/cancelSettings"
+        android:title="Cancel"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/saveSettings"
         android:title="Save"
         app:showAsAction="ifRoom"/>
