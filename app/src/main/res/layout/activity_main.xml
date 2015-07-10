@@ -13,11 +13,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="No bars within your range! \n Check your settings!"
+        android:text="No bars within your range! \nThis can be adjusted in your settings."
         android:id="@+id/emptyListViewText"
         android:layout_marginTop="181dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:visibility="invisible" />
+        android:visibility="visible"
+        android:textStyle="bold"
+        android:gravity="center_horizontal" />
 
 </RelativeLayout>
