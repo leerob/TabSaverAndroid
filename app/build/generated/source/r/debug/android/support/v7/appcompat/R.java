@@ -444,7 +444,7 @@ public final class R {
 		public static final int abc_search_dropdown_item_icons_2line = 0x7f030014;
 		public static final int abc_search_view = 0x7f030015;
 		public static final int abc_simple_dropdown_hint = 0x7f030016;
-		public static final int support_simple_spinner_dropdown_item = 0x7f030021;
+		public static final int support_simple_spinner_dropdown_item = 0x7f030022;
 	}
 	public static final class string {
 		public static final int abc_action_bar_home_description = 0x7f0d0000;
@@ -521,18 +521,18 @@ public final class R {
 		public static final int Base_Theme_AppCompat_Light_Dialog = 0x7f0e0030;
 		public static final int Base_Theme_AppCompat_Light_DialogWhenLarge = 0x7f0e0032;
 		public static final int Base_Theme_AppCompat_Light_Dialog_FixedSize = 0x7f0e0031;
-		public static final int Base_V11_Theme_AppCompat = 0x7f0e00e8;
-		public static final int Base_V11_Theme_AppCompat_Dialog = 0x7f0e00e9;
-		public static final int Base_V11_Theme_AppCompat_Light = 0x7f0e00ea;
-		public static final int Base_V11_Theme_AppCompat_Light_Dialog = 0x7f0e00eb;
-		public static final int Base_V14_Theme_AppCompat = 0x7f0e00ec;
-		public static final int Base_V14_Theme_AppCompat_Dialog = 0x7f0e00ed;
-		public static final int Base_V14_Theme_AppCompat_Light = 0x7f0e00ee;
-		public static final int Base_V14_Theme_AppCompat_Light_Dialog = 0x7f0e00ef;
-		public static final int Base_V21_Theme_AppCompat = 0x7f0e00f0;
-		public static final int Base_V21_Theme_AppCompat_Dialog = 0x7f0e00f1;
-		public static final int Base_V21_Theme_AppCompat_Light = 0x7f0e00f2;
-		public static final int Base_V21_Theme_AppCompat_Light_Dialog = 0x7f0e00f3;
+		public static final int Base_V11_Theme_AppCompat = 0x7f0e00e9;
+		public static final int Base_V11_Theme_AppCompat_Dialog = 0x7f0e00ea;
+		public static final int Base_V11_Theme_AppCompat_Light = 0x7f0e00eb;
+		public static final int Base_V11_Theme_AppCompat_Light_Dialog = 0x7f0e00ec;
+		public static final int Base_V14_Theme_AppCompat = 0x7f0e00ed;
+		public static final int Base_V14_Theme_AppCompat_Dialog = 0x7f0e00ee;
+		public static final int Base_V14_Theme_AppCompat_Light = 0x7f0e00ef;
+		public static final int Base_V14_Theme_AppCompat_Light_Dialog = 0x7f0e00f0;
+		public static final int Base_V21_Theme_AppCompat = 0x7f0e00f1;
+		public static final int Base_V21_Theme_AppCompat_Dialog = 0x7f0e00f2;
+		public static final int Base_V21_Theme_AppCompat_Light = 0x7f0e00f3;
+		public static final int Base_V21_Theme_AppCompat_Light_Dialog = 0x7f0e00f4;
 		public static final int Base_V7_Theme_AppCompat = 0x7f0e0038;
 		public static final int Base_V7_Theme_AppCompat_Dialog = 0x7f0e0039;
 		public static final int Base_V7_Theme_AppCompat_Light = 0x7f0e003a;

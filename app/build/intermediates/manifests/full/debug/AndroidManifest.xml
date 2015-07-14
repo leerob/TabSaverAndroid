@@ -63,10 +63,7 @@
                 android:resource="@xml/searchable" />
 
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.SEARCH" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
@@ -89,6 +86,15 @@
         <activity
             android:name="com.tabsaver.SettingsActivity"
             android:label="@string/title_activity_settings" >
+        </activity>
+        <activity
+            android:name="com.tabsaver.LoadingActivity"
+            android:label="@string/title_activity_loading" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

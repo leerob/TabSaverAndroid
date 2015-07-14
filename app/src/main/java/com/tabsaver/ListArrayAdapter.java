@@ -80,8 +80,6 @@ public class ListArrayAdapter extends BaseAdapter {
             }
         };
 
-        //Store images in a hashmap for fast access
-//        createBarImageHashmap();
     }
 
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -214,16 +212,6 @@ public class ListArrayAdapter extends BaseAdapter {
         }
     }
 
-//    public void createBarImageHashmap(){
-//        barImages = new HashMap<>();
-//
-//        for(int i = 0; i < barData.size(); i++ ) {
-//            String name = barData.get(i).get("name");
-//            String id = barData.get(i).get("id");
-//            barImages.put(id, getImage(id, name));
-//        }
-//    }
-
     /**
      * Determine the deals for the day
      * @return the string representation of the day of the week
@@ -277,7 +265,19 @@ public class ListArrayAdapter extends BaseAdapter {
         else {
             for (HashMap<String, String> bar : barDataBackupForSearchFiltering)
             {
-                if (bar.get("name").toLowerCase().contains(text) && Double.valueOf(bar.get("distance")) <= session.getDistancePreference())
+//                //Limiting by search terms
+//                if (text.contains("show me ")) {
+//                    String searchTerm = text.subSequence(8, text.length()).toString();
+//                    String deals = getDealsString(bar);
+//                    if ( deals.toLowerCase().contains(searchTerm) ) {
+//                        //Maybe break the deals into each deal, sort them - and if it contains that deal
+//                        //Bring it to the top of the list
+//                        barData.add(bar);
+//                    }
+//                }
+
+                //If the deal or bar name contains the search term
+                if ( (bar.get("name").toLowerCase().contains(text) || getDealsString(bar).toLowerCase().contains(text) ) && Double.valueOf(bar.get("distance")) <= session.getDistancePreference())
                 {
                     barData.add(bar);
                 }

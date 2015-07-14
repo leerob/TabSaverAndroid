@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="No bars within your range! \nThis can be adjusted in your settings."
+        android:text="No bars meet your search terms."
         android:id="@+id/emptyListViewText"
         android:layout_marginTop="181dp"
         android:layout_alignParentTop="true"
@@ -21,5 +21,12 @@
         android:visibility="visible"
         android:textStyle="bold"
         android:gravity="center_horizontal" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/barLoading"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

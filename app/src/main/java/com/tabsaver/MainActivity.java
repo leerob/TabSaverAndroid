@@ -1,10 +1,14 @@
 package com.tabsaver;
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -39,14 +43,21 @@ import java.util.List;
 public class MainActivity extends ActionBarActivity {
 
     //All bars information
-    ArrayList<HashMap<String, String>> bars;
+    private ArrayList<HashMap<String, String>> bars;
 
     //Listview
-    ListView listview;
-    ListArrayAdapter adapter;
+    private ListView listview;
+    private ListArrayAdapter adapter;
+
+    //Progress view
+    private View loader;
 
     //Storing and retrieving session information
-    ClientSessionManager session;
+    private ClientSessionManager session;
+
+    //Our current location
+    private Location myLocation;
+    private boolean myLocationDetermined = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,25 +67,12 @@ public class MainActivity extends ActionBarActivity {
         //Setup the session
         session = new ClientSessionManager(getApplicationContext());
 
-        //Grab bar information from online if we have to. TODO: Add a once daily sync.
-        if ( session.getBars().equals("none") ) {
-            new DownloadJSON().execute();
-        } else {
-            try {
-                //grab bar and cities json
-                JSONArray barsJSON = new JSONArray(session.getBars());
+        //Show loader until location is determined
+        loader = findViewById(R.id.barLoading);
+        loader.setVisibility(View.VISIBLE);
 
-                //Setup hash maps for efficient data access
-                setupBarsHashmap(barsJSON);
-                sortBarsByDistance();
-            } catch (JSONException e) {
-                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        //TODO: Abstract data syncing into it's own class? We also should grab images there and cache them when we open them
-        //TODO: Weird behaviour when going back
-        displayListView();
+        //Once location is determined, the view will be loaded
+        setupLocationTracking();
     }
 
     @Override
@@ -86,30 +84,47 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    /**
-     * Sync our bar and city data with the online database
-     */
-    private class DownloadJSON extends AsyncTask<Void, Void, Void> {
+    private void setupLocationTracking(){
+        // Acquire a reference to the system Location Manager
+        LocationManager locationManager = (LocationManager) this.getSystemService(getApplicationContext().LOCATION_SERVICE);
 
-        @Override
-        protected Void doInBackground(Void... params) {
-            //Grab bar information and store it
-            JSONArray barsJSON = JSONFunctions.getJSONfromURL("http://tabsaver.info/retrieveBars.php");
-            session.setBars(barsJSON.toString());
+        // Define a listener that responds to location updates
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                myLocation = location;
+                myLocation.setLongitude(myLocation.getLongitude() * -1);
 
-            //Grab city information and store it
-            JSONArray citiesJSON = JSONFunctions.getJSONfromURL("http://tabsaver.info/retrieveCities.php");
-            session.setCities(citiesJSON.toString());
+                if ( !myLocationDetermined ) {
 
-            setupBarsHashmap(barsJSON);
-            return null;
-        }
+                    //Grab bar information from online if we have to. TODO: Add a once daily sync.
+                    try {
+                        //grab bar and cities json
+                        JSONArray barsJSON = new JSONArray(session.getBars());
 
+                        //Setup hash maps for efficient data access
+                        setupBarsHashmap(barsJSON);
+                        sortBarsByDistance();
+                    } catch (JSONException e) {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
 
-        @Override
-        protected void onPostExecute(Void args) {
+                    displayListView();
 
-        }
+                    loader.setVisibility(View.INVISIBLE);
+                }
+
+                myLocationDetermined = true;
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            public void onProviderEnabled(String provider) {}
+
+            public void onProviderDisabled(String provider) {}
+        };
+
+        // Register the listener with the Location Manager to receive location updates
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
     }
 
     /**
@@ -141,7 +156,13 @@ public class MainActivity extends ActionBarActivity {
                 bar.put("Friday", barJSON.getString("Friday"));
                 bar.put("Saturday", barJSON.getString("Saturday"));
                 bar.put("Sunday", barJSON.getString("Sunday"));
-                bar.put("distance", 00.00 + ""); //TODO: We have to determine distance before loading this screen somehow..
+
+                //Setup the distance
+                Location barLocation = new Location("test");
+                barLocation.setLatitude(barJSON.getDouble("lat"));
+                barLocation.setLongitude(barJSON.getDouble("long"));
+                bar.put("distance", (myLocation.distanceTo(barLocation) / 1609.34) + "");
+
 
                 // Set the JSON Objects into the array
                 bars.add(bar);
@@ -151,8 +172,6 @@ public class MainActivity extends ActionBarActivity {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
-
-        downloadBarImages();
     }
 
     /**
@@ -182,60 +201,7 @@ public class MainActivity extends ActionBarActivity {
         bars.addAll(sortedListByDistance);
     }
 
-    public void downloadBarImages(){
-        for(int i = 0; i < bars.size() ; i++ ) {
-            String barName = bars.get(i).get("name");
-            final String barId = bars.get(i).get("id");
 
-            //Setup to read the file
-            String imageFilePath = getApplicationContext().getFilesDir() + "/" + barId;
-            File imageFile = new File( imageFilePath );
-            int size = (int) imageFile.length();
-            byte[] bytesForImageFile = new byte[size];
-
-            //Set our bitmap
-            Bitmap bitmap = null;
-
-            //If the file exists
-            if ( size == 0 ) {
-
-                //query and load up that image.
-                final ParseQuery findImage = new ParseQuery("BarPhotos");
-                findImage.whereEqualTo("barName", barName);
-
-                findImage.findInBackground(new FindCallback<ParseObject>() {
-                    public void done(List<ParseObject> objects, ParseException e) { //TODO: what is this error? What to do
-                        if (e == null) {
-                            try {
-                                //Grab the image
-                                ArrayList<ParseObject> temp = (ArrayList<ParseObject>) objects;
-
-                                //now get objectId
-                                String objectId = temp.get(0).getObjectId();
-
-                                //Do some weird shit and cast our image to a byte array
-                                ParseObject imageHolder = findImage.get(objectId);
-                                ParseFile image = (ParseFile) imageHolder.get("imageFile");
-                                byte[] imageFile = image.getData();
-
-                                //Now store the file locally
-                                File storedImage = new File(getApplicationContext().getFilesDir(), barId + "");
-                                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(storedImage));
-                                bos.write(imageFile);
-                                bos.flush();
-                                bos.close();
-
-                            } catch (Exception ex) {
-                                Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-            }
-        }
-    }
 
     /**
      * Setting up our settings menu
@@ -254,7 +220,7 @@ public class MainActivity extends ActionBarActivity {
 
         //Setting up the search view
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setQueryHint("Search for a bar");
+        searchView.setQueryHint("Type a bar or drink type");
         searchView.setIconifiedByDefault(false);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {

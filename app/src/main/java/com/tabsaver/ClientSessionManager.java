@@ -121,7 +121,7 @@ public class ClientSessionManager {
      * @return
      */
     public String getToken(){
-        return pref.getString("token", null);
+        return pref.getString("token", "none");
     }
 
     /**
@@ -129,7 +129,7 @@ public class ClientSessionManager {
      * @return
      */
     public String getBar(){
-        return pref.getString("bar", null);
+        return pref.getString("bar", "none");
     }
 
     /**
@@ -137,7 +137,7 @@ public class ClientSessionManager {
      * @return
      */
     public String getCity(){
-        return pref.getString("city", null);
+        return pref.getString("city", "none");
     }
 
     /**

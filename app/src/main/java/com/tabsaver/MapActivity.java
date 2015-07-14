@@ -48,7 +48,8 @@ public class MapActivity extends ActionBarActivity {
     Location myLocation;
 
     //Keeping track of our state
-    boolean locationUndetermined = true;
+    boolean cityLocationUndetermined = true;
+    boolean myLocationUndetermined = true;
 
     //Storing and retrieving session information
     ClientSessionManager session;
@@ -57,8 +58,8 @@ public class MapActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
         session = new ClientSessionManager(getApplicationContext());
-        setUpMapIfNeeded();
 
         //Grab bar and city information from online if we have to. TODO: Add a once daily sync.
         if ( session.getBars().equals("none") ) {
@@ -72,6 +73,8 @@ public class MapActivity extends ActionBarActivity {
                 //Setup hashmaps for efficient data access
                 setupBarsHashmap(barsJSON);
                 setupCitiesHashmap(citiesJSON);
+
+                setUpMapIfNeeded();
 
                 //Load our markers up
                 setupBarMarkers();
@@ -110,6 +113,7 @@ public class MapActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Void args) {
+            setUpMapIfNeeded();
             setupBarMarkers();
         }
     }
@@ -254,6 +258,20 @@ public class MapActivity extends ActionBarActivity {
         public void onMyLocationChange(Location  location) {
             myLocation = location;
             myLocation.setLongitude(myLocation.getLongitude() * -1);
+
+
+            //Zoom to our current location once.
+            if ( cityLocationUndetermined && myLocationUndetermined ) {
+                if ( session.getCity().equals("none") ) {
+                    determineClosestCity();
+                }
+
+                cityLocationUndetermined = false;
+                myLocationUndetermined = false;
+                zoomToCurrentCity();
+            }
+
+
         }
     };
 
@@ -262,7 +280,7 @@ public class MapActivity extends ActionBarActivity {
      */
     private void zoomToCurrentCity(){
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(session.getLat(), session.getLong()), 12.0f));
-        locationUndetermined = false;
+        cityLocationUndetermined = false;
     }
 
     /**
@@ -278,16 +296,6 @@ public class MapActivity extends ActionBarActivity {
             //setup our listeners
             mMap.setMyLocationEnabled(true);
             mMap.setOnMyLocationChangeListener(myLocationChangeListener);
-
-            //Zoom to our current location once.
-            if ( locationUndetermined ) {
-                if ( session.getCity().equals("none") ) {
-                    determineClosestCity();
-                }
-
-                locationUndetermined = false;
-                zoomToCurrentCity();
-            }
         }
     }
 
@@ -363,6 +371,7 @@ public class MapActivity extends ActionBarActivity {
             case R.id.action_settings:
                 Intent settings = new Intent(getApplicationContext(), SettingsActivity.class);
                 startActivity(settings);
+                finish();
                 return true;
 
             //Go to list view
@@ -378,6 +387,7 @@ public class MapActivity extends ActionBarActivity {
                 String distances = calculateDistances();
                 session.setBars(distances); //TODO: We are storing distances in sessions which will lead to the distances not updating because the session doesn't update??
                 startActivity(i);
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

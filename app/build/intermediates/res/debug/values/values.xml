@@ -375,6 +375,7 @@ https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend
     <string name="title_activity_admin">Update Deals</string>
     <string name="title_activity_bar_detail">Detail</string>
     <string name="title_activity_contact">Contact Us</string>
+    <string name="title_activity_loading">Tab Saver</string>
     <!-- From: file:/C:/proj/tabsaverandroid/app/src/debug/res/values/strings_activity_login.xml -->
     <eat-comment/>
     <string name="title_activity_login">Client Sign In</string>
@@ -1511,4 +1512,10 @@ https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend
     <style name="Widget.AppCompat.Spinner.DropDown.ActionBar" parent="Base.Widget.AppCompat.Spinner.DropDown.ActionBar"/>
     <style name="Widget.AppCompat.Toolbar" parent="Base.Widget.AppCompat.Toolbar"/>
     <style name="Widget.AppCompat.Toolbar.Button.Navigation" parent="Base.Widget.AppCompat.Toolbar.Button.Navigation"/>
+    <!-- From: file:/C:/proj/tabsaverandroid/app/src/main/res/values/styles.xml -->
+    <eat-comment/>
+    <style name="splashScreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/ic_launcher</item>
+        <item name="android:background">@color/wallet_holo_blue_light</item>
+    </style>
 </resources>
