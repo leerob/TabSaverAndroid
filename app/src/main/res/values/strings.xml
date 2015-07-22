@@ -37,8 +37,9 @@
     <string name="title_activity_login">Login</string>
     <string name="title_activity_admin">Update Deals</string>
     <string name="title_activity_contact">Contact Us</string>
+    <string name="dealsOutdatedString">Report deals as incorrect</string>
 
     <string name="hello_world">Hello world!</string>
-    <string name="title_activity_loading">Tab Saver</string>
+    <string name="title_activity_loading">TabSaver</string>
 
 </resources>

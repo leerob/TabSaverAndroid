@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -38,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 
 public class BarDetail extends ActionBarActivity implements OnItemSelectedListener {
@@ -49,6 +51,11 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
     ListView listview;
     ArrayAdapter<String> arrayAdapter;
     String[] dealsForSelectedDay;
+
+    //For the deals out of date
+    String barName;
+    String dayOfWeek;
+    Boolean dealOutOfDateSent;
 
     //Storing and retrieving session information
     ClientSessionManager session;
@@ -63,26 +70,50 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
 
         //Grab our barID
         Intent intent = getIntent();
-        int barId = Integer.valueOf(intent.getStringExtra("BarId"));
+        barName = intent.getStringExtra("BarName");
+        dealOutOfDateSent = false;
 
         //Load this bars information
-        getBarHashmap(barId);
+        getBarHashmap(barName);
 
         //Now display everything
         setupViews();
+    }
+
+    private class SendDealsOutOfDateMessage extends AsyncTask<Void, Void, Void> {
+
+        JSONArray result;
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            result = JSONFunctions.getJSONfromURL("http://tabsaver.info/tabsaver/dealsOutdated.php?bar=" + barName + "&day=" + dayOfWeek);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void args) {
+            if ( true ) {
+                Toast.makeText(BarDetail.this, "We've received your update. We've sent the interns to investigate!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(BarDetail.this, "Sorry something went wrong.. Please try again later!", Toast.LENGTH_SHORT).show();
+            }
+
+            dealOutOfDateSent = true;
+        }
     }
 
     public void setupViews(){
         //Setup our views
         final TextView barWebsite = (TextView) findViewById(R.id.barWebsite);
         final TextView barPhone = (TextView) findViewById(R.id.barPhone);
+        final TextView barAddress = (TextView) findViewById(R.id.barAddress);
         listview = (ListView) findViewById(R.id.listView);
 
         //Set the bar's name
         ((TextView) findViewById(R.id.barName)).setText(bar.get("name"));
 
         //Set the bar's address
-        ((TextView) findViewById(R.id.barAddress)).setText(bar.get("address") + ", " + bar.get("town") + ", " + bar.get("state"));
+        barAddress.setText(bar.get("address") + ", " + bar.get("town") + ", " + bar.get("state"));
 
         //Setup the bar's phone number
         if(bar.get("number").equals("No Number")){
@@ -102,7 +133,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
         barPhone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!bar.get("number").equals("No Number")){
+                if (!bar.get("number").equals("No Number")) {
                     Intent intent = new Intent(Intent.ACTION_DIAL);
                     intent.setData(Uri.parse("tel:" + bar.get("number")));
                     startActivity(intent);
@@ -119,9 +150,19 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
             }
         });
 
+        //Listener to navigate to the address on click
+        barAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                        Uri.parse("http://maps.google.com/maps?daddr="+bar.get("lat") +","+( Double.valueOf(bar.get("long")) * -1 )));
+                startActivity(intent);
+            }
+        });
+
         //Parse and display the current deals for the day
-        String day = getDayOfWeekAsString();
-        dealsForSelectedDay = bar.get(day).split(","); //TODO: Get rid of this damn comma stuff
+        dayOfWeek = getDayOfWeekAsString();
+        dealsForSelectedDay = bar.get(dayOfWeek).split(","); //TODO: Get rid of this damn comma stuff
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, dealsForSelectedDay);
         listview.setAdapter(arrayAdapter);
         listview.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
@@ -149,12 +190,20 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
             }
         });
 
+        ((TextView) findViewById(R.id.dealsOutdated)).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (!dealOutOfDateSent) {
+                    new SendDealsOutOfDateMessage().execute();
+                }
+            }
+        });
+
         //Setup the spinner selection listener
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.days_of_week, R.layout.custom_spinner);
         adapter.setDropDownViewResource(R.layout.custom_dropdown);
         spinner.setAdapter(adapter);
-        spinner.setSelection(getIndex(spinner, day));
+        spinner.setSelection(getIndex(spinner, dayOfWeek));
         spinner.setOnItemSelectedListener(this);
 
         getSupportActionBar().hide();
@@ -310,9 +359,9 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
 
     /**
      * Create the hashmap representation of this bar
-     * @param barId the current bar
+     * @param barName the current bar
      */
-    public void getBarHashmap(int barId) {
+    public void getBarHashmap(String barName) {
 
         try {
             //Grab bars from session
@@ -323,13 +372,15 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
                 JSONObject barJSON = allBars.getJSONObject(i);
 
                 //Setup the hashmap
-                if (barJSON.getInt("BarId") == barId) {
-                    bar.put("id", barId + "");
+                if (barJSON.getString("name").equals(barName)) {
+                    bar.put("id", barJSON.getString("BarId"));
                     bar.put("name", barJSON.getString("name"));
                     bar.put("address", barJSON.getString("address"));
                     bar.put("town", barJSON.getString("town"));
                     bar.put("state", barJSON.getString("state"));
                     bar.put("number", barJSON.getString("number"));
+                    bar.put("lat", barJSON.getString("lat"));
+                    bar.put("long", barJSON.getString("long"));
                     bar.put("website", barJSON.getString("website"));
 
                     //Make sure the website is navigable

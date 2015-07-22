@@ -1,6 +1,7 @@
 package com.tabsaver;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -85,6 +86,15 @@ public class SettingsActivity extends ActionBarActivity {
             public void onClick(View v) {
                 Intent contactUs = new Intent(getApplicationContext(), ContactActivity.class);
                 startActivity(contactUs);
+            }
+        });
+
+        //Listener to navigate to a site on click
+        ((TextView) findViewById(R.id.register)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://tabsaver.info/register.html"));
+                startActivity(browserIntent);
             }
         });
 

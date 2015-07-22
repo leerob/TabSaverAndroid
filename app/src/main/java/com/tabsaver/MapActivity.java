@@ -6,13 +6,19 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -38,21 +44,24 @@ public class MapActivity extends ActionBarActivity {
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
     //Json representations of cities and bars
-    ArrayList<HashMap<String, String>> bars = new ArrayList<>();
-    ArrayList<HashMap<String, String>> cities = new ArrayList<>();
+    private ArrayList<HashMap<String, String>> bars = new ArrayList<>();
+    private ArrayList<HashMap<String, String>> cities = new ArrayList<>();
 
     //All of the bar markers on the map
-    List<Marker> markers = new ArrayList<>();
+    private List<Marker> markers = new ArrayList<>();
 
     //Our current location
-    Location myLocation;
+    private Location myLocation;
 
     //Keeping track of our state
-    boolean cityLocationUndetermined = true;
-    boolean myLocationUndetermined = true;
+    private boolean cityLocationUndetermined = true;
+    private boolean myLocationUndetermined = true;
 
     //Storing and retrieving session information
-    ClientSessionManager session;
+    private ClientSessionManager session;
+
+
+    private String[] barsListForSearchview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +153,7 @@ public class MapActivity extends ActionBarActivity {
             bars.add(bar);
         }
 
+        setupSearchStringArray();
     }
 
     /**
@@ -184,7 +194,7 @@ public class MapActivity extends ActionBarActivity {
             String day = getDayOfWeekStr();
 
             //Set deals TODO: Change this comma delimmited shit
-            String[] dealArr = bar.get(day).split(",");
+            String[] deals = bar.get(day).split(",");
 
 
             //Set bar image
@@ -195,9 +205,21 @@ public class MapActivity extends ActionBarActivity {
             Marker m = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(latitude, longitude))
                     .title(name)
-                    .snippet(dealArr[0])
+                    .snippet(deals[0] + "...")
                     .icon(BitmapDescriptorFactory.fromBitmap(img)));
             markers.add((m));
+
+            //Listener to zoom to a marker on click
+            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+                    float zoom = 18;
+                    CameraUpdate update = CameraUpdateFactory.newLatLngZoom(marker.getPosition(), zoom);
+                    mMap.animateCamera(update);
+                    marker.showInfoWindow();
+                    return true;
+                }
+            });
 
             //Listener to load bar detail
             mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
@@ -206,7 +228,7 @@ public class MapActivity extends ActionBarActivity {
                 public void onInfoWindowClick(Marker marker) {
                     // Make new intent to detail view
                     Intent i = new Intent(getApplicationContext(), BarDetail.class);
-                    i.putExtra("BarId", bar.get("id"));
+                    i.putExtra("BarName", marker.getTitle().toString());
                     startActivity(i);
                 }
             });
@@ -300,6 +322,18 @@ public class MapActivity extends ActionBarActivity {
     }
 
     /**
+     * Setup the string for our listview
+     */
+    private void setupSearchStringArray(){
+        barsListForSearchview = new String[bars.size()];
+
+        for(int i = 0; i < bars.size(); i++ ){
+            barsListForSearchview[i] = bars.get(i).get("name");
+        }
+
+    }
+
+    /**
      * Setup our menu items
      * @param menu Menu for this page
      * @return Not sure
@@ -312,23 +346,40 @@ public class MapActivity extends ActionBarActivity {
 
         // Associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        final SearchView searchView = (SearchView) menu.findItem(R.id.searchList).getActionView();
+        final ArrayAdapterSearchView searchView = (ArrayAdapterSearchView) menu.findItem(R.id.searchList).getActionView();
 
-        //Setup the search view
+        //Setup the autocomplete portion
+        final ArrayAdapterSearchView.SearchAutoComplete searchViewAutocomplete = (ArrayAdapterSearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
+
+        //Set the options
+        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_dropdown_item_1line, barsListForSearchview);
+
+        //onClick listener to update the text
+        searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                searchView.setText(adapter.getItem(position).toString());
+
+            }
+        });
+
+        //Now adjust the view and settings
+        searchViewAutocomplete.setDropDownBackgroundResource(R.drawable.white);
+        searchViewAutocomplete.setAdapter(adapter);
+
+        //Setup the actual search view
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setQueryHint("Search for a bar");
-        searchView.setIconifiedByDefault(false);
 
         //Simple search mechanism.. TODO: Want to do autocomplete recommendations
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        searchView.setOnQueryTextListener(new ArrayAdapterSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                boolean barFound = false;
 
                 for (Marker marker : markers) {
-                    String barName = marker.getTitle().toLowerCase().replace("'","");
-                    if(barName.contains(s.toLowerCase())){
-                        barFound = true;
+                    String barName = marker.getTitle().toString();
+                    if(barName.contains(s) || barName.equals(s)){
 
                         // Zoom to bar
                         float zoom = 18;
@@ -339,11 +390,8 @@ public class MapActivity extends ActionBarActivity {
                     }
                 }
 
-                if(!barFound){
-                    Toast.makeText(getApplicationContext(), "Bar not found!", Toast.LENGTH_SHORT).show();
-                }
-
                 searchView.clearFocus();
+                searchView.setText("");
                 return true;
             }
 
@@ -383,9 +431,6 @@ public class MapActivity extends ActionBarActivity {
                 startActivityForResult(i, 0);
                 overridePendingTransition(0, 0);
 
-                //Tack on our distance and show the list
-                String distances = calculateDistances();
-                session.setBars(distances); //TODO: We are storing distances in sessions which will lead to the distances not updating because the session doesn't update??
                 startActivity(i);
                 finish();
                 return true;
@@ -429,45 +474,45 @@ public class MapActivity extends ActionBarActivity {
         session.setCity(name, min.getLatitude(), min.getLongitude());
     }
 
-    /**
-     * Appending distances to our bars
-     * @return a JSON String repesenting the bars
-     */
-    public String calculateDistances(){
-        try {
-            //Setup our arrays
-            JSONArray barsWithoutDistances = new JSONArray(session.getBars());
-            JSONArray barsWithDistances = new JSONArray();
-
-            for( int i = 0; i < barsWithoutDistances.length(); i++ ) {
-
-                //Grab bar and setup the barLocation
-                JSONObject bar = barsWithoutDistances.getJSONObject(i);
-                Location barLoc = new Location("Bar");
-                barLoc.setLatitude(bar.getDouble("lat"));
-                barLoc.setLongitude(bar.getDouble("long"));
-
-                //Set location if valid
-                if ( myLocation == null ) {
-                    bar.put("distance", 0.000);
-                } else {
-                    double distance = myLocation.distanceTo(barLoc);
-                    if ( distance == Double.NaN ) {
-                        bar.put("distance", 0.000);
-                    } else {
-                        bar.put("distance", (double) Math.round((distance / 1609) * 1000) / 1000);
-                    }
-                }
-
-                //Add this bar to the array
-                barsWithDistances.put(bar);
-            }
-
-            return barsWithDistances.toString();
-
-        } catch (JSONException e) {
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            return null;
-        }
-    }
+//    /**
+//     * Appending distances to our bars
+//     * @return a JSON String repesenting the bars
+//     */
+//    public String calculateDistances(){
+//        try {
+//            //Setup our arrays
+//            JSONArray barsWithoutDistances = new JSONArray(session.getBars());
+//            JSONArray barsWithDistances = new JSONArray();
+//
+//            for( int i = 0; i < barsWithoutDistances.length(); i++ ) {
+//
+//                //Grab bar and setup the barLocation
+//                JSONObject bar = barsWithoutDistances.getJSONObject(i);
+//                Location barLoc = new Location("Bar");
+//                barLoc.setLatitude(bar.getDouble("lat"));
+//                barLoc.setLongitude(bar.getDouble("long"));
+//
+//                //Set location if valid
+//                if ( myLocation == null ) {
+//                    bar.put("distance", 0.000);
+//                } else {
+//                    double distance = myLocation.distanceTo(barLoc);
+//                    if ( distance == Double.NaN ) {
+//                        bar.put("distance", 0.000);
+//                    } else {
+//                        bar.put("distance", (double) Math.round((distance / 1609) * 1000) / 1000);
+//                    }
+//                }
+//
+//                //Add this bar to the array
+//                barsWithDistances.put(bar);
+//            }
+//
+//            return barsWithDistances.toString();
+//
+//        } catch (JSONException e) {
+//            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+//            return null;
+//        }
+//    }
 }

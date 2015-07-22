@@ -85,8 +85,8 @@ public class ListArrayAdapter extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
         //Grab bar information
         HashMap<String, String> currentBar = barData.get(position);
-        String barName = currentBar.get("name");
-        final int barId = Integer.valueOf(currentBar.get("id"));
+        final String barName = currentBar.get("name");
+        int barId = Integer.valueOf(currentBar.get("id"));
 
         //Get our view
         inflater = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE));
@@ -96,7 +96,7 @@ public class ListArrayAdapter extends BaseAdapter {
         String dealsStr = getDealsString(currentBar);
 
         //TODO: Replace this god damn comma stuff
-        String formattedDeals = dealsStr.replace(",", "\n");
+        String formattedDeals = dealsStr.replace(",", ", ");
 
         //setup formater for distance
         NumberFormat formatter = new DecimalFormat("#0.0");
@@ -119,7 +119,7 @@ public class ListArrayAdapter extends BaseAdapter {
             @Override
             public void onClick(View arg0) {
                 Intent i = new Intent(context, BarDetail.class);
-                i.putExtra("BarId", barId + "");
+                i.putExtra("BarName", barName);
                 context.startActivity(i);
             }
         });
@@ -265,16 +265,6 @@ public class ListArrayAdapter extends BaseAdapter {
         else {
             for (HashMap<String, String> bar : barDataBackupForSearchFiltering)
             {
-//                //Limiting by search terms
-//                if (text.contains("show me ")) {
-//                    String searchTerm = text.subSequence(8, text.length()).toString();
-//                    String deals = getDealsString(bar);
-//                    if ( deals.toLowerCase().contains(searchTerm) ) {
-//                        //Maybe break the deals into each deal, sort them - and if it contains that deal
-//                        //Bring it to the top of the list
-//                        barData.add(bar);
-//                    }
-//                }
 
                 //If the deal or bar name contains the search term
                 if ( (bar.get("name").toLowerCase().contains(text) || getDealsString(bar).toLowerCase().contains(text) ) && Double.valueOf(bar.get("distance")) <= session.getDistancePreference())
