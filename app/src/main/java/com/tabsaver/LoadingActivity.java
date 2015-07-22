@@ -50,6 +50,8 @@ public class LoadingActivity extends Activity {
         //Setup the session
         session = new ClientSessionManager(getApplicationContext());
 
+        getAllBarData();
+
         //TextView showing our current loading message
         loadingMessage = (TextView) findViewById(R.id.loadingMessage);
 
@@ -83,6 +85,8 @@ public class LoadingActivity extends Activity {
             JSONArray barsJSON = JSONFunctions.getJSONfromURL("http://tabsaver.info/retrieveBars.php");
             session.setBars(barsJSON.toString());
 
+            getAllBarData();
+
             //Grab city information and store it
             JSONArray citiesJSON = JSONFunctions.getJSONfromURL("http://tabsaver.info/retrieveCities.php");
             session.setCities(citiesJSON.toString());
@@ -100,6 +104,28 @@ public class LoadingActivity extends Activity {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void getAllBarData(){
+        //query and load up that image.
+        final ParseQuery getBars = new ParseQuery("Bars");
+
+        getBars.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> objects, ParseException e) { //TODO: what is this error? What to do
+                if (e == null) {
+                    try {
+                       System.out.println("tesT");
+
+                    } catch (Exception ex) {
+                        Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+
+                moveToStartScreen();
+            }
+        });
     }
 
     public void setWaitingMessage(String message){
@@ -182,7 +208,6 @@ public class LoadingActivity extends Activity {
                             } catch (Exception ex) {
                                 Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
                             }
-
                         } else {
                             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
