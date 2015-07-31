@@ -74,7 +74,6 @@ public class ClientSessionManager {
     public String getBars(){
         return pref.getString("bars", "none");
     }
-
     /**
      * Get name of saved closest city
      * @return

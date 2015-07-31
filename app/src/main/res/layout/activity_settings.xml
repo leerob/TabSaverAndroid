@@ -80,7 +80,7 @@
             android:paddingTop="20dp"
             android:id="@+id/locationDistanceLabel"
             android:layout_below="@+id/locationLabel"
-            android:paddingRight="20dp"
+            android:paddingRight="17dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_marginTop="15dp"
@@ -126,9 +126,10 @@
             android:id="@+id/contact_us"
             android:paddingTop="10dp"
             android:layout_gravity="bottom|center_horizontal"
-            android:layout_below="@+id/view"
+            android:layout_below="@+id/view3"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:paddingBottom="10dp" />
 
 
 
@@ -149,7 +150,7 @@
             android:layout_height="2dp"
             android:background="#E0E0E0"
             android:id="@+id/view1"
-            android:layout_below="@+id/register"
+            android:layout_below="@+id/contact_us"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
@@ -157,11 +158,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Request To Register Your Bar"
+            android:text="Register Bar"
             android:id="@+id/register"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:layout_below="@+id/view3"
+            android:layout_below="@+id/view"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
@@ -172,9 +173,10 @@
             android:text="0 mi"
             android:id="@+id/currentDistanceDisplay"
             android:layout_below="@+id/autoCompleteTextView1"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginRight="5dp" />
+            android:layout_alignLeft="@+id/autoCompleteTextView1"
+            android:layout_alignStart="@+id/autoCompleteTextView1"
+            android:layout_marginLeft="110dp"
+            android:layout_marginStart="110dp" />
 
     </RelativeLayout>
 

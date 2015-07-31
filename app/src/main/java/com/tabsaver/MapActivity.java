@@ -348,31 +348,13 @@ public class MapActivity extends ActionBarActivity {
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         final ArrayAdapterSearchView searchView = (ArrayAdapterSearchView) menu.findItem(R.id.searchList).getActionView();
 
-        //Setup the autocomplete portion
-        final ArrayAdapterSearchView.SearchAutoComplete searchViewAutocomplete = (ArrayAdapterSearchView.SearchAutoComplete) searchView.findViewById(R.id.search_src_text);
-
-        //Set the options
-        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_dropdown_item_1line, barsListForSearchview);
-
-        //onClick listener to update the text
-        searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                searchView.setText(adapter.getItem(position).toString());
-
-            }
-        });
-
-        //Now adjust the view and settings
-        searchViewAutocomplete.setDropDownBackgroundResource(R.drawable.white);
-        searchViewAutocomplete.setAdapter(adapter);
-
         //Setup the actual search view
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setQueryHint("Search for a bar");
+        searchView.setIconifiedByDefault(false);
 
-        //Simple search mechanism.. TODO: Want to do autocomplete recommendations
+
+        //Simple search mechanism..
         searchView.setOnQueryTextListener(new ArrayAdapterSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {

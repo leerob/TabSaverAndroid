@@ -98,11 +98,8 @@ public class MainActivity extends ActionBarActivity {
 
                     //Grab bar information from online if we have to. TODO: Add a once daily sync.
                     try {
-                        //grab bar and cities json
-                        JSONArray barsJSON = new JSONArray(session.getBars());
-
                         //Setup hash maps for efficient data access
-                        setupBarsHashmap(barsJSON);
+                        setupBarsHashmap();
                         sortBarsByDistance();
                     } catch (JSONException e) {
                         Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -138,7 +135,11 @@ public class MainActivity extends ActionBarActivity {
         listview.setEmptyView((TextView) findViewById(R.id.emptyListViewText));
     }
 
-    public void setupBarsHashmap(JSONArray barsJSON){
+    public void setupBarsHashmap() throws JSONException {
+        JSONArray barsJSON = new JSONArray(session.getBars());
+        JSONArray dealsJSON = new JSONArray(session.getBarDeals());
+        JSONArray hoursJSON = new JSONArray(session.getBarHours());
+
        bars = new ArrayList<>();
 
         //Setup the bar info
@@ -148,18 +149,27 @@ public class MainActivity extends ActionBarActivity {
                 JSONObject barJSON = barsJSON.getJSONObject(i);
 
                 // Retrieve JSON Objects
-                bar.put("id",  barJSON.getString("BarId"));
+                bar.put("id",  barJSON.getString("id"));
                 bar.put("name", barJSON.getString("name"));
-                bar.put("Monday", barJSON.getString("Monday"));
-                bar.put("Tuesday", barJSON.getString("Tuesday"));
-                bar.put("Wednesday", barJSON.getString("Wednesday"));
-                bar.put("Thursday", barJSON.getString("Thursday"));
-                bar.put("Friday", barJSON.getString("Friday"));
-                bar.put("Saturday", barJSON.getString("Saturday"));
-                bar.put("Sunday", barJSON.getString("Sunday"));
+
+                //Grab deals - TODO: Make this more efficient somewhere
+                for (int j = 0; j < dealsJSON.length(); j++ ) {
+                    JSONObject thisBar = dealsJSON.getJSONObject(j);
+                    if ( thisBar.getString("barId").equals(barJSON.getString("id"))) {
+                        bar.put("deals", thisBar.toString()); //TODO: This is where we left of. Breaking somewhere
+                    }
+                }
+
+                //Grab Hours - TODO: Make this more efficient somewhere
+                for (int j = 0; j < hoursJSON.length(); j++ ) {
+                    JSONObject thisBar = hoursJSON.getJSONObject(j);
+                    if ( thisBar.getString("barId").equals(barJSON.getString("id"))) {
+                        bar.put("Hours", thisBar.toString());
+                    }
+                }
 
                 //Setup the distance
-                Location barLocation = new Location("test");
+                Location barLocation = new Location("");
                 barLocation.setLatitude(barJSON.getDouble("lat"));
                 barLocation.setLongitude(barJSON.getDouble("long"));
                 bar.put("distance", (myLocation.distanceTo(barLocation) / 1609.34) + "");
@@ -217,14 +227,14 @@ public class MainActivity extends ActionBarActivity {
 
         // Associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        final SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        final ArrayAdapterSearchView searchView = (ArrayAdapterSearchView) menu.findItem(R.id.search).getActionView();
 
         //Setting up the search view
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setQueryHint("Type a bar or drink type");
         searchView.setIconifiedByDefault(false);
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        searchView.setOnQueryTextListener(new ArrayAdapterSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 searchView.clearFocus();

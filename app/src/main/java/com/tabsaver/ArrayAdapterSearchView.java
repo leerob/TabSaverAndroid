@@ -28,9 +28,9 @@ public class ArrayAdapterSearchView extends SearchView {
     public void initialize() {
         mSearchAutoComplete = (SearchAutoComplete)
                 findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        mSearchAutoComplete.setThreshold(3);
         this.setAdapter(null);
         this.setOnItemClickListener(null);
-        this.setThreshold(3);
     }
 
     @Override
@@ -50,8 +50,5 @@ public class ArrayAdapterSearchView extends SearchView {
         mSearchAutoComplete.setText(text);
     }
 
-    public void setThreshold(int val){
-        mSearchAutoComplete.setThreshold(val);
-    }
 
 }

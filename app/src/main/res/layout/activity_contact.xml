@@ -99,7 +99,8 @@
             android:layout_marginTop="15dp"
             android:layout_below="@+id/contact_message"
             android:layout_centerHorizontal="true"
-            style="@style/Base.TextAppearance.AppCompat.Caption" />
+            style="@style/Base.TextAppearance.AppCompat.Caption"
+            android:textStyle="bold" />
 
     </RelativeLayout>
 </ScrollView>
