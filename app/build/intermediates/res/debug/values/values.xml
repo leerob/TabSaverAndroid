@@ -314,7 +314,7 @@
     <string name="create_calendar_title">Create calendar event</string>
     <!-- From: file:/C:/proj/tabsaverandroid/app/src/main/res/values/strings.xml -->
     <eat-comment/>
-    <string name="dealsOutdatedString">Report deals as incorrect</string>
+    <string name="dealsOutdatedString">Tap to report deals as incorrect</string>
     <!-- From: file:/C:/proj/tabsaverandroid/app/build/intermediates/exploded-aar/com.google.android.gms/play-services/6.5.87/res/values/admob_strings.xml -->
     <eat-comment/>
     <string name="decline">Decline</string>

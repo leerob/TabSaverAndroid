@@ -70,61 +70,24 @@ public class MapActivity extends ActionBarActivity {
 
         session = new ClientSessionManager(getApplicationContext());
 
-        //Grab bar and city information from online if we have to. TODO: Add a once daily sync.
-        if ( session.getBars().equals("none") ) {
-            new DownloadJSON().execute();
-        } else {
-            try {
-                //grab bar and cities json
-                JSONArray citiesJSON = new JSONArray(session.getCities());
-                JSONArray barsJSON = new JSONArray(session.getBars());
+        //Grab bar and city information
+        try {
+            //grab bar and cities json
+            JSONArray citiesJSON = new JSONArray(session.getCities());
+            JSONArray barsJSON = new JSONArray(session.getBars());
 
-                //Setup hashmaps for efficient data access
-                setupBarsHashmap(barsJSON);
-                setupCitiesHashmap(citiesJSON);
+            //Setup hashmaps for efficient data access
+            setupBarsHashmap(barsJSON);
+            setupCitiesHashmap(citiesJSON);
 
-                setUpMapIfNeeded();
-
-                //Load our markers up
-                setupBarMarkers();
-            } catch (JSONException e) {
-                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }
-
-    }
-
-    /**
-     * Sync our bar and city data with the database
-     */
-    private class DownloadJSON extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            //Grab bar information and store it
-            JSONArray barsJSON = JSONFunctions.getJSONfromURL("http://tabsaver.info/retrieveBars.php");
-            session.setBars(barsJSON.toString());
-
-            //Grab city information and store it
-            JSONArray citiesJSON = JSONFunctions.getJSONfromURL("http://tabsaver.info/retrieveCities.php");
-            session.setCities(citiesJSON.toString());
-
-            //Now setup the hashmap for each bar from the JSON
-            try {
-                setupBarsHashmap(barsJSON);
-                setupCitiesHashmap(citiesJSON);
-            } catch (JSONException e) {
-                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void args) {
             setUpMapIfNeeded();
+
+            //Load our markers up
             setupBarMarkers();
+        } catch (JSONException e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
         }
+
     }
 
     /**
@@ -138,17 +101,11 @@ public class MapActivity extends ActionBarActivity {
             JSONObject barJSON = barsJSON.getJSONObject(i);
 
             //Set all the bar info
-            bar.put("id",  barJSON.getString("BarId"));
+            bar.put("id",  barJSON.getString("id"));
             bar.put("name", barJSON.getString("name"));
             bar.put("lat", barJSON.getString("lat"));
             bar.put("long", barJSON.getString("long"));
-            bar.put("Monday", barJSON.getString("Monday"));
-            bar.put("Tuesday", barJSON.getString("Tuesday"));
-            bar.put("Wednesday", barJSON.getString("Wednesday"));
-            bar.put("Thursday", barJSON.getString("Thursday"));
-            bar.put("Friday", barJSON.getString("Friday"));
-            bar.put("Saturday", barJSON.getString("Saturday"));
-            bar.put("Sunday", barJSON.getString("Sunday"));
+            bar.put("deals", barJSON.getString("deals"));
 
             bars.add(bar);
         }
@@ -187,15 +144,14 @@ public class MapActivity extends ActionBarActivity {
 
             //Set name and location
             double latitude = Double.parseDouble(bar.get("lat"));
-            double longitude = Double.parseDouble("-" + bar.get("long"));
+            double longitude = Double.parseDouble(bar.get("long"));
             String name = bar.get("name");
 
             //Set day
             String day = getDayOfWeekStr();
 
             //Set deals TODO: Change this comma delimmited shit
-            String[] deals = bar.get(day).split(",");
-
+            String firstDeal = getFirstDeal(day, bar);
 
             //Set bar image
             BitmapFactory.Options o = new BitmapFactory.Options();
@@ -205,7 +161,7 @@ public class MapActivity extends ActionBarActivity {
             Marker m = mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(latitude, longitude))
                     .title(name)
-                    .snippet(deals[0] + "...")
+                    .snippet(firstDeal + "...")
                     .icon(BitmapDescriptorFactory.fromBitmap(img)));
             markers.add((m));
 
@@ -235,6 +191,20 @@ public class MapActivity extends ActionBarActivity {
 
         }
 
+    }
+
+    public String getFirstDeal(String dayOfWeek, HashMap<String, String> bar){
+        JSONObject dealsArray;
+        JSONArray todaysDeals;
+        try {
+            dealsArray = new JSONObject(bar.get("deals"));
+            todaysDeals = dealsArray.getJSONArray(dayOfWeek);
+            return todaysDeals.getString(0);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return "";
     }
 
     /**
@@ -279,8 +249,6 @@ public class MapActivity extends ActionBarActivity {
         @Override
         public void onMyLocationChange(Location  location) {
             myLocation = location;
-            myLocation.setLongitude(myLocation.getLongitude() * -1);
-
 
             //Zoom to our current location once.
             if ( cityLocationUndetermined && myLocationUndetermined ) {
@@ -352,7 +320,6 @@ public class MapActivity extends ActionBarActivity {
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         searchView.setQueryHint("Search for a bar");
         searchView.setIconifiedByDefault(false);
-
 
         //Simple search mechanism..
         searchView.setOnQueryTextListener(new ArrayAdapterSearchView.OnQueryTextListener() {

@@ -19,6 +19,11 @@ import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -86,7 +91,7 @@ public class ListArrayAdapter extends BaseAdapter {
         //Grab bar information
         HashMap<String, String> currentBar = barData.get(position);
         final String barName = currentBar.get("name");
-        int barId = Integer.valueOf(currentBar.get("id"));
+        final String barId = currentBar.get("id");
 
         //Get our view
         inflater = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE));
@@ -95,9 +100,6 @@ public class ListArrayAdapter extends BaseAdapter {
         // Determine Day of Week
         String dealsStr = getDealsString(currentBar);
 
-        //TODO: Replace this god damn comma stuff
-        String formattedDeals = dealsStr.replace(",", ", ");
-
         //setup formater for distance
         NumberFormat formatter = new DecimalFormat("#0.0");
 
@@ -105,7 +107,7 @@ public class ListArrayAdapter extends BaseAdapter {
         ((TextView) itemView.findViewById(R.id.deal)).setText(barName);
 
         //Set the deals
-        ((TextView) itemView.findViewById(R.id.deals)).setText(formattedDeals);
+        ((TextView) itemView.findViewById(R.id.deals)).setText(dealsStr);
 
         //Set the distance
         ((TextView) itemView.findViewById(R.id.distance)).setText(formatter.format(Double.valueOf(currentBar.get("distance"))) + " mi");
@@ -119,7 +121,7 @@ public class ListArrayAdapter extends BaseAdapter {
             @Override
             public void onClick(View arg0) {
                 Intent i = new Intent(context, BarDetail.class);
-                i.putExtra("BarName", barName);
+                i.putExtra("BarId", barId);
                 context.startActivity(i);
             }
         });
@@ -127,7 +129,7 @@ public class ListArrayAdapter extends BaseAdapter {
         return itemView;
     }
 
-    public void loadBitmap(int barId, ImageView barImage) {
+    public void loadBitmap(String barId, ImageView barImage) {
 
         Bitmap bitmap = getBitmapFromMemCache(barId+"");
 
@@ -136,7 +138,7 @@ public class ListArrayAdapter extends BaseAdapter {
         } else {
             bitmap = getImage(barId+"");
             barImage.setImageBitmap(bitmap);
-            addBitmapToMemoryCache(barId+"",bitmap);
+            addBitmapToMemoryCache(barId + "", bitmap);
         }
     }
 
@@ -216,37 +218,101 @@ public class ListArrayAdapter extends BaseAdapter {
      * Determine the deals for the day
      * @return the string representation of the day of the week
      */
-    private String getDealsString(HashMap<String, String> currentBar){
+    private String getDealsString(HashMap<String, String> currentBar) {
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_WEEK);
 
-        String dealsStr = "";
+        try {
+            JSONObject deals = new JSONObject(currentBar.get("deals"));
+            JSONArray daysDeals;
+            String dealsResult = "";
 
-        switch (day) {
-            case Calendar.SUNDAY:
-                dealsStr = currentBar.get("Sunday");
-                break;
-            case Calendar.MONDAY:
-                dealsStr = currentBar.get("Monday");
-                break;
-            case Calendar.TUESDAY:
-                dealsStr = currentBar.get("Tuesday");
-                break;
-            case Calendar.WEDNESDAY:
-                dealsStr = currentBar.get("Wednesday");
-                break;
-            case Calendar.THURSDAY:
-                dealsStr = currentBar.get("Thursday");
-                break;
-            case Calendar.FRIDAY:
-                dealsStr = currentBar.get("Friday");
-                break;
-            case Calendar.SATURDAY:
-                dealsStr = currentBar.get("Saturday");
-                break;
+            switch (day) {
+                case Calendar.SUNDAY:
+                    daysDeals = deals.getJSONArray("Sunday");
+                    for(int i = 0; i < daysDeals.length(); i++) {
+                        dealsResult = dealsResult + daysDeals.getString(i);
+
+                        //Add comas except at the end
+                        if (i != daysDeals.length() - 1) {
+                            dealsResult = dealsResult + ", ";
+                        }
+                    }
+                    break;
+                case Calendar.MONDAY:
+                    daysDeals = deals.getJSONArray("Monday");
+                    for(int i = 0; i < daysDeals.length(); i++){
+                        dealsResult = dealsResult + daysDeals.getString(i);
+
+                        //Add comas except at the end
+                        if ( i != daysDeals.length() - 1  ) {
+                            dealsResult = dealsResult + ", ";
+                        }
+                    }
+                    break;
+                case Calendar.TUESDAY:
+                    daysDeals = deals.getJSONArray("Tuesday");
+                    for(int i = 0; i < daysDeals.length(); i++){
+                        dealsResult = dealsResult + daysDeals.getString(i);
+
+                        //Add comas except at the end
+                        if ( i != daysDeals.length() - 1  ) {
+                            dealsResult = dealsResult + ", ";
+                        }
+                    }
+                    break;
+                case Calendar.WEDNESDAY:
+                    daysDeals = deals.getJSONArray("Wednesday");
+                    for(int i = 0; i < daysDeals.length(); i++){
+                        dealsResult = dealsResult + daysDeals.getString(i);
+
+                        //Add comas except at the end
+                        if ( i != daysDeals.length() - 1  ) {
+                            dealsResult = dealsResult + ", ";
+                        }
+                    }
+                    break;
+                case Calendar.THURSDAY:
+                    daysDeals = deals.getJSONArray("Thursday");
+                    for(int i = 0; i < daysDeals.length(); i++){
+                        dealsResult = dealsResult + daysDeals.getString(i);
+
+                        //Add comas except at the end
+                        if ( i != daysDeals.length() - 1  ) {
+                            dealsResult = dealsResult + ", ";
+                        }
+                    }
+                    break;
+                case Calendar.FRIDAY:
+                    daysDeals = deals.getJSONArray("Friday");
+                    for(int i = 0; i < daysDeals.length(); i++){
+                        dealsResult = dealsResult + daysDeals.getString(i);
+
+                        //Add comas except at the end
+                        if ( i != daysDeals.length() - 1  ) {
+                            dealsResult = dealsResult + ", ";
+                        }
+                    }
+                    break;
+                case Calendar.SATURDAY:
+                    daysDeals = deals.getJSONArray("Saturday");
+                    for(int i = 0; i < daysDeals.length(); i++){
+                        dealsResult = dealsResult + daysDeals.getString(i);
+
+                        //Add comas except at the end
+                        if ( i != daysDeals.length() - 1  ) {
+                            dealsResult = dealsResult + ", ";
+                        }
+                    }
+                    break;
+            }
+
+            return dealsResult;
+        } catch (JSONException e) {
+            Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
-        return dealsStr;
+        return "";
     }
 
     /**

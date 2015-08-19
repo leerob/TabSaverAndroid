@@ -26,16 +26,13 @@ import java.util.List;
 
 public class LoadingActivity extends Activity {
 
-    //All bars information
-    private ArrayList<HashMap<String, String>> bars;
-
     //Storing and retrieving session information
     private ClientSessionManager session;
 
     //Message to display to the user
     private TextView loadingMessage;
 
-    //Integer tracking the number of images loaded
+    //Integer tracking the number of images loaded for the loading message
     private int numImagesLoaded;
 
     //Tracking status of all the information we've downloaded
@@ -73,24 +70,6 @@ public class LoadingActivity extends Activity {
         }
 
     }
-//
-//    /**
-//     * Sync our bar and city data with the online database
-//     */
-//    private class DownloadJSON extends AsyncTask<Void, Void, Void> {
-//
-//        @Override
-//        protected Void doInBackground(Void... params) {
-//
-//            return null;
-//        }
-//
-//
-//        @Override
-//        protected void onPostExecute(Void args) {
-//
-//        }
-//    }
 
     public void getBarData(){
         setWaitingMessage("Drinking a beer");
@@ -125,8 +104,9 @@ public class LoadingActivity extends Activity {
 
                         //If everythings done, now we can get our images
                         if (barHoursLoaded && barDealsLoaded && citiesLoaded && imagesLoaded){
-                            moveToStartScreen();
+                            assembleBarDealInformation();
                         }
+
                     } catch (Exception ex) {
                         Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
                     }
@@ -169,7 +149,7 @@ public class LoadingActivity extends Activity {
 
                         //If everythings done, now we can get our images
                         if (barHoursLoaded && barDealsLoaded && barsLoaded && imagesLoaded){
-                            moveToStartScreen();
+                            assembleBarDealInformation();
                         }
                     } catch (Exception ex) {
                         Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
@@ -215,7 +195,7 @@ public class LoadingActivity extends Activity {
 
                         //If everythings done, now we can get our images
                         if (barHoursLoaded && barsLoaded && citiesLoaded && imagesLoaded){
-                            moveToStartScreen();
+                            assembleBarDealInformation();
                         }
                     } catch (Exception ex) {
                         Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
@@ -260,7 +240,7 @@ public class LoadingActivity extends Activity {
 
                         //If everythings done, now we can get our images
                         if (barDealsLoaded && barsLoaded && citiesLoaded && imagesLoaded) {
-                            moveToStartScreen();
+                            assembleBarDealInformation();
                         }
                     } catch (Exception ex) {
                         Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
@@ -354,7 +334,7 @@ public class LoadingActivity extends Activity {
                         imagesLoaded = true;
 
                         if (barHoursLoaded && barsLoaded && barDealsLoaded && citiesLoaded) {
-                            moveToStartScreen();
+                            assembleBarDealInformation();
                         }
                     } catch (Exception ex) {
                         Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
@@ -436,11 +416,36 @@ public class LoadingActivity extends Activity {
     }
 
     public void assembleBarDealInformation(){
+        setWaitingMessage("Piecing together the evening");
+
         try {
-            JSONArray fullBars = new JSONArray(bars.length());
             for(int i = 0; i < bars.length(); i++ ) {
-                JSONObject bars.get(i)
+                JSONObject bar = bars.getJSONObject(i);
+
+                //Grab bars deals
+                for(int j = 0; j < deals.length(); j++){
+                    JSONObject deal = deals.getJSONObject(j);
+
+                    if (deal.getString("barId").equals(bar.getString("id"))) {
+                        System.out.println("wtf");
+                        bar.put("deals", deal.toString());
+                        break;
+                    }
+                }
+
+                //Grab bar hours
+                for( int j = 0; j < hours.length(); j++ ) {
+                    JSONObject hour = hours.getJSONObject(j);
+
+                    if (hour.getString("barId").equals(bar.getString("id"))) {
+                        bar.put("hours", hour.toString());
+                        break;
+                    }
+                }
             }
+
+            session.setBars(bars.toString());
+            moveToStartScreen();
         } catch (JSONException e) {
             e.printStackTrace();
         }

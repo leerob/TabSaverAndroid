@@ -70,11 +70,11 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
 
         //Grab our barID
         Intent intent = getIntent();
-        barName = intent.getStringExtra("BarName");
+        String barId = intent.getStringExtra("BarId");
         dealOutOfDateSent = false;
 
         //Load this bars information
-        getBarHashmap(barName);
+        getBarHashmap(barId);
 
         //Now display everything
         setupViews();
@@ -93,7 +93,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
         @Override
         protected void onPostExecute(Void args) {
             if ( true ) {
-                Toast.makeText(BarDetail.this, "We've received your update. We've sent the interns to investigate!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(BarDetail.this, "Thanks! We've received your report and have sent the interns to investigate.", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(BarDetail.this, "Sorry something went wrong.. Please try again later!", Toast.LENGTH_SHORT).show();
             }
@@ -113,7 +113,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
         ((TextView) findViewById(R.id.barName)).setText(bar.get("name"));
 
         //Set the bar's address
-        barAddress.setText(bar.get("address") + ", " + bar.get("town") + ", " + bar.get("state"));
+        barAddress.setText(bar.get("address") + ", " + bar.get("city") + ", " + bar.get("state"));
 
         //Setup the bar's phone number
         if(bar.get("number").equals("No Number")){
@@ -162,7 +162,9 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
 
         //Parse and display the current deals for the day
         dayOfWeek = getDayOfWeekAsString();
-        dealsForSelectedDay = bar.get(dayOfWeek).split(","); //TODO: Get rid of this damn comma stuff
+
+        getDealsForDay(dayOfWeek);
+
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, dealsForSelectedDay);
         listview.setAdapter(arrayAdapter);
         listview.setVerticalScrollbarPosition(View.SCROLLBAR_POSITION_LEFT);
@@ -207,6 +209,22 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
         spinner.setOnItemSelectedListener(this);
 
         getSupportActionBar().hide();
+    }
+
+    public void getDealsForDay(String dayOfWeek){
+        JSONObject dealsArray;
+        JSONArray todaysDeals;
+        try {
+            dealsArray = new JSONObject(bar.get("deals"));
+            todaysDeals = dealsArray.getJSONArray(dayOfWeek);
+            dealsForSelectedDay = new String[todaysDeals.length()];
+
+            for(int i = 0; i < todaysDeals.length(); i++ ){
+                dealsForSelectedDay[i] = todaysDeals.getString(i);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void loadImage(){
@@ -311,30 +329,8 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
     }
 
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-
-        switch (parent.getItemAtPosition(pos).toString()) {
-            case "Sunday":
-                dealsForSelectedDay = bar.get("Sunday").split(",");
-                break;
-            case "Monday":
-                dealsForSelectedDay = bar.get("Monday").split(",");
-                break;
-            case "Tuesday":
-                dealsForSelectedDay = bar.get("Tuesday").split(",");
-                break;
-            case "Wednesday":
-                dealsForSelectedDay = bar.get("Wednesday").split(",");
-                break;
-            case "Thursday":
-                dealsForSelectedDay = bar.get("Thursday").split(",");
-                break;
-            case "Friday":
-                dealsForSelectedDay = bar.get("Friday").split(",");
-                break;
-            case "Saturday":
-                dealsForSelectedDay = bar.get("Saturday").split(",");
-                break;
-        }
+        //Show the deals for the selected day
+        getDealsForDay(parent.getItemAtPosition(pos).toString());
 
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, dealsForSelectedDay);
         listview.setAdapter(arrayAdapter);
@@ -359,9 +355,9 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
 
     /**
      * Create the hashmap representation of this bar
-     * @param barName the current bar
+     * @param id the current bar
      */
-    public void getBarHashmap(String barName) {
+    public void getBarHashmap(String id) {
 
         try {
             //Grab bars from session
@@ -372,11 +368,12 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
                 JSONObject barJSON = allBars.getJSONObject(i);
 
                 //Setup the hashmap
-                if (barJSON.getString("name").equals(barName)) {
-                    bar.put("id", barJSON.getString("BarId"));
+                if (barJSON.getString("id").equals(id)) {
+                    bar.put("id", barJSON.getString("id"));
                     bar.put("name", barJSON.getString("name"));
+                    barName = barJSON.getString("name");
                     bar.put("address", barJSON.getString("address"));
-                    bar.put("town", barJSON.getString("town"));
+                    bar.put("city", barJSON.getString("city"));
                     bar.put("state", barJSON.getString("state"));
                     bar.put("number", barJSON.getString("number"));
                     bar.put("lat", barJSON.getString("lat"));
@@ -388,13 +385,10 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
                         bar.put("website", "http://" + bar.get("website"));
                     }
 
-                    bar.put("Monday", barJSON.getString("Monday"));
-                    bar.put("Tuesday", barJSON.getString("Tuesday"));
-                    bar.put("Wednesday", barJSON.getString("Wednesday"));
-                    bar.put("Thursday", barJSON.getString("Thursday"));
-                    bar.put("Friday", barJSON.getString("Friday"));
-                    bar.put("Saturday", barJSON.getString("Saturday"));
-                    bar.put("Sunday", barJSON.getString("Sunday"));
+                    bar.put("deals", barJSON.getString("deals"));
+                    bar.put("hours", barJSON.getString("hours"));
+
+                    break;
                 }
             }
 

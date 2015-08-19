@@ -92,7 +92,7 @@ public class MainActivity extends ActionBarActivity {
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 myLocation = location;
-                myLocation.setLongitude(myLocation.getLongitude() * -1);
+                myLocation.setLongitude(myLocation.getLongitude());
 
                 if ( !myLocationDetermined ) {
 
@@ -137,8 +137,6 @@ public class MainActivity extends ActionBarActivity {
 
     public void setupBarsHashmap() throws JSONException {
         JSONArray barsJSON = new JSONArray(session.getBars());
-        JSONArray dealsJSON = new JSONArray(session.getBarDeals());
-        JSONArray hoursJSON = new JSONArray(session.getBarHours());
 
        bars = new ArrayList<>();
 
@@ -152,21 +150,10 @@ public class MainActivity extends ActionBarActivity {
                 bar.put("id",  barJSON.getString("id"));
                 bar.put("name", barJSON.getString("name"));
 
-                //Grab deals - TODO: Make this more efficient somewhere
-                for (int j = 0; j < dealsJSON.length(); j++ ) {
-                    JSONObject thisBar = dealsJSON.getJSONObject(j);
-                    if ( thisBar.getString("barId").equals(barJSON.getString("id"))) {
-                        bar.put("deals", thisBar.toString()); //TODO: This is where we left of. Breaking somewhere
-                    }
-                }
+                //Put bars and hours
+                bar.put("hours", barJSON.getString("hours"));
+                bar.put("deals", barJSON.getString("deals"));
 
-                //Grab Hours - TODO: Make this more efficient somewhere
-                for (int j = 0; j < hoursJSON.length(); j++ ) {
-                    JSONObject thisBar = hoursJSON.getJSONObject(j);
-                    if ( thisBar.getString("barId").equals(barJSON.getString("id"))) {
-                        bar.put("Hours", thisBar.toString());
-                    }
-                }
 
                 //Setup the distance
                 Location barLocation = new Location("");

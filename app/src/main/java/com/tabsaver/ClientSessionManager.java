@@ -95,7 +95,7 @@ public class ClientSessionManager {
      * @return
      */
     public Double getLong(){
-        return Double.valueOf(pref.getString("lon", "" + 0.0)) * -1;
+        return Double.valueOf(pref.getString("lon", "" + 0.0));
     }
 
 
