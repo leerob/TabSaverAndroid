@@ -184,13 +184,24 @@ public class MapActivity extends ActionBarActivity {
                 public void onInfoWindowClick(Marker marker) {
                     // Make new intent to detail view
                     Intent i = new Intent(getApplicationContext(), BarDetail.class);
-                    i.putExtra("BarName", marker.getTitle().toString());
+                    i.putExtra("BarId", getBarIdFromName(marker.getTitle().toString()));
                     startActivity(i);
                 }
             });
 
         }
+    }
 
+    public String getBarIdFromName(String barName){
+        for(int i = 0; i < bars.size(); i++) {
+            String curBarName = bars.get(i).get("name");
+
+            if ( curBarName.equals(barName) ) {
+                return bars.get(i).get("id");
+            }
+        }
+
+        return "";
     }
 
     public String getFirstDeal(String dayOfWeek, HashMap<String, String> bar){
@@ -315,6 +326,17 @@ public class MapActivity extends ActionBarActivity {
         // Associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         final ArrayAdapterSearchView searchView = (ArrayAdapterSearchView) menu.findItem(R.id.searchList).getActionView();
+
+        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                R.layout.searchview_listitem, barsListForSearchview);
+        searchView.setAdapter(adapter);
+
+        searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                searchView.setText(adapter.getItem(position).toString());
+            }
+        });
 
         //Setup the actual search view
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));

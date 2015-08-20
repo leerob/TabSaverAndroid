@@ -656,8 +656,9 @@ int layout activity_settings 0x7f03001e
 int layout custom_dropdown 0x7f03001f
 int layout custom_spinner 0x7f030020
 int layout list_item 0x7f030021
-int layout support_simple_spinner_dropdown_item 0x7f030022
-int layout toolbar 0x7f030023
+int layout searchview_listitem 0x7f030022
+int layout support_simple_spinner_dropdown_item 0x7f030023
+int layout toolbar 0x7f030024
 int menu menu_admin 0x7f0f0000
 int menu menu_bar_detail 0x7f0f0001
 int menu menu_contact 0x7f0f0002
