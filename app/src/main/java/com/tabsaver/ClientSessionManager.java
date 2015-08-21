@@ -144,7 +144,7 @@ public class ClientSessionManager {
      * @return
      */
     public int getDistancePreference(){
-        return pref.getInt("distance", 250);
+        return pref.getInt("distance", 10);
     }
 
     /**

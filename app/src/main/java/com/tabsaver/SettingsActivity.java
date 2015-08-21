@@ -89,14 +89,14 @@ public class SettingsActivity extends ActionBarActivity {
             }
         });
 
-        //Listener to navigate to a site on click
-        ((TextView) findViewById(R.id.register)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://tabsaver.info/register.html"));
-                startActivity(browserIntent);
-            }
-        });
+        //Listener to navigate to a site on click -- TODO: Add once registration feature works
+//        ((TextView) findViewById(R.id.register)).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://tabsaver.info/register.html"));
+//                startActivity(browserIntent);
+//            }
+//        });
 
         //Setup the distance seekBar listener
         ((SeekBar)findViewById(R.id.locationDistanceBar)).setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {

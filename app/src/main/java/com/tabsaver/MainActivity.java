@@ -58,21 +58,45 @@ public class MainActivity extends ActionBarActivity {
     //Our current location
     private Location myLocation;
     private boolean myLocationDetermined = false;
+    private long lastTimeLocationUpdated;
+
+    //Refresh view every 2 minutes
+    private static final int REFRESHTIME = 2 * 60 * 1000;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Setup the session
-        session = new ClientSessionManager(getApplicationContext());
-
-        //Show loader until location is determined
         loader = findViewById(R.id.barLoading);
         loader.setVisibility(View.VISIBLE);
 
+        //Setup the session
+        session = new ClientSessionManager(getApplicationContext());
+
         //Once location is determined, the view will be loaded
         setupLocationTracking();
+
+        refreshListView();
+    }
+
+    public void refreshListView(){
+        loader.setVisibility(View.VISIBLE);
+
+        //display everything
+        try {
+            setupBarsHashmap();
+
+            if ( myLocationDetermined ) {
+                sortBarsByDistance();
+            }
+
+            displayListView();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        loader.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -92,25 +116,18 @@ public class MainActivity extends ActionBarActivity {
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 myLocation = location;
-                myLocation.setLongitude(myLocation.getLongitude());
 
                 if ( !myLocationDetermined ) {
-
-                    //Grab bar information from online if we have to. TODO: Add a once daily sync.
-                    try {
-                        //Setup hash maps for efficient data access
-                        setupBarsHashmap();
-                        sortBarsByDistance();
-                    } catch (JSONException e) {
-                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-
-                    displayListView();
-
-                    loader.setVisibility(View.INVISIBLE);
+                    myLocationDetermined = true;
+                    refreshListView();
+                    lastTimeLocationUpdated = System.currentTimeMillis();
                 }
 
-                myLocationDetermined = true;
+                if ( System.currentTimeMillis() - lastTimeLocationUpdated > REFRESHTIME ) {
+                    refreshListView();
+                    lastTimeLocationUpdated = System.currentTimeMillis();
+                }
+
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -155,12 +172,15 @@ public class MainActivity extends ActionBarActivity {
                 bar.put("deals", barJSON.getString("deals"));
 
 
-                //Setup the distance
-                Location barLocation = new Location("");
-                barLocation.setLatitude(barJSON.getDouble("lat"));
-                barLocation.setLongitude(barJSON.getDouble("long"));
-                bar.put("distance", (myLocation.distanceTo(barLocation) / 1609.34) + "");
-
+                if ( myLocationDetermined ) {
+                    //Setup the distance
+                    Location barLocation = new Location("");
+                    barLocation.setLatitude(barJSON.getDouble("lat"));
+                    barLocation.setLongitude(barJSON.getDouble("long"));
+                    bar.put("distance", (myLocation.distanceTo(barLocation) / 1609.34) + "");
+                } else {
+                    bar.put("distance", "0.0");
+                }
 
                 // Set the JSON Objects into the array
                 bars.add(bar);
@@ -198,8 +218,6 @@ public class MainActivity extends ActionBarActivity {
 
         bars.addAll(sortedListByDistance);
     }
-
-
 
     /**
      * Setting up our settings menu

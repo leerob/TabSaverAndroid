@@ -11,7 +11,18 @@
     <string name="list">List</string>
     <string name="contactUs">Contact Us</string>
     <string name="title_activity_bar_detail">Detail</string>
+    <string name="title_activity_login">Client Sign In</string>
 
+    <!-- Strings related to login -->
+    <string name="prompt_user">Username</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign In</string>
+    <string name="action_sign_in_short">Sign in</string>
+
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
 
     <string-array name="days_of_week">
         <item>Sunday</item>
@@ -34,11 +45,9 @@
         <item>Sunday</item>
     </string-array>
 
-    <string name="title_activity_login">Login</string>
     <string name="title_activity_admin">Update Deals</string>
     <string name="title_activity_contact">Contact Us</string>
     <string name="dealsOutdatedString">Tap to report deals as incorrect</string>
-
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_loading">TabSaver</string>
 

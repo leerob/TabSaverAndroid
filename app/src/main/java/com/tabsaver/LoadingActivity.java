@@ -64,7 +64,7 @@ public class LoadingActivity extends Activity {
             getBarHours();
             getCities();
             getBarImages();
-            setWaitingMessage("Taking a shot...");
+            setWaitingMessage("Taking shots...");
         } else {
             moveToStartScreen();
         }

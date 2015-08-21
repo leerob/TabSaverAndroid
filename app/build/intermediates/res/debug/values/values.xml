@@ -268,12 +268,8 @@
     <eat-comment/>
     <string name="action_client">Client Login</string>
     <string name="action_settings">Settings</string>
-    <!-- From: file:/C:/proj/tabsaverandroid/app/src/debug/res/values/strings_activity_login.xml -->
-    <eat-comment/>
     <string name="action_sign_in">Sign In</string>
     <string name="action_sign_in_short">Sign in</string>
-    <!-- From: file:/C:/proj/tabsaverandroid/app/src/main/res/values/strings.xml -->
-    <eat-comment/>
     <string name="app_name">TabSaver</string>
     <!-- From: file:/C:/proj/tabsaverandroid/app/build/intermediates/exploded-aar/com.google.android.gms/play-services/6.5.87/res/values/common_strings.xml -->
     <eat-comment/>
@@ -318,7 +314,7 @@
     <!-- From: file:/C:/proj/tabsaverandroid/app/build/intermediates/exploded-aar/com.google.android.gms/play-services/6.5.87/res/values/admob_strings.xml -->
     <eat-comment/>
     <string name="decline">Decline</string>
-    <!-- From: file:/C:/proj/tabsaverandroid/app/src/debug/res/values/strings_activity_login.xml -->
+    <!-- From: file:/C:/proj/tabsaverandroid/app/src/main/res/values/strings.xml -->
     <eat-comment/>
     <string name="error_field_required">This field is required</string>
     <string name="error_incorrect_password">This password is incorrect</string>
@@ -326,7 +322,7 @@
     <string name="error_invalid_password">This password is too short</string>
     <!-- From: file:/C:/proj/tabsaverandroid/app/src/debug/res/values/google_maps_api.xml -->
     <eat-comment/>
-    <string name="google_maps_key" templateMergeStrategy="preserve">AIzaSyDkiUwxIOTJ3WLozVj5FdU2h0asd2TDKKU</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve">AIzaSyDU2L7pd64vwDSggURTcmT7nwuIwLSqtkY</string>
     <string name="google_maps_key_instructions" templateMergeStrategy="replace"><!--
 
     TODO: Before you run your application, you need a Google Maps API key.
@@ -364,12 +360,10 @@ https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend
     <string name="pref_title_sync_frequency">Sync frequency</string>
     <string name="pref_title_system_sync_settings">System sync settings</string>
     <string name="pref_title_vibrate">Vibrate</string>
-    <!-- From: file:/C:/proj/tabsaverandroid/app/src/debug/res/values/strings_activity_login.xml -->
+    <!-- From: file:/C:/proj/tabsaverandroid/app/src/main/res/values/strings.xml -->
     <eat-comment/>
     <string name="prompt_password">Password</string>
     <string name="prompt_user">Username</string>
-    <!-- From: file:/C:/proj/tabsaverandroid/app/src/main/res/values/strings.xml -->
-    <eat-comment/>
     <string name="search">Search</string>
     <!-- From: file:/C:/proj/tabsaverandroid/app/build/intermediates/exploded-aar/com.google.android.gms/play-services/6.5.87/res/values/admob_strings.xml -->
     <eat-comment/>
@@ -381,11 +375,7 @@ https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend
     <string name="title_activity_bar_detail">Detail</string>
     <string name="title_activity_contact">Contact Us</string>
     <string name="title_activity_loading">TabSaver</string>
-    <!-- From: file:/C:/proj/tabsaverandroid/app/src/debug/res/values/strings_activity_login.xml -->
-    <eat-comment/>
     <string name="title_activity_login">Client Sign In</string>
-    <!-- From: file:/C:/proj/tabsaverandroid/app/src/main/res/values/strings.xml -->
-    <eat-comment/>
     <string name="title_activity_main">TabSaver</string>
     <string name="title_activity_map">TabSaver</string>
     <!-- From: file:/C:/proj/tabsaverandroid/app/src/main/res/values/strings_activity_settings.xml -->
