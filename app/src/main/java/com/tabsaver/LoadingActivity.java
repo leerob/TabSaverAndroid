@@ -59,12 +59,12 @@ public class LoadingActivity extends Activity {
 
         //Grab bar information from online if we have to. TODO: Add a once daily sync.
         if ( session.getBars().equals("none") ) {
+            setWaitingMessage("Taking shots...");
             getBarData();
             getBarDeals();
             getBarHours();
             getCities();
             getBarImages();
-            setWaitingMessage("Taking shots...");
         } else {
             moveToStartScreen();
         }
@@ -108,15 +108,21 @@ public class LoadingActivity extends Activity {
                         }
 
                     } catch (Exception ex) {
-                        Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
+                        yell("Failed to load image");
+                        yell("If issues persiste, reinstall with a reliable internet connection.");
                     }
                 } else {
                     Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    yell("If issues persiste, reinstall with a reliable internet connection.");
                 }
 
             }
         });
 
+    }
+
+    public void yell(String msg){
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
     public void getCities(){
@@ -152,10 +158,12 @@ public class LoadingActivity extends Activity {
                             assembleBarDealInformation();
                         }
                     } catch (Exception ex) {
-                        Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
+                        yell("Failed to load image.");
+                        yell("If issues persiste, reinstall with a reliable internet connection.");
                     }
                 } else {
-                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    yell(e.getMessage());
+                    yell("If issues persiste, reinstall with a reliable internet connection.");
                 }
 
             }
@@ -198,10 +206,12 @@ public class LoadingActivity extends Activity {
                             assembleBarDealInformation();
                         }
                     } catch (Exception ex) {
-                        Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
+                        yell("Failed to load image");
+                        yell("If issues persiste, reinstall with a reliable internet connection.");
                     }
                 } else {
-                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    yell(e.getMessage());
+                    yell("If issues persiste, reinstall with a reliable internet connection.");
                 }
 
             }
@@ -243,10 +253,12 @@ public class LoadingActivity extends Activity {
                             assembleBarDealInformation();
                         }
                     } catch (Exception ex) {
-                        Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
+                        yell("Failed to load image");
+                        yell("If issues persiste, reinstall with a reliable internet connection.");
                     }
                 } else {
-                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    yell(e.getMessage());
+                    yell("If issues persiste, reinstall with a reliable internet connection.");
                 }
 
             }
@@ -292,7 +304,7 @@ public class LoadingActivity extends Activity {
 //    }
 
     public void getBarImages(){
-        setWaitingMessage("Taking selfies...");
+        setWaitingMessage("More shots... (This may take a while)");
         //query and load up that image.
         final ParseQuery getImages = new ParseQuery("BarPhotos");
         getImages.findInBackground(new FindCallback<ParseObject>() {
@@ -324,7 +336,8 @@ public class LoadingActivity extends Activity {
                                     bos.close();
 
                                 } catch (Exception ex) {
-                                    Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
+                                    yell("Failed to load image");
+                                    yell("If issues persiste, reinstall with a reliable internet connection.");
                                 }
                             }
 
@@ -337,10 +350,12 @@ public class LoadingActivity extends Activity {
                             assembleBarDealInformation();
                         }
                     } catch (Exception ex) {
-                        Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
+                        yell("Failed to load image");
+                        yell("If issues persiste, reinstall with a reliable internet connection.");
                     }
                 } else {
-                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    yell(e.getMessage());
+                    yell("If issues persiste, reinstall with a reliable internet connection.");
                 }
 
             }
@@ -427,7 +442,6 @@ public class LoadingActivity extends Activity {
                     JSONObject deal = deals.getJSONObject(j);
 
                     if (deal.getString("barId").equals(bar.getString("id"))) {
-                        System.out.println("wtf");
                         bar.put("deals", deal.toString());
                         break;
                     }
