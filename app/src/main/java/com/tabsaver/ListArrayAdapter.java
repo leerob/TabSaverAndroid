@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,29 +13,20 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 
 public class ListArrayAdapter extends BaseAdapter {
 
@@ -50,6 +40,8 @@ public class ListArrayAdapter extends BaseAdapter {
 
     //Caching images
     private LruCache<String, Bitmap> mMemoryCache;
+
+    final static long SHOULDUPDATE = 1000 * 60 * 60 * 24;
 
     //Storing and retrieving session information
     ClientSessionManager session;
@@ -67,6 +59,11 @@ public class ListArrayAdapter extends BaseAdapter {
 
         //Now filter the visible data by distance
         filterByDistancePreference();
+
+        if ( System.currentTimeMillis() - session.getLastUpdateTime() > SHOULDUPDATE) {
+            Intent reload = new Intent(context, LoadingActivity.class);
+            context.startActivity(reload);
+        }
 
         // Get max available VM memory, exceeding this amount will throw an
         // OutOfMemory exception. Stored in kilobytes as LruCache takes an
@@ -113,7 +110,8 @@ public class ListArrayAdapter extends BaseAdapter {
         ((TextView) itemView.findViewById(R.id.distance)).setText(formatter.format(Double.valueOf(currentBar.get("distance"))) + " mi");
 
         //Now set the image for the bar
-        loadBitmap(barId, ((ImageView) itemView.findViewById(R.id.bar_thumbnail)));
+//        loadBitmap(barId, ((ImageView) itemView.findViewById(R.id.bar_thumbnail)));
+        ((ImageView) itemView.findViewById(R.id.bar_thumbnail)).setImageBitmap(getImage(barId)); //TODO: Go back to using the Cache
 
         //Set listener
         itemView.setOnClickListener(new OnClickListener() {
@@ -214,13 +212,90 @@ public class ListArrayAdapter extends BaseAdapter {
         }
     }
 
+    //Determines which day's deals apply (Today or yesterday - i.e, the bar hasn't closed from last night)
+    private int determineDayOfWeekForBar(HashMap<String, String> currentBar){
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+        int curTime = calendar.get(Calendar.HOUR_OF_DAY);
+        int prevDay = day;
+
+        //Look at the previous day
+        if ( day == 1 ) {
+            prevDay = 7;
+        } else {
+            prevDay = day - 1;
+        }
+
+        //Get yesterdays hours
+        String[] prevDayHours = getHoursForBar(currentBar, prevDay).split("-");
+
+        //Closed bars situation
+        if ( prevDayHours[0].equals("Closed") ) {
+            return day;
+        }
+
+        //Parse the close time into an integer
+        String closeTimeString = prevDayHours[1];
+        int closeTime;
+
+        //If they didn't close at night, they could be open today
+        if ( !closeTimeString.contains("PM") ) {
+            if ( closeTimeString.contains(":")) {
+                closeTime = Integer.valueOf(closeTimeString.replace("AM", "").substring(0, closeTimeString.indexOf(':')));
+            } else {
+                closeTime = Integer.valueOf(closeTimeString.replace("AM", ""));
+            }
+        } else {
+            //They closed last night so the day we should consider for deals is the current one
+            return day;
+        }
+
+        if ( curTime < closeTime ) {
+            return prevDay;
+        } else {
+            return day;
+        }
+    }
+
+    //Grabs the hours for the given day int
+    private String getHoursForBar(HashMap<String, String> currentBar, int day){
+
+        try {
+            JSONObject hours = new JSONObject(currentBar.get("hours"));
+
+            switch(day) {
+                case Calendar.SUNDAY:
+                    return hours.getString("Sunday");
+                case Calendar.MONDAY:
+                    return hours.getString("Monday");
+                case Calendar.TUESDAY:
+                    return hours.getString("Tuesday");
+                case Calendar.WEDNESDAY:
+                    return hours.getString("Wednesday");
+                case Calendar.THURSDAY:
+                    return hours.getString("Thursday");
+                case Calendar.FRIDAY:
+                    return hours.getString("Friday");
+                case Calendar.SATURDAY:
+                    return hours.getString("Saturday");
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return "";
+    }
+
     /**
      * Determine the deals for the day
      * @return the string representation of the day of the week
      */
     private String getDealsString(HashMap<String, String> currentBar) {
         Calendar calendar = Calendar.getInstance();
-        int day = calendar.get(Calendar.DAY_OF_WEEK);
+
+        //Determines the day of the week if it applies to the bar
+        int day = determineDayOfWeekForBar(currentBar);
 
         try {
             JSONObject deals = new JSONObject(currentBar.get("deals"));

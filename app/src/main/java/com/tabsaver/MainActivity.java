@@ -62,11 +62,13 @@ public class MainActivity extends ActionBarActivity {
 
     //Refresh view every 2 minutes
     private static final int REFRESHTIME = 2 * 60 * 1000;
+    private static final int UPDATEFREQUENCY = 1000 * 60 * 60 * 24 * 1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         loader = findViewById(R.id.barLoading);
         loader.setVisibility(View.VISIBLE);
@@ -74,10 +76,22 @@ public class MainActivity extends ActionBarActivity {
         //Setup the session
         session = new ClientSessionManager(getApplicationContext());
 
+        //First things first - validate that we're up to date!
+        if (shouldUpdate()){
+            Intent loader = new Intent(getApplicationContext(), LoadingActivity.class);
+            startActivity(loader);
+            finish();
+        }
+
         //Once location is determined, the view will be loaded
         setupLocationTracking();
 
         refreshListView();
+    }
+
+    public boolean shouldUpdate(){
+        Long lastUpdateTime = session.getLastUpdateTime();
+        return lastUpdateTime + UPDATEFREQUENCY <= System.currentTimeMillis();
     }
 
     public void refreshListView(){
@@ -109,6 +123,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void setupLocationTracking(){
+
         // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) this.getSystemService(getApplicationContext().LOCATION_SERVICE);
 
@@ -137,9 +152,13 @@ public class MainActivity extends ActionBarActivity {
             public void onProviderDisabled(String provider) {}
         };
 
-        // Register the listener with the Location Manager to receive location updates
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        try {
+            // Register the listener with the Location Manager to receive location updates
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        } catch (IllegalArgumentException e ) {
+            Toast.makeText(getApplicationContext(), "Unable to access GPS, location services will not work.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -236,7 +255,7 @@ public class MainActivity extends ActionBarActivity {
 
         //Setting up the search view
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setQueryHint("Type a bar or drink type");
+        searchView.setQueryHint("Search Drinks & Bars");
         searchView.setIconifiedByDefault(false);
 
         searchView.setOnQueryTextListener(new ArrayAdapterSearchView.OnQueryTextListener() {

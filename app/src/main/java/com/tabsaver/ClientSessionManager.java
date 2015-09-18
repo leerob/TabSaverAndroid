@@ -41,7 +41,6 @@ public class ClientSessionManager {
         edit.putString("bar", bar);
         edit.putString("city", city);
         edit.commit(); // commit changes
-
     }
 
     //Sets the city setting item
@@ -65,6 +64,24 @@ public class ClientSessionManager {
     public void setDistancePreference(int distance){
         edit.putInt("distance", distance);
         edit.commit();
+    }
+
+    public void setNumberOfBars(int numBars){
+        edit.putInt("numBars", numBars);
+        edit.commit();
+    }
+
+    public void setLastUpdateTime(){
+        edit.putLong("lastUpdateTime", System.currentTimeMillis());
+        edit.commit();
+    }
+
+    public long getLastUpdateTime(){
+        return pref.getLong("lastUpdateTime", 0);
+    }
+
+    public int getNumberOfBars(){
+        return pref.getInt("numBars", 0);
     }
 
     public String getCities(){

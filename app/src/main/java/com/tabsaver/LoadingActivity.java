@@ -19,8 +19,6 @@ import org.json.JSONObject;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -54,20 +52,19 @@ public class LoadingActivity extends Activity {
         //Setup the session
         session = new ClientSessionManager(getApplicationContext());
 
+        //Set now as the current update time
+        session.setLastUpdateTime();
+
         //TextView showing our current loading message
         loadingMessage = (TextView) findViewById(R.id.loadingMessage);
 
-        //Grab bar information from online if we have to. TODO: Add a once daily sync.
-        if ( session.getBars().equals("none") ) {
-            setWaitingMessage("Taking shots...");
-            getBarData();
-            getBarDeals();
-            getBarHours();
-            getCities();
-            getBarImages();
-        } else {
-            moveToStartScreen();
-        }
+        //Always update deals/bar hours/etc. -- Only update images when needed
+        setWaitingMessage("Taking shots...");
+        getBarData();
+        getBarDeals();
+        getBarHours();
+        getCities();
+        session.setLastUpdateTime();
 
     }
 
@@ -82,6 +79,15 @@ public class LoadingActivity extends Activity {
             public void done(List<ParseObject> objects, ParseException e) { //TODO: what is this error? What to do
                 if (e == null) {
                     try {
+
+                        //If the number of bars has changed (new bars)
+                        if ( session.getNumberOfBars() != objects.size() ) {
+                            getBarImages();
+                            session.setNumberOfBars(objects.size());
+                        } else {
+                            imagesLoaded = true;
+                        }
+
                         //Iterate over each bar
                         for (int i = 0; i < objects.size(); i++) {
                             ParseObject PO = objects.get(i);
@@ -97,6 +103,8 @@ public class LoadingActivity extends Activity {
                             bar.put("state", PO.getString("state"));
                             barData.put(bar);
                         }
+
+
 
                         //Store information in our session
                         bars = barData;
@@ -126,7 +134,7 @@ public class LoadingActivity extends Activity {
     }
 
     public void getCities(){
-        setWaitingMessage("One tequila, two tequila..");
+        setWaitingMessage("Taking shots... (This may take a while)");
 
         //query and load up the bars.
         final ParseQuery getBars = new ParseQuery("Locations");
@@ -268,43 +276,9 @@ public class LoadingActivity extends Activity {
     public void setWaitingMessage(String message){
         loadingMessage.setText(message);
     }
-//
-//    public void setupBarsHashmap() throws JSONException {
-//        setWaitingMessage("Ooh dollar shots!");
-//
-//        JSONArray barsJSON = new JSONArray(session.getBars());
-//        bars = new ArrayList<>();
-//
-//        //Setup the bar info
-//        try {
-//            for (int i = 0; i < barsJSON.length(); i++) {
-//                HashMap<String, String> bar = new HashMap<>();
-//                JSONObject barJSON = barsJSON.getJSONObject(i);
-//
-//                // Retrieve JSON Objects
-//                bar.put("id",  barJSON.getString("BarId"));
-//                bar.put("name", barJSON.getString("name"));
-//                bar.put("Monday", barJSON.getString("Monday"));
-//                bar.put("Tuesday", barJSON.getString("Tuesday"));
-//                bar.put("Wednesday", barJSON.getString("Wednesday"));
-//                bar.put("Thursday", barJSON.getString("Thursday"));
-//                bar.put("Friday", barJSON.getString("Friday"));
-//                bar.put("Saturday", barJSON.getString("Saturday"));
-//                bar.put("Sunday", barJSON.getString("Sunday"));
-//
-//                // Set the JSON Objects into the array
-//                bars.add(bar);
-//            }
-//
-//        } catch (JSONException e) {
-//            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-//        }
-//
-//        getBarImages();
-//    }
 
     public void getBarImages(){
-        setWaitingMessage("More shots... (This may take a while)");
+        setWaitingMessage("One tequila, two tequila..");
         //query and load up that image.
         final ParseQuery getImages = new ParseQuery("BarPhotos");
         getImages.findInBackground(new FindCallback<ParseObject>() {
@@ -361,65 +335,6 @@ public class LoadingActivity extends Activity {
             }
         });
     }
-
-//    public void downloadBarImages(){
-//        setWaitingMessage("Taking selfies at all of the bars...");
-//        numImagesLoaded = 0;
-//
-//        for(int i = 0; i < bars.size() ; i++ ) {
-//            String barName = bars.get(i).get("name");
-//            final String barId = bars.get(i).get("id");
-//
-//            //Setup to read the file
-//            String imageFilePath = getApplicationContext().getFilesDir() + "/" + barId;
-//            File imageFile = new File( imageFilePath );
-//            int size = (int) imageFile.length();
-//
-//            //If the file does not exist
-//            if ( size == 0 ) {
-//
-//                //query and load up that image.
-//                final ParseQuery findImage = new ParseQuery("BarPhotos");
-//                findImage.whereEqualTo("barName", barName);
-//
-//                findImage.findInBackground(new FindCallback<ParseObject>() {
-//                    public void done(List<ParseObject> objects, ParseException e) { //TODO: what is this error? What to do
-//                        if (e == null) {
-//                            try {
-//                                //Grab the image
-//                                ArrayList<ParseObject> temp = (ArrayList<ParseObject>) objects;
-//
-//                                //now get objectId
-//                                String objectId = temp.get(0).getObjectId();
-//
-//                                //Do some weird shit and cast our image to a byte array
-//                                ParseObject imageHolder = findImage.get(objectId);
-//                                ParseFile image = (ParseFile) imageHolder.get("imageFile");
-//                                byte[] imageFile = image.getData();
-//
-//                                //Now store the file locally
-//                                File storedImage = new File(getApplicationContext().getFilesDir(), barId + "");
-//                                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(storedImage));
-//                                bos.write(imageFile);
-//                                bos.flush();
-//                                bos.close();
-//
-//                            } catch (Exception ex) {
-//                                Toast.makeText(getApplicationContext(), "Failed to load image.", Toast.LENGTH_SHORT).show();
-//                            }
-//                        } else {
-//                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-//                        }
-//
-//                        moveToStartScreen();
-//                    }
-//                });
-//            } else {
-//                moveToStartScreen();
-//            }
-//        }
-//
-//    }
 
     /**
      * Finish this activity and move on!

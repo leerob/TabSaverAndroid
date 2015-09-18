@@ -15,7 +15,7 @@
 
     <item android:id="@+id/action_settings"
         android:icon="@drawable/ic_settings_black_24dp"
-        search:showAsAction="always"
+        search:showAsAction="ifRoom"
         android:title="@string/action_settings" />
 
 </menu>

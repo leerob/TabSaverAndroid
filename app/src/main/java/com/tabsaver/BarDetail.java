@@ -92,8 +92,9 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
 
         @Override
         protected void onPostExecute(Void args) {
+            //TODO: Not always reporting
             if ( true ) {
-                Toast.makeText(BarDetail.this, "Thanks! We've received your report and have sent the interns to investigate.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(BarDetail.this, "Thanks! Report received. Give us a day or two to make an update.", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(BarDetail.this, "Sorry something went wrong.. Please try again later!", Toast.LENGTH_SHORT).show();
             }
@@ -111,6 +112,9 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
 
         //Set the bar's name
         ((TextView) findViewById(R.id.barName)).setText(bar.get("name"));
+
+        //Set the bar's hours
+        ((TextView) findViewById(R.id.barHours)).setText(getHoursForBar(determineDayOfWeekForBar()));
 
         //Set the bar's address
         barAddress.setText(bar.get("address") + ", " + bar.get("city") + ", " + bar.get("state"));
@@ -227,6 +231,77 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
         }
     }
 
+    //Determines which day's deals apply (Today or yesterday - i.e, the bar hasn't closed from last night)
+    private int determineDayOfWeekForBar(){
+        Calendar calendar = Calendar.getInstance();
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+        int curTime = calendar.get(Calendar.HOUR_OF_DAY);
+        int prevDay = day;
+
+        //Look at the previous day
+        if ( day == 1 ) {
+            prevDay = 7;
+        } else {
+            prevDay = day - 1;
+        }
+
+        //Get yesterdays hours
+        String[] prevDayHours = getHoursForBar(prevDay).split("-");
+
+        //Closed bars situation
+        if ( prevDayHours[0].equals("Closed") ) {
+            return day;
+        }
+
+        //Parse the close time into an integer
+        String closeTimeString = prevDayHours[1];
+        int closeTime;
+
+        //If they didn't close at night, they could be open today
+        if ( !closeTimeString.contains("PM") ) {
+            closeTime = Integer.valueOf(closeTimeString.replace("AM", ""));
+        } else {
+            //They closed last night so the day we should consider for deals is the current one
+            return day;
+        }
+
+        if ( curTime < closeTime ) {
+            return prevDay;
+        } else {
+            return day;
+        }
+    }
+
+    //Grabs the hours for the given day int
+    private String getHoursForBar(int day){
+
+        try {
+            JSONObject hours = new JSONObject(bar.get("hours"));
+
+            switch(day) {
+                case Calendar.SUNDAY:
+                    return hours.getString("Sunday");
+                case Calendar.MONDAY:
+                    return hours.getString("Monday");
+                case Calendar.TUESDAY:
+                    return hours.getString("Tuesday");
+                case Calendar.WEDNESDAY:
+                    return hours.getString("Wednesday");
+                case Calendar.THURSDAY:
+                    return hours.getString("Thursday");
+                case Calendar.FRIDAY:
+                    return hours.getString("Friday");
+                case Calendar.SATURDAY:
+                    return hours.getString("Saturday");
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return "";
+    }
+
     public void loadImage(){
         final ImageView barImage = (ImageView) findViewById(R.id.imageView);
 
@@ -306,7 +381,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
     public String getDayOfWeekAsString(){
 
         Calendar calendar = Calendar.getInstance();
-        int day = calendar.get(Calendar.DAY_OF_WEEK);
+        int day = determineDayOfWeekForBar();
 
         switch (day) {
             case Calendar.SUNDAY:
@@ -372,6 +447,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
                     bar.put("id", barJSON.getString("id"));
                     bar.put("name", barJSON.getString("name"));
                     barName = barJSON.getString("name");
+                    barName = barName.replace(" ", "");
                     bar.put("address", barJSON.getString("address"));
                     bar.put("city", barJSON.getString("city"));
                     bar.put("state", barJSON.getString("state"));
@@ -381,7 +457,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
                     bar.put("website", barJSON.getString("website"));
 
                     //Make sure the website is navigable
-                    if ( !bar.get("website").startsWith("http://") ) {
+                    if ( !bar.get("website").startsWith("http://") && !bar.get("website").startsWith("https://") ) {
                         bar.put("website", "http://" + bar.get("website"));
                     }
 
