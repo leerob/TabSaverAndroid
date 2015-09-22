@@ -55,6 +55,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
     //For the deals out of date
     String barName;
     String dayOfWeek;
+    String barId;
     Boolean dealOutOfDateSent;
 
     //Storing and retrieving session information
@@ -70,7 +71,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
 
         //Grab our barID
         Intent intent = getIntent();
-        String barId = intent.getStringExtra("BarId");
+        barId = intent.getStringExtra("BarId");
         dealOutOfDateSent = false;
 
         //Load this bars information
@@ -138,6 +139,10 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
             @Override
             public void onClick(View v) {
                 if (!bar.get("number").equals("No Number")) {
+                    //Update analytics
+                    AnalyticsFunctions.incrementBarAnalyticsValue(barId, "phoneCalls");
+
+                    //Parse phone number, send off the call
                     Intent intent = new Intent(Intent.ACTION_DIAL);
                     intent.setData(Uri.parse("tel:" + bar.get("number")));
                     startActivity(intent);
@@ -149,6 +154,10 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
         barWebsite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Update analytics
+                AnalyticsFunctions.incrementBarAnalyticsValue(barId, "siteVisits");
+
+                //Navigate to website
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(bar.get("website")));
                 startActivity(browserIntent);
             }
@@ -158,6 +167,10 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
         barAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Update analytics
+                AnalyticsFunctions.incrementBarAnalyticsValue(barId, "directionsRequests");
+
+                //Use google maps service to navigate
                 Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
                         Uri.parse("http://maps.google.com/maps?daddr="+bar.get("lat") +","+( Double.valueOf(bar.get("long")) * -1 )));
                 startActivity(intent);

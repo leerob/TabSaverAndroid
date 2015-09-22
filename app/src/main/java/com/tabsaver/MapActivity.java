@@ -29,6 +29,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -92,6 +96,7 @@ public class MapActivity extends ActionBarActivity {
 
     /**
      * Translate Bars JSON array into something useful
+     *
      * @throws JSONException
      */
     public void setupBarsHashmap(JSONArray barsJSON) throws JSONException {
@@ -101,7 +106,7 @@ public class MapActivity extends ActionBarActivity {
             JSONObject barJSON = barsJSON.getJSONObject(i);
 
             //Set all the bar info
-            bar.put("id",  barJSON.getString("id"));
+            bar.put("id", barJSON.getString("id"));
             bar.put("name", barJSON.getString("name"));
             bar.put("lat", barJSON.getString("lat"));
             bar.put("long", barJSON.getString("long"));
@@ -115,6 +120,7 @@ public class MapActivity extends ActionBarActivity {
 
     /**
      * Translate Cities JSON array into something useful
+     *
      * @throws JSONException
      */
     public void setupCitiesHashmap(JSONArray citiesJSON) throws JSONException {
@@ -135,10 +141,10 @@ public class MapActivity extends ActionBarActivity {
     /**
      * Setup and place the markers
      */
-    public void setupBarMarkers(){
+    public void setupBarMarkers() {
 
         // Add markers to the map
-        for(int i = 0; i < bars.size(); i++){
+        for (int i = 0; i < bars.size(); i++) {
             // Get the current bar HashMap
             final HashMap<String, String> bar = bars.get(i);
 
@@ -182,9 +188,15 @@ public class MapActivity extends ActionBarActivity {
 
                 @Override
                 public void onInfoWindowClick(Marker marker) {
+                    String barId = getBarIdFromName(marker.getTitle().toString());
                     // Make new intent to detail view
                     Intent i = new Intent(getApplicationContext(), BarDetail.class);
-                    i.putExtra("BarId", getBarIdFromName(marker.getTitle().toString()));
+                    i.putExtra("BarId", barId);
+
+                    //Update analytics
+                    AnalyticsFunctions.incrementBarClickThrough(barId);
+
+                    //Move on
                     startActivity(i);
                 }
             });
@@ -192,11 +204,11 @@ public class MapActivity extends ActionBarActivity {
         }
     }
 
-    public String getBarIdFromName(String barName){
-        for(int i = 0; i < bars.size(); i++) {
+    public String getBarIdFromName(String barName) {
+        for (int i = 0; i < bars.size(); i++) {
             String curBarName = bars.get(i).get("name");
 
-            if ( curBarName.equals(barName) ) {
+            if (curBarName.equals(barName)) {
                 return bars.get(i).get("id");
             }
         }
@@ -204,7 +216,7 @@ public class MapActivity extends ActionBarActivity {
         return "";
     }
 
-    public String getFirstDeal(String dayOfWeek, HashMap<String, String> bar){
+    public String getFirstDeal(String dayOfWeek, HashMap<String, String> bar) {
         JSONObject dealsArray;
         JSONArray todaysDeals;
         try {
@@ -220,9 +232,10 @@ public class MapActivity extends ActionBarActivity {
 
     /**
      * Determines the day of the week
+     *
      * @return The string representation of the current day of the week
      */
-    public String getDayOfWeekStr(){
+    public String getDayOfWeekStr() {
 
         Calendar calendar = Calendar.getInstance();
         int day = calendar.get(Calendar.DAY_OF_WEEK);
@@ -258,12 +271,12 @@ public class MapActivity extends ActionBarActivity {
      */
     private GoogleMap.OnMyLocationChangeListener myLocationChangeListener = new GoogleMap.OnMyLocationChangeListener() {
         @Override
-        public void onMyLocationChange(Location  location) {
+        public void onMyLocationChange(Location location) {
             myLocation = location;
 
             //Zoom to our current location once.
-            if ( cityLocationUndetermined && myLocationUndetermined ) {
-                if ( session.getCity().equals("none") ) {
+            if (cityLocationUndetermined && myLocationUndetermined) {
+                if (session.getCity().equals("none")) {
                     determineClosestCity();
                 }
 
@@ -279,7 +292,7 @@ public class MapActivity extends ActionBarActivity {
     /**
      * Zoom the map to the current city
      */
-    private void zoomToCurrentCity(){
+    private void zoomToCurrentCity() {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(session.getLat(), session.getLong()), 12.0f));
         cityLocationUndetermined = false;
     }
@@ -303,10 +316,10 @@ public class MapActivity extends ActionBarActivity {
     /**
      * Setup the string for our listview
      */
-    private void setupSearchStringArray(){
+    private void setupSearchStringArray() {
         barsListForSearchview = new String[bars.size()];
 
-        for(int i = 0; i < bars.size(); i++ ){
+        for (int i = 0; i < bars.size(); i++) {
             barsListForSearchview[i] = bars.get(i).get("name");
         }
 
@@ -314,6 +327,7 @@ public class MapActivity extends ActionBarActivity {
 
     /**
      * Setup our menu items
+     *
      * @param menu Menu for this page
      * @return Not sure
      */
@@ -350,7 +364,7 @@ public class MapActivity extends ActionBarActivity {
 
                 for (Marker marker : markers) {
                     String barName = marker.getTitle().toString();
-                    if(barName.contains(s) || barName.equals(s)){
+                    if (barName.contains(s) || barName.equals(s)) {
 
                         // Zoom to bar
                         float zoom = 18;
@@ -368,7 +382,9 @@ public class MapActivity extends ActionBarActivity {
 
             @Override
             public boolean onQueryTextChange(String s) {
-
+                if (s.length() > 3) {
+                    AnalyticsFunctions.saveSearchTerm("Map", s, getApplicationContext());
+                }
                 return false;
             }
 
@@ -379,6 +395,7 @@ public class MapActivity extends ActionBarActivity {
 
     /**
      * Handling menu item selection
+     *
      * @param item Selected menu item
      * @return not sure
      */
@@ -413,7 +430,7 @@ public class MapActivity extends ActionBarActivity {
     /**
      * Determining the closest city to us
      */
-    public void determineClosestCity()  {
+    public void determineClosestCity() {
         //Current location
         Location cur = new Location("BS");
 
@@ -428,62 +445,23 @@ public class MapActivity extends ActionBarActivity {
         min.setLatitude(Double.valueOf(city.get("lat")));
         min.setLongitude(Double.valueOf(city.get("long")));
 
-        for(int i = 0; i < cities.size(); i++ ) {
+        for (int i = 0; i < cities.size(); i++) {
             //Setting up our current city
             HashMap<String, String> thisCity = cities.get(i);
             cur.setLatitude(Double.valueOf(thisCity.get("lat")));
             cur.setLongitude(Double.valueOf(thisCity.get("long")));
 
-            if (myLocation.distanceTo(cur) <= myLocation.distanceTo(min) ) {
+            if (myLocation.distanceTo(cur) <= myLocation.distanceTo(min)) {
                 min.setLatitude(cur.getLatitude());
                 min.setLongitude(cur.getLongitude());
                 name = thisCity.get("name");
             }
         }
 
+        AnalyticsFunctions.incrementAndroidAnalyticsValue("LocationBasedCityChange", name);
+
         //Set our minimum city in the session
         session.setCity(name, min.getLatitude(), min.getLongitude());
     }
 
-//    /**
-//     * Appending distances to our bars
-//     * @return a JSON String repesenting the bars
-//     */
-//    public String calculateDistances(){
-//        try {
-//            //Setup our arrays
-//            JSONArray barsWithoutDistances = new JSONArray(session.getBars());
-//            JSONArray barsWithDistances = new JSONArray();
-//
-//            for( int i = 0; i < barsWithoutDistances.length(); i++ ) {
-//
-//                //Grab bar and setup the barLocation
-//                JSONObject bar = barsWithoutDistances.getJSONObject(i);
-//                Location barLoc = new Location("Bar");
-//                barLoc.setLatitude(bar.getDouble("lat"));
-//                barLoc.setLongitude(bar.getDouble("long"));
-//
-//                //Set location if valid
-//                if ( myLocation == null ) {
-//                    bar.put("distance", 0.000);
-//                } else {
-//                    double distance = myLocation.distanceTo(barLoc);
-//                    if ( distance == Double.NaN ) {
-//                        bar.put("distance", 0.000);
-//                    } else {
-//                        bar.put("distance", (double) Math.round((distance / 1609) * 1000) / 1000);
-//                    }
-//                }
-//
-//                //Add this bar to the array
-//                barsWithDistances.put(bar);
-//            }
-//
-//            return barsWithDistances.toString();
-//
-//        } catch (JSONException e) {
-//            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-//            return null;
-//        }
-//    }
 }

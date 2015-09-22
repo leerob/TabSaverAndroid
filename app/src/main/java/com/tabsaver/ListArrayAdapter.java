@@ -14,6 +14,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,6 +33,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 
 public class ListArrayAdapter extends BaseAdapter {
 
@@ -110,8 +117,7 @@ public class ListArrayAdapter extends BaseAdapter {
         ((TextView) itemView.findViewById(R.id.distance)).setText(formatter.format(Double.valueOf(currentBar.get("distance"))) + " mi");
 
         //Now set the image for the bar
-//        loadBitmap(barId, ((ImageView) itemView.findViewById(R.id.bar_thumbnail)));
-        ((ImageView) itemView.findViewById(R.id.bar_thumbnail)).setImageBitmap(getImage(barId)); //TODO: Go back to using the Cache
+        loadBitmap(barId, ((ImageView) itemView.findViewById(R.id.bar_thumbnail)));
 
         //Set listener
         itemView.setOnClickListener(new OnClickListener() {
@@ -121,6 +127,9 @@ public class ListArrayAdapter extends BaseAdapter {
                 Intent i = new Intent(context, BarDetail.class);
                 i.putExtra("BarId", barId);
                 context.startActivity(i);
+
+                //Update bar analytics for clickthrough
+                AnalyticsFunctions.incrementBarClickThrough(barId);
             }
         });
 
@@ -171,7 +180,6 @@ public class ListArrayAdapter extends BaseAdapter {
 
         return inSampleSize;
     }
-
 
     public Bitmap getImage(final String barId) {
         //Setup to read the file
@@ -397,13 +405,15 @@ public class ListArrayAdapter extends BaseAdapter {
     public void filter(String text) {
         text = text.toLowerCase();
         barData.clear();
-
-
         if (text.length() == 0) {
             barData.addAll(barDataBackupForSearchFiltering);
             filterByDistancePreference();
         }
         else {
+            if ( text.length() > 3){
+                AnalyticsFunctions.saveSearchTerm("List View", text, context);
+            }
+
             for (HashMap<String, String> bar : barDataBackupForSearchFiltering)
             {
 

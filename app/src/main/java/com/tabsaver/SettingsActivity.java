@@ -76,6 +76,9 @@ public class SettingsActivity extends ActionBarActivity {
         //Client Login- On Click Listener
         ((TextView) findViewById(R.id.client_login)).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                //Update analytics
+                AnalyticsFunctions.incrementAndroidAnalyticsValue("ClientLogin","Clicks");
+
                 Intent clientLogin = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(clientLogin);
             }
@@ -84,24 +87,20 @@ public class SettingsActivity extends ActionBarActivity {
         //Contact Us - On Click Listener
         ((TextView) findViewById(R.id.contact_us)).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                //Update analytics
+                AnalyticsFunctions.incrementAndroidAnalyticsValue("ContactUs","Clicks");
+
+                //Navigate to intent
                 Intent contactUs = new Intent(getApplicationContext(), ContactActivity.class);
                 startActivity(contactUs);
             }
         });
 
-        //Listener to navigate to a site on click -- TODO: Add once registration feature works
-//        ((TextView) findViewById(R.id.register)).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://tabsaver.info/register.html"));
-//                startActivity(browserIntent);
-//            }
-//        });
-
         //Setup the distance seekBar listener
         ((SeekBar)findViewById(R.id.locationDistanceBar)).setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                //Update value and view
                 ((TextView) findViewById(R.id.currentDistanceDisplay)).setText(progress + " mi");
                 distancePreference = progress;
             }
@@ -151,6 +150,10 @@ public class SettingsActivity extends ActionBarActivity {
                         JSONObject temp  = fullCities.getJSONObject(i);
 
                         if ( temp.getString("name").toLowerCase().contains(location.getText().toString().toLowerCase()) ) {
+                            //Update analytics
+                            AnalyticsFunctions.incrementAndroidAnalyticsValue("SettingsBasedCityChange", temp.getString("name"));
+
+                            //Set city location
                             session.setCity(temp.getString("name"), temp.getDouble("lat"), temp.getDouble("long"));
                         }
 
