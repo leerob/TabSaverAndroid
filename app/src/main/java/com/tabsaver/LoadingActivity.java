@@ -44,6 +44,8 @@ public class LoadingActivity extends Activity {
     private JSONArray hours;
     private JSONArray deals;
 
+    private static final int API_MAX_LIMIT = 1000;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +74,7 @@ public class LoadingActivity extends Activity {
         setWaitingMessage("Drinking a beer");
 
         //query and load up the bars.
-        final ParseQuery getBars = new ParseQuery("Bars");
+        final ParseQuery getBars = new ParseQuery("Bars").setLimit(API_MAX_LIMIT);
         final JSONArray barData = new JSONArray();
 
         getBars.findInBackground(new FindCallback<ParseObject>() {
@@ -117,11 +119,13 @@ public class LoadingActivity extends Activity {
 
                     } catch (Exception ex) {
                         yell("Failed to load image");
-                        yell("If issues persiste, reinstall with a reliable internet connection.");
+                        yell("If issues persist, reinstall with a reliable internet connection.");
+                        finish();
                     }
                 } else {
-                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    yell(e.getMessage());
                     yell("If issues persiste, reinstall with a reliable internet connection.");
+                    finish();
                 }
 
             }
@@ -137,7 +141,7 @@ public class LoadingActivity extends Activity {
         setWaitingMessage("Taking shots... (This may take a while)");
 
         //query and load up the bars.
-        final ParseQuery getBars = new ParseQuery("Locations");
+        final ParseQuery getBars = new ParseQuery("Locations").setLimit(API_MAX_LIMIT);
         final JSONArray cities = new JSONArray();
 
         getBars.findInBackground(new FindCallback<ParseObject>() {
@@ -183,7 +187,7 @@ public class LoadingActivity extends Activity {
         setWaitingMessage("Three tequila, floor.");
 
         //query and load up that image.
-        final ParseQuery getBars = new ParseQuery("Deals");
+        final ParseQuery getBars = new ParseQuery("Deals").setLimit(API_MAX_LIMIT);
         final JSONArray barDeals = new JSONArray();
 
         getBars.findInBackground(new FindCallback<ParseObject>() {
@@ -231,7 +235,7 @@ public class LoadingActivity extends Activity {
         setWaitingMessage("Checking the time..");
 
         //query and load up that image.
-        final ParseQuery getBars = new ParseQuery("BarHours");
+        final ParseQuery getBars = new ParseQuery("BarHours").setLimit(API_MAX_LIMIT);
         final JSONArray barHours = new JSONArray();
 
         getBars.findInBackground(new FindCallback<ParseObject>() {
@@ -280,7 +284,8 @@ public class LoadingActivity extends Activity {
     public void getBarImages(){
         setWaitingMessage("One tequila, two tequila..");
         //query and load up that image.
-        final ParseQuery getImages = new ParseQuery("BarPhotos");
+        final ParseQuery getImages = new ParseQuery("BarPhotos").setLimit(API_MAX_LIMIT);
+
         getImages.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objects, ParseException e) { //TODO: what is this error? What to do
                 if (e == null) {

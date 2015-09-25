@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.tabsaver"
-    android:versionCode="6"
-    android:versionName="1.3" >
+    android:versionCode="10"
+    android:versionName="1.3.1" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -128,10 +128,19 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
-<!--                   IMPORTANT: Change "com.parse.starter" to match your app's package name. -->
+                <!-- IMPORTANT: Change "com.parse.starter" to match your app's package name. -->
                 <category android:name="com.tabsaver" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name="com.tabsaver.PrivacyPolicy"
+            android:label="@string/title_activity_privacy_policy" >
+        </activity>
+        <activity
+            android:name="com.tabsaver.TermsOfService"
+            android:label="@string/title_activity_terms_of_service" >
+        </activity>
     </application>
 
 </manifest>

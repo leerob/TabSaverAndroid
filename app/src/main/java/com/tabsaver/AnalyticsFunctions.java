@@ -22,15 +22,44 @@ public class AnalyticsFunctions {
         ParseQuery getAnalytics = ParseQuery.getQuery("BarAnalytics");
         getAnalytics.whereEqualTo("barId", barId);
 
-// Retrieve the object by id
+        // Retrieve the object by id
         getAnalytics.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
 
-                    //Should only return 1 bar
-                    ParseObject bar = objects.get(0);
-                    bar.increment("pageClicks");
-                    bar.saveInBackground();
+                    //Should only return 1 bar - but check just in case
+                    if ( objects.size() > 0 ) {
+                        ParseObject bar = objects.get(0);
+                        bar.increment("pageClicks");
+                        bar.saveInBackground();
+                    }
+
+                }
+            }
+        });
+    }
+
+    /**
+     * Used right after installation to set the installations location
+     * @param city
+     */
+    public static void setInstallationCity(final String city){
+        //query and load up the bars.
+        ParseQuery getAnalytics = ParseQuery.getQuery("Installation");
+        getAnalytics.whereEqualTo("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
+
+        // Retrieve the object by id
+        getAnalytics.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+
+                    //Should only return 1 bar - But check just in case
+                    if (objects.size() > 0) {
+                        ParseObject installation = objects.get(0);
+                        installation.put("location", city);
+                        installation.saveInBackground();
+                    }
+
                 }
             }
         });
@@ -63,10 +92,13 @@ public class AnalyticsFunctions {
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
 
-                    //Should only return 1 bar
-                    ParseObject city = objects.get(0);
-                    city.increment("count");
-                    city.saveInBackground();
+                    //Should only return 1 bar - but check just in case
+                    if ( objects.size() > 0 ) {
+                        ParseObject city = objects.get(0);
+                        city.increment("count");
+                        city.saveInBackground();
+                    }
+
                 }
             }
         });
@@ -85,9 +117,12 @@ public class AnalyticsFunctions {
                 if (e == null) {
 
                     //Should only return 1 bar
-                    ParseObject city = objects.get(0);
-                    city.increment(value);
-                    city.saveInBackground();
+                    if ( objects.size() > 0 ) {
+                        ParseObject city = objects.get(0);
+                        city.increment(value);
+                        city.saveInBackground();
+                    }
+
                 }
             }
         });

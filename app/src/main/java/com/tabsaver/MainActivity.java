@@ -1,49 +1,36 @@
 package com.tabsaver;
 
-import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.SearchView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
 
     //All bars information
     private ArrayList<HashMap<String, String>> bars;
+
+    //All cities
+    private ArrayList<HashMap<String, String>> cities;
 
     //Listview
     private ListView listview;
@@ -60,9 +47,12 @@ public class MainActivity extends ActionBarActivity {
     private boolean myLocationDetermined = false;
     private long lastTimeLocationUpdated;
 
-    //Refresh view every 2 minutes
-    private static final int REFRESHTIME = 2 * 60 * 1000;
+    //Frequency in which the app should force update = ms * sec * min * hours * day
     private static final int UPDATEFREQUENCY = 1000 * 60 * 60 * 24 * 1;
+
+    //Gesture tracking variables
+    float y1, y2 = 0;
+    static final float SWIPETHRESHOLD = 35;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -89,13 +79,35 @@ public class MainActivity extends ActionBarActivity {
         refreshListView();
     }
 
+//    public void emulateProgressBar(){
+//        ListView mainView = (ListView) findViewById(R.id.listview);
+//        ProgressBar showProgress = new ProgressBar(this);
+//        showProgress.setVisibility(View.VISIBLE);
+//        mainView.addView(showProgress);
+//
+//        try {
+//            Thread.sleep(500);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+    /**
+     * Determines if the app should force a bar deal update
+     * @return
+     */
     public boolean shouldUpdate(){
         Long lastUpdateTime = session.getLastUpdateTime();
         return lastUpdateTime + UPDATEFREQUENCY <= System.currentTimeMillis();
     }
 
+    /**
+     * Refreshes the distance for each bar!
+     */
     public void refreshListView(){
         loader.setVisibility(View.VISIBLE);
+
+       // emulateProgressBar();
 
         //display everything
         try {
@@ -122,6 +134,9 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    /**
+     * Establishes location listener so that the location updates
+     */
     private void setupLocationTracking(){
 
         // Acquire a reference to the system Location Manager
@@ -136,11 +151,11 @@ public class MainActivity extends ActionBarActivity {
                     myLocationDetermined = true;
                     refreshListView();
                     lastTimeLocationUpdated = System.currentTimeMillis();
-                }
 
-                if ( System.currentTimeMillis() - lastTimeLocationUpdated > REFRESHTIME ) {
-                    refreshListView();
-                    lastTimeLocationUpdated = System.currentTimeMillis();
+                    if ( session.getCity().equals("none") ) {
+                        setupCitiesHashmap();
+                        determineClosestCity();
+                    }
                 }
 
             }
@@ -157,7 +172,7 @@ public class MainActivity extends ActionBarActivity {
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         } catch (IllegalArgumentException e ) {
-            Toast.makeText(getApplicationContext(), "Unable to access GPS, location services will not work.", Toast.LENGTH_SHORT).show();
+            yell("Unable to access GPS, location services will not work.");
         }
     }
 
@@ -171,6 +186,10 @@ public class MainActivity extends ActionBarActivity {
         listview.setEmptyView((TextView) findViewById(R.id.emptyListViewText));
     }
 
+    /**
+     * Create a hashmap representation of all of our bars
+     * @throws JSONException
+     */
     public void setupBarsHashmap() throws JSONException {
         JSONArray barsJSON = new JSONArray(session.getBars());
 
@@ -206,9 +225,8 @@ public class MainActivity extends ActionBarActivity {
             }
 
         } catch (JSONException e) {
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            yell(e.getMessage());
         }
-
     }
 
     /**
@@ -278,6 +296,116 @@ public class MainActivity extends ActionBarActivity {
     }
 
     /**
+     * Translate Cities JSON array into something useful
+     *
+     * @throws JSONException
+     */
+    public void setupCitiesHashmap() {
+        cities = new ArrayList<>();
+
+        try {
+            JSONArray citiesJSON = new JSONArray(session.getCities());
+
+            for (int i = 0; i < citiesJSON.length(); i++) {
+                //Grab the bar objects
+                HashMap<String, String> city = new HashMap<>();
+                JSONObject cityJSON = citiesJSON.getJSONObject(i);
+
+                city.put("name", cityJSON.getString("name"));
+                city.put("lat", cityJSON.getString("lat"));
+                city.put("long", cityJSON.getString("long"));
+
+                cities.add(city);
+            }
+        } catch (JSONException e ) {
+            yell(e.getMessage());
+        }
+
+    }
+
+    /**
+     * Determining the closest city to us
+     */
+    public void determineClosestCity() {
+        //Current location
+        Location cur = new Location("BS");
+
+        //Minimum location
+        Location min = new Location("BS");
+
+        //City name
+        String name = "None";
+
+        //Set our minimum city to the first
+        HashMap<String, String> city = cities.get(0);
+        min.setLatitude(Double.valueOf(city.get("lat")));
+        min.setLongitude(Double.valueOf(city.get("long")));
+
+        for (int i = 0; i < cities.size(); i++) {
+            //Setting up our current city
+            HashMap<String, String> thisCity = cities.get(i);
+            cur.setLatitude(Double.valueOf(thisCity.get("lat")));
+            cur.setLongitude(Double.valueOf(thisCity.get("long")));
+
+            if (myLocation.distanceTo(cur) <= myLocation.distanceTo(min)) {
+                min.setLatitude(cur.getLatitude());
+                min.setLongitude(cur.getLongitude());
+                name = thisCity.get("name");
+            }
+        }
+
+        AnalyticsFunctions.setInstallationCity(name);
+
+        //Set our minimum city in the session
+        session.setCity(name, min.getLatitude(), min.getLongitude());
+    }
+
+
+    /**
+     * Gesture tracking to refresh the list view
+     */
+    public void checkGestureForSwipe(MotionEvent event){
+
+        switch (event.getAction()){
+            //Record x when we start a motion event
+            case MotionEvent.ACTION_DOWN:
+                y1 = event.getY();
+                break;
+
+            //Record x when we finish, and act if our criteria are met (horizontal change in 35 pixels)
+            case MotionEvent.ACTION_UP:
+                y2 = event.getY();
+
+                //Check for horizontal movement of 35px (in either direction
+                if ( Math.abs(y1 - y2) > SWIPETHRESHOLD ) {
+
+                    //Determine if we went down --> up (y2 < y1) or vice versa
+                    if ( y2 > y1 ) {
+                        refreshListView();
+                        yell("Refreshing Location!");
+                    }
+                }
+        }
+
+    }
+
+    /**
+     * Interrupt the normal touch actions so that our activity can observe touch events
+     * @param event
+     * @return
+     */
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event){
+
+        //If we can't scroll up and we scroll up, refresh the view!
+        if ( !listview.canScrollVertically(-1) ) {
+            checkGestureForSwipe(event);
+        }
+
+        return super.dispatchTouchEvent(event);
+    }
+
+    /**
      * Handle settings menu interactions
      * @param item Selected menu item
      * @return some boolean?
@@ -303,5 +431,9 @@ public class MainActivity extends ActionBarActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void yell(String message){
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

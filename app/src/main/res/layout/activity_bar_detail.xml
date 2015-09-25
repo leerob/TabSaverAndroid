@@ -102,7 +102,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:background="#c0c0c0"
-                android:id="@+id/view" />
+                android:id="@+id/view33asd" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -222,13 +222,95 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingLeft="10dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/yelpIcon"
+                android:src="@drawable/ic_yelp"
+                android:tint="@drawable/blue"
+                android:paddingLeft="4dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@android:style/TextAppearance.Small"
+                android:text="Yelp"
+                android:id="@+id/yelp"
+                android:layout_marginTop="10dp"
+                android:paddingTop="10dp"
+                android:textSize="16sp"
+                android:lines="1"
+                android:ellipsize="end"
+                android:layout_gravity="center_horizontal"
+                android:textStyle="italic" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#c0c0c0"
+            android:id="@+id/view33asd"
+            android:focusableInTouchMode="true"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/imageView3"
+                android:src="@drawable/ic_foursquare"
+                android:tint="@drawable/blue"
+                android:paddingLeft="4dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@android:style/TextAppearance.Small"
+                android:text="FourSquare"
+                android:id="@+id/foursquare"
+                android:layout_marginTop="10dp"
+                android:paddingTop="10dp"
+                android:textSize="16sp"
+                android:lines="1"
+                android:ellipsize="end"
+                android:layout_gravity="center_horizontal"
+                android:textStyle="italic" />
+        </LinearLayout>
+
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="#c0c0c0"
+                android:id="@+id/view3" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="10dp"
             android:orientation="horizontal" >
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
-                android:id="@+id/dealReportIcon"
+                android:id="@+id/imageView2"
                 android:paddingRight="5dp"
                 android:src="@drawable/ic_error"
                 android:tint="@drawable/blue"
@@ -247,17 +329,7 @@
                 android:lines="1"
                 android:ellipsize="end"
                 android:layout_gravity="center_horizontal" />
-
         </LinearLayout>
-
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="0.5dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:background="#c0c0c0"
-                android:id="@+id/view3" />
-
 
         <ListView
             android:layout_width="wrap_content"

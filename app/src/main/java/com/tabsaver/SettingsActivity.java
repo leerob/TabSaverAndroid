@@ -77,7 +77,7 @@ public class SettingsActivity extends ActionBarActivity {
         ((TextView) findViewById(R.id.client_login)).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 //Update analytics
-                AnalyticsFunctions.incrementAndroidAnalyticsValue("ClientLogin","Clicks");
+                AnalyticsFunctions.incrementAndroidAnalyticsValue("ClientLogin", "Clicks");
 
                 Intent clientLogin = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(clientLogin);
@@ -93,6 +93,23 @@ public class SettingsActivity extends ActionBarActivity {
                 //Navigate to intent
                 Intent contactUs = new Intent(getApplicationContext(), ContactActivity.class);
                 startActivity(contactUs);
+            }
+        });
+
+        //ToS - On Click Listener
+        ((TextView) findViewById(R.id.tos)).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                //Navigate to intent
+                Intent termsOfService = new Intent(getApplicationContext(), TermsOfService.class);
+                startActivity(termsOfService);
+            }
+        });
+
+        //PP - On Click Listener
+        ((TextView) findViewById(R.id.pp)).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent privacyPolicy = new Intent(getApplicationContext(), PrivacyPolicy.class);
+                startActivity(privacyPolicy);
             }
         });
 
@@ -177,5 +194,6 @@ public class SettingsActivity extends ActionBarActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
 
 }

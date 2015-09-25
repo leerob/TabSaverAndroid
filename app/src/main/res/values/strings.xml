@@ -50,5 +50,7 @@
     <string name="dealsOutdatedString">Tap to report deals as incorrect</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_loading">TabSaver</string>
+    <string name="title_activity_privacy_policy">PrivacyPolicy</string>
+    <string name="title_activity_terms_of_service">TermsOfService</string>
 
 </resources>

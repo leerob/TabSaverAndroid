@@ -109,6 +109,8 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
         final TextView barWebsite = (TextView) findViewById(R.id.barWebsite);
         final TextView barPhone = (TextView) findViewById(R.id.barPhone);
         final TextView barAddress = (TextView) findViewById(R.id.barAddress);
+        final TextView yelp = (TextView) findViewById(R.id.yelp);
+        final TextView foursquare = (TextView) findViewById(R.id.foursquare);
         listview = (ListView) findViewById(R.id.listView);
 
         //Set the bar's name

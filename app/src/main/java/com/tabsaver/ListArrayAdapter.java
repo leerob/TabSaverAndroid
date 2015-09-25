@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.LruCache;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -144,13 +145,17 @@ public class ListArrayAdapter extends BaseAdapter {
             barImage.setImageBitmap(bitmap);
         } else {
             bitmap = getImage(barId+"");
-            barImage.setImageBitmap(bitmap);
+
+            if ( bitmap != null ) {
+                barImage.setImageBitmap(bitmap);
+            }
+
             addBitmapToMemoryCache(barId + "", bitmap);
         }
     }
 
     public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
-        if (getBitmapFromMemCache(key) == null) {
+        if (getBitmapFromMemCache(key) == null && bitmap != null) {
             mMemoryCache.put(key, bitmap);
         }
     }
