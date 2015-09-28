@@ -103,6 +103,7 @@ public class LoadingActivity extends Activity {
                             bar.put("address", PO.getString("address"));
                             bar.put("city", PO.getString("city"));
                             bar.put("state", PO.getString("state"));
+                            bar.put("foursquare", PO.getString("foursquare"));
                             barData.put(bar);
                         }
 
@@ -158,6 +159,7 @@ public class LoadingActivity extends Activity {
                             city.put("lat", PO.getDouble("lat"));
                             city.put("long", PO.getDouble("long"));
                             city.put("taxiService", PO.getString("taxiService"));
+                            city.put("taxiNumber", PO.getString("taxiNumber"));
                             cities.put(city);
                         }
 

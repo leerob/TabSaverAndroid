@@ -165,6 +165,31 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
             }
         });
 
+        //Listener to navigate to a site on click
+        yelp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Update analytics
+                AnalyticsFunctions.incrementAndroidAnalyticsValue("YelpNavigation", "Clicks");
+
+                //Navigate to website
+                //TODO: Navigate to yelp search
+            }
+        });
+
+        //Listener to navigate to a site on click
+        foursquare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Update analytics
+                AnalyticsFunctions.incrementAndroidAnalyticsValue("FourSquareNavigation", "Clicks");
+
+                //Navigate to website
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://foursquare.com/v/venue/" + bar.get("foursquare")));
+                        startActivity(browserIntent);
+            }
+        });
+
         //Listener to navigate to the address on click
         barAddress.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -470,6 +495,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
                     bar.put("lat", barJSON.getString("lat"));
                     bar.put("long", barJSON.getString("long"));
                     bar.put("website", barJSON.getString("website"));
+                    bar.put("foursquare", barJSON.getString("foursquare"));
 
                     //Make sure the website is navigable
                     if ( !bar.get("website").startsWith("http://") && !bar.get("website").startsWith("https://") ) {

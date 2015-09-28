@@ -1,11 +1,14 @@
 package com.tabsaver;
 
+import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.net.Uri;
 import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -132,6 +135,8 @@ public class MapActivity extends ActionBarActivity {
             city.put("name", cityJSON.getString("name"));
             city.put("lat", cityJSON.getString("lat"));
             city.put("long", cityJSON.getString("long"));
+            city.put("taxiService", cityJSON.getString("taxiService"));
+            city.put("taxiNumber", cityJSON.getString("taxiNumber"));
 
             cities.add(city);
         }
@@ -314,6 +319,64 @@ public class MapActivity extends ActionBarActivity {
     }
 
     /**
+     * Button to handle the tax service uses
+     * @param view
+     */
+    public void hailCab(View view){
+        //Update analytics
+        AnalyticsFunctions.incrementAndroidAnalyticsValue("Taxi", "Clicks");
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        //Set our title
+        builder.setTitle("Need A Cab?");
+
+        //Set our taxi icon
+        builder.setIcon(R.drawable.ic_taxi);
+
+        // If they have a city and taxi, prompt for it. Else prompt them to set their location!
+        if ( !session.getTaxiName().equals("none")) {
+            //Set our message
+            builder.setMessage("Do you want us to call you a taxi? We partner with " + session.getTaxiName() + " of " + session.getCityName() + " to get you home safe.");
+        } else {
+            //Set our message
+            builder.setMessage("You haven't set a city! You'll need to set one in the settings menu");
+        }
+
+        //OnConfirm
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                //If their taxi service was set, use it. Otherwise navigate to the settings menu
+                if ( !session.getTaxiName().equals("none")) {
+                    //Update analytics
+                    AnalyticsFunctions.incrementAndroidAnalyticsValue("Taxi", "Calls");
+
+                    //Parse phone number, send off the call to the taxi service
+                    Intent intent = new Intent(Intent.ACTION_DIAL);
+                    intent.setData(Uri.parse("tel:" + session.getTaxiNumber()));
+                    startActivity(intent);
+                } else {
+                    //Navigate to settings
+                    Intent settings = new Intent(getApplicationContext(), SettingsActivity.class);
+                    startActivity(settings);
+                }
+
+            }
+        });
+
+        //OnCancel
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+            }
+        });
+
+        // Create the AlertDialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    /**
      * Setup the string for our listview
      */
     private void setupSearchStringArray() {
@@ -445,6 +508,7 @@ public class MapActivity extends ActionBarActivity {
         min.setLatitude(Double.valueOf(city.get("lat")));
         min.setLongitude(Double.valueOf(city.get("long")));
 
+        HashMap<String, String> minCity = new HashMap<>();
         for (int i = 0; i < cities.size(); i++) {
             //Setting up our current city
             HashMap<String, String> thisCity = cities.get(i);
@@ -454,14 +518,15 @@ public class MapActivity extends ActionBarActivity {
             if (myLocation.distanceTo(cur) <= myLocation.distanceTo(min)) {
                 min.setLatitude(cur.getLatitude());
                 min.setLongitude(cur.getLongitude());
-                name = thisCity.get("name");
+
+                minCity = thisCity;
             }
         }
 
         AnalyticsFunctions.incrementAndroidAnalyticsValue("LocationBasedCityChange", name);
 
         //Set our minimum city in the session
-        session.setCity(name, min.getLatitude(), min.getLongitude());
+        session.setCity(minCity.get("name"), min.getLatitude(), min.getLongitude(), minCity.get("taxiService"), minCity.get("taxiNumber"));
     }
 
 }

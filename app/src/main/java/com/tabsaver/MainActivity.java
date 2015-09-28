@@ -1,12 +1,16 @@
 package com.tabsaver;
 
+import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,8 +40,10 @@ public class MainActivity extends ActionBarActivity {
     private ListView listview;
     private ListArrayAdapter adapter;
 
+    private SwipeRefreshLayout swipeContainer;
+
     //Progress view
-    private View loader;
+    private ProgressBar loader;
 
     //Storing and retrieving session information
     private ClientSessionManager session;
@@ -59,9 +65,9 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        loader = findViewById(R.id.barLoading);
-        loader.setVisibility(View.VISIBLE);
+        //Grab our swipe refresh and such
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        loader = (ProgressBar) findViewById(R.id.view_loading);
 
         //Setup the session
         session = new ClientSessionManager(getApplicationContext());
@@ -76,21 +82,27 @@ public class MainActivity extends ActionBarActivity {
         //Once location is determined, the view will be loaded
         setupLocationTracking();
 
-        refreshListView();
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+                refreshListView();
+            }
+        });
+
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
+        //Refresh swipe container
+        swipeContainer.setRefreshing(true);
     }
 
-//    public void emulateProgressBar(){
-//        ListView mainView = (ListView) findViewById(R.id.listview);
-//        ProgressBar showProgress = new ProgressBar(this);
-//        showProgress.setVisibility(View.VISIBLE);
-//        mainView.addView(showProgress);
-//
-//        try {
-//            Thread.sleep(500);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     /**
      * Determines if the app should force a bar deal update
@@ -105,9 +117,6 @@ public class MainActivity extends ActionBarActivity {
      * Refreshes the distance for each bar!
      */
     public void refreshListView(){
-        loader.setVisibility(View.VISIBLE);
-
-       // emulateProgressBar();
 
         //display everything
         try {
@@ -122,6 +131,7 @@ public class MainActivity extends ActionBarActivity {
             e.printStackTrace();
         }
 
+        swipeContainer.setRefreshing(false);
         loader.setVisibility(View.INVISIBLE);
     }
 
@@ -174,6 +184,64 @@ public class MainActivity extends ActionBarActivity {
         } catch (IllegalArgumentException e ) {
             yell("Unable to access GPS, location services will not work.");
         }
+    }
+
+    /**
+     * Button to handle the tax service uses
+     * @param view
+     */
+    public void hailCab(View view){
+        //Update analytics
+        AnalyticsFunctions.incrementAndroidAnalyticsValue("Taxi", "Clicks");
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        //Set our title
+        builder.setTitle("Need A Cab?");
+
+        //Set our taxi icon
+        builder.setIcon(R.drawable.ic_taxi);
+
+        // If they have a city and taxi, prompt for it. Else prompt them to set their location!
+        if ( !session.getTaxiName().equals("none")) {
+            //Set our message
+            builder.setMessage("Do you want us to call you a taxi? We partner with " + session.getTaxiName() + " of " + session.getCityName() + " to get you home safe.");
+        } else {
+            //Set our message
+            builder.setMessage("You haven't set a city! You'll need to set one in the settings menu");
+        }
+
+        //OnConfirm
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                //If their taxi service was set, use it. Otherwise navigate to the settings menu
+                if ( !session.getTaxiName().equals("none")) {
+                    //Update analytics
+                    AnalyticsFunctions.incrementAndroidAnalyticsValue("Taxi", "Calls");
+
+                    //Parse phone number, send off the call to the taxi service
+                    Intent intent = new Intent(Intent.ACTION_DIAL);
+                    intent.setData(Uri.parse("tel:" + session.getTaxiNumber()));
+                    startActivity(intent);
+                } else {
+                    //Navigate to settings
+                    Intent settings = new Intent(getApplicationContext(), SettingsActivity.class);
+                    startActivity(settings);
+                }
+
+            }
+        });
+
+        //OnCancel
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+            }
+        });
+
+        // Create the AlertDialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     /**
@@ -301,7 +369,6 @@ public class MainActivity extends ActionBarActivity {
      * @throws JSONException
      */
     public void setupCitiesHashmap() {
-        cities = new ArrayList<>();
 
         try {
             JSONArray citiesJSON = new JSONArray(session.getCities());
@@ -314,6 +381,8 @@ public class MainActivity extends ActionBarActivity {
                 city.put("name", cityJSON.getString("name"));
                 city.put("lat", cityJSON.getString("lat"));
                 city.put("long", cityJSON.getString("long"));
+                city.put("taxiService", cityJSON.getString("taxiService"));
+                city.put("taxiNumber", cityJSON.getString("taxiNumber"));
 
                 cities.add(city);
             }
@@ -341,6 +410,7 @@ public class MainActivity extends ActionBarActivity {
         min.setLatitude(Double.valueOf(city.get("lat")));
         min.setLongitude(Double.valueOf(city.get("long")));
 
+        HashMap<String, String> minCity = new HashMap<>();
         for (int i = 0; i < cities.size(); i++) {
             //Setting up our current city
             HashMap<String, String> thisCity = cities.get(i);
@@ -350,59 +420,15 @@ public class MainActivity extends ActionBarActivity {
             if (myLocation.distanceTo(cur) <= myLocation.distanceTo(min)) {
                 min.setLatitude(cur.getLatitude());
                 min.setLongitude(cur.getLongitude());
-                name = thisCity.get("name");
+
+                minCity = thisCity;
             }
         }
 
-        AnalyticsFunctions.setInstallationCity(name);
+        AnalyticsFunctions.incrementAndroidAnalyticsValue("LocationBasedCityChange", name);
 
         //Set our minimum city in the session
-        session.setCity(name, min.getLatitude(), min.getLongitude());
-    }
-
-
-    /**
-     * Gesture tracking to refresh the list view
-     */
-    public void checkGestureForSwipe(MotionEvent event){
-
-        switch (event.getAction()){
-            //Record x when we start a motion event
-            case MotionEvent.ACTION_DOWN:
-                y1 = event.getY();
-                break;
-
-            //Record x when we finish, and act if our criteria are met (horizontal change in 35 pixels)
-            case MotionEvent.ACTION_UP:
-                y2 = event.getY();
-
-                //Check for horizontal movement of 35px (in either direction
-                if ( Math.abs(y1 - y2) > SWIPETHRESHOLD ) {
-
-                    //Determine if we went down --> up (y2 < y1) or vice versa
-                    if ( y2 > y1 ) {
-                        refreshListView();
-                        yell("Refreshing Location!");
-                    }
-                }
-        }
-
-    }
-
-    /**
-     * Interrupt the normal touch actions so that our activity can observe touch events
-     * @param event
-     * @return
-     */
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event){
-
-        //If we can't scroll up and we scroll up, refresh the view!
-        if ( !listview.canScrollVertically(-1) ) {
-            checkGestureForSwipe(event);
-        }
-
-        return super.dispatchTouchEvent(event);
+        session.setCity(minCity.get("name"), min.getLatitude(), min.getLongitude(), minCity.get("taxiService"), minCity.get("taxiNumber"));
     }
 
     /**

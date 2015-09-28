@@ -171,7 +171,7 @@ public class SettingsActivity extends ActionBarActivity {
                             AnalyticsFunctions.incrementAndroidAnalyticsValue("SettingsBasedCityChange", temp.getString("name"));
 
                             //Set city location
-                            session.setCity(temp.getString("name"), temp.getDouble("lat"), temp.getDouble("long"));
+                            session.setCity(temp.getString("name"), temp.getDouble("lat"), temp.getDouble("long"), temp.getString("taxiService"), temp.getString("taxiNumber"));
                         }
 
                     } catch (JSONException e) {

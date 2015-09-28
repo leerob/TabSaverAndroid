@@ -44,10 +44,12 @@ public class ClientSessionManager {
     }
 
     //Sets the city setting item
-    public void setCity(String city, double lat, double lon){
+    public void setCity(String city, double lat, double lon, String taxiService, String taxiNumber){
         edit.putString("city", city);
         edit.putString("lat" , "" + lat);
         edit.putString("lon", "" + lon);
+        edit.putString("taxiService", "" + taxiService);
+        edit.putString("taxiNumber", "" + taxiNumber);
         edit.commit();
     }
 
@@ -97,6 +99,22 @@ public class ClientSessionManager {
      */
     public String getCityName() {
         return pref.getString("city", "none");
+    }
+
+    /**
+     * Get the taxi service for this city's name
+     * @return
+     */
+    public String getTaxiName(){
+        return pref.getString("taxiService", "none");
+    }
+
+    /**
+     * Get the taxi service for this city's number
+     * @return
+     */
+    public String getTaxiNumber(){
+        return pref.getString("taxiNumber", "none");
     }
 
     /**

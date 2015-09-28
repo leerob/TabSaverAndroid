@@ -52,5 +52,7 @@
     <string name="title_activity_loading">TabSaver</string>
     <string name="title_activity_privacy_policy">PrivacyPolicy</string>
     <string name="title_activity_terms_of_service">TermsOfService</string>
+    <string name="ok">Take Me Home!</string>
+    <string name="cancel">No Thanks.</string>
 
 </resources>
