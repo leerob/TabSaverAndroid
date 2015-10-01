@@ -49,25 +49,16 @@ public class MainActivity extends ActionBarActivity {
     private ClientSessionManager session;
 
     //Our current location
-    private Location myLocation;
+    private Location myLocation = null;
     private boolean myLocationDetermined = false;
-    private long lastTimeLocationUpdated;
 
     //Frequency in which the app should force update = ms * sec * min * hours * day
     private static final int UPDATEFREQUENCY = 1000 * 60 * 60 * 24 * 1;
-
-    //Gesture tracking variables
-    float y1, y2 = 0;
-    static final float SWIPETHRESHOLD = 35;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //Grab our swipe refresh and such
-        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        loader = (ProgressBar) findViewById(R.id.view_loading);
 
         //Setup the session
         session = new ClientSessionManager(getApplicationContext());
@@ -79,9 +70,18 @@ public class MainActivity extends ActionBarActivity {
             finish();
         }
 
+        //Grab our swipe refresh and such
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        loader = (ProgressBar) findViewById(R.id.view_loading);
+
         //Once location is determined, the view will be loaded
         setupLocationTracking();
 
+        //Setup our swipe refresh
+        setupSwipeRefresh();
+    }
+
+    public void setupSwipeRefresh(){
         // Setup refresh listener which triggers new data loading
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -103,6 +103,46 @@ public class MainActivity extends ActionBarActivity {
         swipeContainer.setRefreshing(true);
     }
 
+    /**
+     * Establishes location listener so that the location updates
+     */
+    private void setupLocationTracking(){
+
+        // Acquire a reference to the system Location Manager
+        LocationManager locationManager = (LocationManager) this.getSystemService(getApplicationContext().LOCATION_SERVICE);
+
+        // Define a listener that responds to location updates
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                myLocation = location;
+
+                if ( !myLocationDetermined ) {
+                    myLocationDetermined = true;
+                    refreshListView();
+
+                    if ( session.getCity().equals("none") ) {
+                        cities = DataManagement.setupCitiesHashmap(getApplicationContext());
+                        DataManagement.determineClosestCity(cities, myLocation, getApplicationContext());
+                    }
+                }
+
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            public void onProviderEnabled(String provider) {}
+
+            public void onProviderDisabled(String provider) {}
+        };
+
+        try {
+            // Register the listener with the Location Manager to receive location updates
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        } catch (IllegalArgumentException e ) {
+            yell("Unable to access GPS, location services will not work.");
+        }
+    }
 
     /**
      * Determines if the app should force a bar deal update
@@ -120,7 +160,8 @@ public class MainActivity extends ActionBarActivity {
 
         //display everything
         try {
-            setupBarsHashmap();
+            //Setup the bars hashmap
+            bars = DataManagement.setupBarsHashmap(getApplicationContext(), myLocation);
 
             if ( myLocationDetermined ) {
                 sortBarsByDistance();
@@ -141,48 +182,6 @@ public class MainActivity extends ActionBarActivity {
 
         if ( adapter != null ) {
             adapter.filterByDistancePreference();
-        }
-    }
-
-    /**
-     * Establishes location listener so that the location updates
-     */
-    private void setupLocationTracking(){
-
-        // Acquire a reference to the system Location Manager
-        LocationManager locationManager = (LocationManager) this.getSystemService(getApplicationContext().LOCATION_SERVICE);
-
-        // Define a listener that responds to location updates
-        LocationListener locationListener = new LocationListener() {
-            public void onLocationChanged(Location location) {
-                myLocation = location;
-
-                if ( !myLocationDetermined ) {
-                    myLocationDetermined = true;
-                    refreshListView();
-                    lastTimeLocationUpdated = System.currentTimeMillis();
-
-                    if ( session.getCity().equals("none") ) {
-                        setupCitiesHashmap();
-                        determineClosestCity();
-                    }
-                }
-
-            }
-
-            public void onStatusChanged(String provider, int status, Bundle extras) {}
-
-            public void onProviderEnabled(String provider) {}
-
-            public void onProviderDisabled(String provider) {}
-        };
-
-        try {
-            // Register the listener with the Location Manager to receive location updates
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-        } catch (IllegalArgumentException e ) {
-            yell("Unable to access GPS, location services will not work.");
         }
     }
 
@@ -211,11 +210,11 @@ public class MainActivity extends ActionBarActivity {
             builder.setMessage("You haven't set a city! You'll need to set one in the settings menu");
         }
 
-        //OnConfirm
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                //If their taxi service was set, use it. Otherwise navigate to the settings menu
-                if ( !session.getTaxiName().equals("none")) {
+        //If their taxi service was set, use it. Otherwise navigate to the settings menu
+        if ( !session.getTaxiName().equals("none")) {
+            //OnConfirm
+            builder.setPositiveButton(R.string.take_me_home, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
                     //Update analytics
                     AnalyticsFunctions.incrementAndroidAnalyticsValue("Taxi", "Calls");
 
@@ -223,14 +222,22 @@ public class MainActivity extends ActionBarActivity {
                     Intent intent = new Intent(Intent.ACTION_DIAL);
                     intent.setData(Uri.parse("tel:" + session.getTaxiNumber()));
                     startActivity(intent);
-                } else {
+
+
+                }
+            });
+        } else {
+            //OnConfirm
+            builder.setPositiveButton(R.string.go_to_settings, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
                     //Navigate to settings
                     Intent settings = new Intent(getApplicationContext(), SettingsActivity.class);
                     startActivity(settings);
                 }
+            });
 
-            }
-        });
+        }
+
 
         //OnCancel
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -252,49 +259,6 @@ public class MainActivity extends ActionBarActivity {
         adapter = new ListArrayAdapter(MainActivity.this, bars);
         listview.setAdapter(adapter);
         listview.setEmptyView((TextView) findViewById(R.id.emptyListViewText));
-    }
-
-    /**
-     * Create a hashmap representation of all of our bars
-     * @throws JSONException
-     */
-    public void setupBarsHashmap() throws JSONException {
-        JSONArray barsJSON = new JSONArray(session.getBars());
-
-       bars = new ArrayList<>();
-
-        //Setup the bar info
-        try {
-            for (int i = 0; i < barsJSON.length(); i++) {
-                HashMap<String, String> bar = new HashMap<>();
-                JSONObject barJSON = barsJSON.getJSONObject(i);
-
-                // Retrieve JSON Objects
-                bar.put("id",  barJSON.getString("id"));
-                bar.put("name", barJSON.getString("name"));
-
-                //Put bars and hours
-                bar.put("hours", barJSON.getString("hours"));
-                bar.put("deals", barJSON.getString("deals"));
-
-
-                if ( myLocationDetermined ) {
-                    //Setup the distance
-                    Location barLocation = new Location("");
-                    barLocation.setLatitude(barJSON.getDouble("lat"));
-                    barLocation.setLongitude(barJSON.getDouble("long"));
-                    bar.put("distance", (myLocation.distanceTo(barLocation) / 1609.34) + "");
-                } else {
-                    bar.put("distance", "0.0");
-                }
-
-                // Set the JSON Objects into the array
-                bars.add(bar);
-            }
-
-        } catch (JSONException e) {
-            yell(e.getMessage());
-        }
     }
 
     /**
@@ -361,74 +325,6 @@ public class MainActivity extends ActionBarActivity {
         });
 
         return true;
-    }
-
-    /**
-     * Translate Cities JSON array into something useful
-     *
-     * @throws JSONException
-     */
-    public void setupCitiesHashmap() {
-
-        try {
-            JSONArray citiesJSON = new JSONArray(session.getCities());
-
-            for (int i = 0; i < citiesJSON.length(); i++) {
-                //Grab the bar objects
-                HashMap<String, String> city = new HashMap<>();
-                JSONObject cityJSON = citiesJSON.getJSONObject(i);
-
-                city.put("name", cityJSON.getString("name"));
-                city.put("lat", cityJSON.getString("lat"));
-                city.put("long", cityJSON.getString("long"));
-                city.put("taxiService", cityJSON.getString("taxiService"));
-                city.put("taxiNumber", cityJSON.getString("taxiNumber"));
-
-                cities.add(city);
-            }
-        } catch (JSONException e ) {
-            yell(e.getMessage());
-        }
-
-    }
-
-    /**
-     * Determining the closest city to us
-     */
-    public void determineClosestCity() {
-        //Current location
-        Location cur = new Location("BS");
-
-        //Minimum location
-        Location min = new Location("BS");
-
-        //City name
-        String name = "None";
-
-        //Set our minimum city to the first
-        HashMap<String, String> city = cities.get(0);
-        min.setLatitude(Double.valueOf(city.get("lat")));
-        min.setLongitude(Double.valueOf(city.get("long")));
-
-        HashMap<String, String> minCity = new HashMap<>();
-        for (int i = 0; i < cities.size(); i++) {
-            //Setting up our current city
-            HashMap<String, String> thisCity = cities.get(i);
-            cur.setLatitude(Double.valueOf(thisCity.get("lat")));
-            cur.setLongitude(Double.valueOf(thisCity.get("long")));
-
-            if (myLocation.distanceTo(cur) <= myLocation.distanceTo(min)) {
-                min.setLatitude(cur.getLatitude());
-                min.setLongitude(cur.getLongitude());
-
-                minCity = thisCity;
-            }
-        }
-
-        AnalyticsFunctions.incrementAndroidAnalyticsValue("LocationBasedCityChange", name);
-
-        //Set our minimum city in the session
-        session.setCity(minCity.get("name"), min.getLatitude(), min.getLongitude(), minCity.get("taxiService"), minCity.get("taxiNumber"));
     }
 
     /**

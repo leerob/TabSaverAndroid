@@ -44,25 +44,12 @@ public class AnalyticsFunctions {
      * @param city
      */
     public static void setInstallationCity(final String city){
-        //query and load up the bars.
-        ParseQuery getAnalytics = ParseQuery.getQuery("Installation");
-        getAnalytics.whereEqualTo("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
+        //Grab the current installation
+        ParseInstallation currentInstallation = ParseInstallation.getCurrentInstallation();
 
-        // Retrieve the object by id
-        getAnalytics.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-
-                    //Should only return 1 bar - But check just in case
-                    if (objects.size() > 0) {
-                        ParseObject installation = objects.get(0);
-                        installation.put("location", city);
-                        installation.saveInBackground();
-                    }
-
-                }
-            }
-        });
+        //Set the location and save
+        currentInstallation.put("location", city);
+        currentInstallation.saveInBackground();
     }
 
     //Save the entered search term

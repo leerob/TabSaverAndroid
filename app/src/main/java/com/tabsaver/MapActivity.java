@@ -58,16 +58,15 @@ public class MapActivity extends ActionBarActivity {
     private List<Marker> markers = new ArrayList<>();
 
     //Our current location
-    private Location myLocation;
+    private Location myLocation = null;
 
     //Keeping track of our state
-    private boolean cityLocationUndetermined = true;
-    private boolean myLocationUndetermined = true;
+    private boolean myLocationDetermined = false;
 
     //Storing and retrieving session information
     private ClientSessionManager session;
 
-
+    //The bars list to show up in the search view (Strings instead of the arraylist)
     private String[] barsListForSearchview;
 
     @Override
@@ -79,13 +78,10 @@ public class MapActivity extends ActionBarActivity {
 
         //Grab bar and city information
         try {
-            //grab bar and cities json
-            JSONArray citiesJSON = new JSONArray(session.getCities());
-            JSONArray barsJSON = new JSONArray(session.getBars());
-
-            //Setup hashmaps for efficient data access
-            setupBarsHashmap(barsJSON);
-            setupCitiesHashmap(citiesJSON);
+            //setup bars and cities datastructures
+            bars = DataManagement.setupBarsHashmap(getApplicationContext(), myLocation);
+            cities = DataManagement.setupCitiesHashmap(getApplicationContext());
+            setupSearchStringArray();
 
             setUpMapIfNeeded();
 
@@ -93,52 +89,6 @@ public class MapActivity extends ActionBarActivity {
             setupBarMarkers();
         } catch (JSONException e) {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-
-    }
-
-    /**
-     * Translate Bars JSON array into something useful
-     *
-     * @throws JSONException
-     */
-    public void setupBarsHashmap(JSONArray barsJSON) throws JSONException {
-        for (int i = 0; i < barsJSON.length(); i++) {
-            //Grab the bar objects
-            HashMap<String, String> bar = new HashMap<>();
-            JSONObject barJSON = barsJSON.getJSONObject(i);
-
-            //Set all the bar info
-            bar.put("id", barJSON.getString("id"));
-            bar.put("name", barJSON.getString("name"));
-            bar.put("lat", barJSON.getString("lat"));
-            bar.put("long", barJSON.getString("long"));
-            bar.put("deals", barJSON.getString("deals"));
-
-            bars.add(bar);
-        }
-
-        setupSearchStringArray();
-    }
-
-    /**
-     * Translate Cities JSON array into something useful
-     *
-     * @throws JSONException
-     */
-    public void setupCitiesHashmap(JSONArray citiesJSON) throws JSONException {
-        for (int i = 0; i < citiesJSON.length(); i++) {
-            //Grab the bar objects
-            HashMap<String, String> city = new HashMap<>();
-            JSONObject cityJSON = citiesJSON.getJSONObject(i);
-
-            city.put("name", cityJSON.getString("name"));
-            city.put("lat", cityJSON.getString("lat"));
-            city.put("long", cityJSON.getString("long"));
-            city.put("taxiService", cityJSON.getString("taxiService"));
-            city.put("taxiNumber", cityJSON.getString("taxiNumber"));
-
-            cities.add(city);
         }
 
     }
@@ -279,14 +229,13 @@ public class MapActivity extends ActionBarActivity {
         public void onMyLocationChange(Location location) {
             myLocation = location;
 
-            //Zoom to our current location once.
-            if (cityLocationUndetermined && myLocationUndetermined) {
-                if (session.getCity().equals("none")) {
-                    determineClosestCity();
-                }
+            //Set our current city
+            if (session.getCity().equals("none")) {
+                session.setCity(DataManagement.determineClosestCity(cities, myLocation, getApplicationContext()));
+            }
 
-                cityLocationUndetermined = false;
-                myLocationUndetermined = false;
+            //Zoom to our location if we haven't yet
+            if (!myLocationDetermined) {
                 zoomToCurrentCity();
             }
 
@@ -299,7 +248,7 @@ public class MapActivity extends ActionBarActivity {
      */
     private void zoomToCurrentCity() {
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(session.getLat(), session.getLong()), 12.0f));
-        cityLocationUndetermined = false;
+        myLocationDetermined = true;
     }
 
     /**
@@ -343,11 +292,11 @@ public class MapActivity extends ActionBarActivity {
             builder.setMessage("You haven't set a city! You'll need to set one in the settings menu");
         }
 
-        //OnConfirm
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                //If their taxi service was set, use it. Otherwise navigate to the settings menu
-                if ( !session.getTaxiName().equals("none")) {
+        //If their taxi service was set, use it. Otherwise navigate to the settings menu
+        if ( !session.getTaxiName().equals("none")) {
+            //OnConfirm
+            builder.setPositiveButton(R.string.take_me_home, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
                     //Update analytics
                     AnalyticsFunctions.incrementAndroidAnalyticsValue("Taxi", "Calls");
 
@@ -355,14 +304,21 @@ public class MapActivity extends ActionBarActivity {
                     Intent intent = new Intent(Intent.ACTION_DIAL);
                     intent.setData(Uri.parse("tel:" + session.getTaxiNumber()));
                     startActivity(intent);
-                } else {
+
+
+                }
+            });
+        } else {
+            //OnConfirm
+            builder.setPositiveButton(R.string.go_to_settings, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
                     //Navigate to settings
                     Intent settings = new Intent(getApplicationContext(), SettingsActivity.class);
                     startActivity(settings);
                 }
+            });
 
-            }
-        });
+        }
 
         //OnCancel
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -488,45 +444,6 @@ public class MapActivity extends ActionBarActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    /**
-     * Determining the closest city to us
-     */
-    public void determineClosestCity() {
-        //Current location
-        Location cur = new Location("BS");
-
-        //Minimum location
-        Location min = new Location("BS");
-
-        //City name
-        String name = "None";
-
-        //Set our minimum city to the first
-        HashMap<String, String> city = cities.get(0);
-        min.setLatitude(Double.valueOf(city.get("lat")));
-        min.setLongitude(Double.valueOf(city.get("long")));
-
-        HashMap<String, String> minCity = new HashMap<>();
-        for (int i = 0; i < cities.size(); i++) {
-            //Setting up our current city
-            HashMap<String, String> thisCity = cities.get(i);
-            cur.setLatitude(Double.valueOf(thisCity.get("lat")));
-            cur.setLongitude(Double.valueOf(thisCity.get("long")));
-
-            if (myLocation.distanceTo(cur) <= myLocation.distanceTo(min)) {
-                min.setLatitude(cur.getLatitude());
-                min.setLongitude(cur.getLongitude());
-
-                minCity = thisCity;
-            }
-        }
-
-        AnalyticsFunctions.incrementAndroidAnalyticsValue("LocationBasedCityChange", name);
-
-        //Set our minimum city in the session
-        session.setCity(minCity.get("name"), min.getLatitude(), min.getLongitude(), minCity.get("taxiService"), minCity.get("taxiNumber"));
     }
 
 }

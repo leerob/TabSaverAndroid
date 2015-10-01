@@ -2,6 +2,9 @@ package com.tabsaver;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +49,9 @@ public class LoadingActivity extends Activity {
 
     private static final int API_MAX_LIMIT = 1000;
 
+    private Location myLocation;
+    private boolean myLocationDetermined = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,14 +66,65 @@ public class LoadingActivity extends Activity {
         //TextView showing our current loading message
         loadingMessage = (TextView) findViewById(R.id.loadingMessage);
 
+        //If we haven't set our location, do so.
+        if ( session.getCityName().equals("none")) {
+            setupLocationTracking();
+        } else {
+            grabData(true);
+        }
+
+    }
+
+    /**
+     * Establishes location listener so that the location updates
+     */
+    private void setupLocationTracking(){
+        setWaitingMessage("Where am I?");
+
+        // Acquire a reference to the system Location Manager
+        LocationManager locationManager = (LocationManager) this.getSystemService(getApplicationContext().LOCATION_SERVICE);
+
+        // Define a listener that responds to location updates
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+
+                myLocation = location;
+
+                if ( !myLocationDetermined ) {
+                    myLocationDetermined = true;
+                    getCities();
+                }
+
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            public void onProviderEnabled(String provider) {}
+
+            public void onProviderDisabled(String provider) {}
+        };
+
+        try {
+            // Register the listener with the Location Manager to receive location updates
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        } catch (IllegalArgumentException e ) {
+            yell("Unable to access GPS, location services will not work.");
+        }
+    }
+
+    public void grabData(boolean getCities){
         //Always update deals/bar hours/etc. -- Only update images when needed
         setWaitingMessage("Taking shots...");
+
+        if ( getCities ) {
+            getCities();
+        }
+
         getBarData();
         getBarDeals();
         getBarHours();
-        getCities();
         session.setLastUpdateTime();
-
     }
 
     public void getBarData(){
@@ -83,7 +140,7 @@ public class LoadingActivity extends Activity {
                     try {
 
                         //If the number of bars has changed (new bars)
-                        if ( session.getNumberOfBars() != objects.size() ) {
+                        if (session.getNumberOfBars() != objects.size()) {
                             getBarImages();
                             session.setNumberOfBars(objects.size());
                         } else {
@@ -108,13 +165,12 @@ public class LoadingActivity extends Activity {
                         }
 
 
-
                         //Store information in our session
                         bars = barData;
                         barsLoaded = true;
 
                         //If everythings done, now we can get our images
-                        if (barHoursLoaded && barDealsLoaded && citiesLoaded && imagesLoaded){
+                        if (barHoursLoaded && barDealsLoaded && citiesLoaded && imagesLoaded) {
                             assembleBarDealInformation();
                         }
 
@@ -165,7 +221,22 @@ public class LoadingActivity extends Activity {
 
                         //Store information in our session
                         session.setCities(cities.toString());
+
+                        //If the nearest city hasn't been set, set it
+                        if ( session.getCity().equals("none") ) {
+                            DataManagement.determineClosestCity(DataManagement.setupCitiesHashmap(getApplicationContext()),myLocation, getApplicationContext());
+                            grabData(false);
+
+                            //Update installation analytics
+                            AnalyticsFunctions.setInstallationCity(session.getCity());
+                        }
+
                         citiesLoaded = true;
+
+                        //Set our location based on city
+                        myLocation = new Location("myLocation");
+                        myLocation.setLatitude(session.getLat());
+                        myLocation.setLongitude(session.getLong());
 
                         //If everythings done, now we can get our images
                         if (barHoursLoaded && barDealsLoaded && barsLoaded && imagesLoaded){

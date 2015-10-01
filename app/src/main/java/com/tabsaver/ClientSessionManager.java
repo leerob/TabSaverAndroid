@@ -4,6 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+
+import java.util.HashMap;
+
 public class ClientSessionManager {
 
     //The shared preference file
@@ -44,12 +47,12 @@ public class ClientSessionManager {
     }
 
     //Sets the city setting item
-    public void setCity(String city, double lat, double lon, String taxiService, String taxiNumber){
-        edit.putString("city", city);
-        edit.putString("lat" , "" + lat);
-        edit.putString("lon", "" + lon);
-        edit.putString("taxiService", "" + taxiService);
-        edit.putString("taxiNumber", "" + taxiNumber);
+    public void setCity(HashMap<String, String> city){
+        edit.putString("city", city.get("name"));
+        edit.putString("lat" , city.get("lat"));
+        edit.putString("lon", city.get("long"));
+        edit.putString("taxiService", city.get("taxiService"));
+        edit.putString("taxiNumber", city.get("taxiNumber"));
         edit.commit();
     }
 

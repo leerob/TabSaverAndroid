@@ -2031,7 +2031,8 @@ containing a value of this type.
         public static final int error_incorrect_password=0x7f0d0039;
         public static final int error_invalid_email=0x7f0d003a;
         public static final int error_invalid_password=0x7f0d003b;
-        public static final int google_maps_key=0x7f0d003c;
+        public static final int go_to_settings=0x7f0d003c;
+        public static final int google_maps_key=0x7f0d003d;
         /** 
 
     TODO: Before you run your application, you need a Google Maps API key.
@@ -2047,11 +2048,10 @@ https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend
     string in this file.
     
          */
-        public static final int google_maps_key_instructions=0x7f0d003d;
-        public static final int hello_world=0x7f0d003e;
-        public static final int list=0x7f0d003f;
-        public static final int menu_settings=0x7f0d0040;
-        public static final int ok=0x7f0d0041;
+        public static final int google_maps_key_instructions=0x7f0d003e;
+        public static final int hello_world=0x7f0d003f;
+        public static final int list=0x7f0d0040;
+        public static final int menu_settings=0x7f0d0041;
         public static final int pref_default_display_name=0x7f0d0042;
         public static final int pref_description_social_recommendations=0x7f0d0043;
         public static final int pref_header_data_sync=0x7f0d0044;
@@ -2071,17 +2071,18 @@ https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend
         public static final int search=0x7f0d0052;
         public static final int store_picture_message=0x7f0d0053;
         public static final int store_picture_title=0x7f0d0054;
-        public static final int title_activity_admin=0x7f0d0055;
-        public static final int title_activity_bar_detail=0x7f0d0056;
-        public static final int title_activity_contact=0x7f0d0057;
-        public static final int title_activity_loading=0x7f0d0058;
-        public static final int title_activity_login=0x7f0d0059;
-        public static final int title_activity_main=0x7f0d005a;
-        public static final int title_activity_map=0x7f0d005b;
-        public static final int title_activity_privacy_policy=0x7f0d005c;
-        public static final int title_activity_settings=0x7f0d005d;
-        public static final int title_activity_terms_of_service=0x7f0d005e;
-        public static final int wallet_buy_button_place_holder=0x7f0d005f;
+        public static final int take_me_home=0x7f0d0055;
+        public static final int title_activity_admin=0x7f0d0056;
+        public static final int title_activity_bar_detail=0x7f0d0057;
+        public static final int title_activity_contact=0x7f0d0058;
+        public static final int title_activity_loading=0x7f0d0059;
+        public static final int title_activity_login=0x7f0d005a;
+        public static final int title_activity_main=0x7f0d005b;
+        public static final int title_activity_map=0x7f0d005c;
+        public static final int title_activity_privacy_policy=0x7f0d005d;
+        public static final int title_activity_settings=0x7f0d005e;
+        public static final int title_activity_terms_of_service=0x7f0d005f;
+        public static final int wallet_buy_button_place_holder=0x7f0d0060;
     }
     public static final class style {
         public static final int Base_TextAppearance_AppCompat=0x7f0e0000;

@@ -18,6 +18,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+
 
 public class SettingsActivity extends ActionBarActivity {
 
@@ -72,6 +74,13 @@ public class SettingsActivity extends ActionBarActivity {
         ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1, cities);
         location.setAdapter(adapter);
         location.setThreshold(1);
+
+        location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                location.showDropDown();
+            }
+        });
 
         //Client Login- On Click Listener
         ((TextView) findViewById(R.id.client_login)).setOnClickListener(new View.OnClickListener() {
@@ -170,8 +179,16 @@ public class SettingsActivity extends ActionBarActivity {
                             //Update analytics
                             AnalyticsFunctions.incrementAndroidAnalyticsValue("SettingsBasedCityChange", temp.getString("name"));
 
+                            //Setup a hashmap because that's what is expected.. There's probably a better way
+                            HashMap<String, String> city = new HashMap<>();
+                            city.put("name", temp.getString("name"));
+                            city.put("lat", String.valueOf(temp.getDouble("lat")));
+                            city.put("long", String.valueOf(temp.getDouble("long")));
+                            city.put("taxiService", temp.getString("taxiService"));
+                            city.put("taxiNumber", temp.getString("taxiNumber"));
+
                             //Set city location
-                            session.setCity(temp.getString("name"), temp.getDouble("lat"), temp.getDouble("long"), temp.getString("taxiService"), temp.getString("taxiNumber"));
+                            session.setCity(city);
                         }
 
                     } catch (JSONException e) {
