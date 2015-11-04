@@ -5,7 +5,6 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -19,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tabsaver.Adapters.ArrayAdapterSearchView;
@@ -28,6 +26,7 @@ import com.tabsaver.Helpers.ParseAnalyticsFunctions;
 import com.tabsaver.Helpers.SessionStorage;
 import com.tabsaver.Adapters.ListArrayAdapter;
 import com.tabsaver.R;
+import com.tabsaver._Screens.Inactive.OldSettingsActivity;
 
 import org.json.JSONException;
 
@@ -89,7 +88,14 @@ public class MainActivity extends ActionBarActivity {
         //Drop in the tabsaver logo
         setIconAsLogo();
 
+        //For look ahead options
         this.dayOfWeek = "today";
+
+        //Should we prompt the user to rate the app?
+        session.incrementTimesLoaded();
+        askToRate();
+
+        shouldUpdate();
     }
 
     /**
@@ -97,7 +103,7 @@ public class MainActivity extends ActionBarActivity {
      */
     public void setIconAsLogo(){
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setLogo(R.drawable.ic_mug);
+        getSupportActionBar().setLogo(R.mipmap.ic_actionbar_logo);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
     }
 
@@ -195,10 +201,14 @@ public class MainActivity extends ActionBarActivity {
         refreshListView();
     }
 
+    /**
+     * Shows a dialog letting the user choose the day of the week they prefer
+     * @param view
+     */
     public void showDayDialog(View view){
         AlertDialog.Builder b = new AlertDialog.Builder(this);
 
-        b.setTitle("Choose A day");
+        b.setTitle("Show Deals For:");
         //b.setMessage("Want to see deals for a different day? Go ahead and choose below!");
 
         b.setIcon(R.drawable.ic_mug);
@@ -216,6 +226,55 @@ public class MainActivity extends ActionBarActivity {
         });
 
         b.show();
+    }
+
+    /**
+     * Prompt the user to rate the app every 5 times it is opened
+     */
+    public void askToRate(){
+        if ( session.getTimesLoaded() == 5) {
+            showRatingDialog();
+        }
+    }
+
+    /**
+     * Button to handle the tax service uses
+     */
+    public void showRatingDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        //Set our title
+        builder.setTitle("Rate Us!");
+
+        //Set our taxi icon
+        builder.setIcon(R.drawable.ic_mug);
+
+        builder.setMessage("Have you rated us in the app store? Take 30 seconds to do it now! We won't ever ask you again.");
+
+        //OnConfirm
+        builder.setPositiveButton(R.string.rate_us, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                } catch (android.content.ActivityNotFoundException anfe) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                }
+
+            }
+        });
+
+
+        //OnCancel
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+            }
+        });
+
+        // Create the AlertDialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     /**
@@ -264,7 +323,7 @@ public class MainActivity extends ActionBarActivity {
             builder.setPositiveButton(R.string.go_to_settings, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     //Navigate to settings
-                    Intent settings = new Intent(getApplicationContext(), SettingsActivity.class);
+                    Intent settings = new Intent(getApplicationContext(), OldSettingsActivity.class);
                     startActivity(settings);
                 }
             });
@@ -376,12 +435,8 @@ public class MainActivity extends ActionBarActivity {
             case R.id.showMapView:
                 Intent map = new Intent(getApplicationContext(), MapActivity.class);
 
-                //Disabling animation for the transition
-                map.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivityForResult(map, 0);
-                overridePendingTransition(0, 0); //0 for no animation
-
                 startActivity(map);
+                overridePendingTransition(0, 0); //0 for no animation
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

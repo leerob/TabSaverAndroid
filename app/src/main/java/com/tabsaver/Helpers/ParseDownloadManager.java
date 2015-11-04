@@ -246,8 +246,6 @@ public class ParseDownloadManager {
                 }
             }
 
-            moveToActivity();
-
         } catch (Exception ex) {
             yell("Failed to load image");
             yell("If issues persistes, reinstall with a reliable internet connection.");
@@ -265,6 +263,7 @@ public class ParseDownloadManager {
         if ( moveToNext != null ) {
             Intent i = new Intent(context, moveToNext);
             context.startActivity(i);
+            ((Activity) context).overridePendingTransition(0, 0);
             ((Activity) context).finish();
         }
 

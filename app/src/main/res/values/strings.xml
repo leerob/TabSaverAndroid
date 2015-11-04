@@ -50,10 +50,15 @@
     <string name="dealsOutdatedString">Tap to report deals as incorrect</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_loading">TabSaver</string>
-    <string name="title_activity_privacy_policy">PrivacyPolicy</string>
-    <string name="title_activity_terms_of_service">TermsOfService</string>
+    <string name="title_activity_privacy_policy">Privacy Policy</string>
+    <string name="title_activity_terms_of_service">Terms Of Service</string>
     <string name="take_me_home">Take Me Home</string>
-    <string name="go_to_settings">Go To Settings</string>
     <string name="cancel">No Thanks</string>
+    <string name="go_to_settings">Go To Settings</string>
+    <string name="rate_us">Rate Us!</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_new_settings">Settings</string>
 
 </resources>

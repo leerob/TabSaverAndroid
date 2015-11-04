@@ -341,6 +341,7 @@ https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend
     --></string>
     <!-- From: file:/C:/proj/tabsaver/tabsaverandroid/app/src/main/res/values/strings.xml -->
     <eat-comment/>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="hello_world">Hello world!</string>
     <string name="list">List</string>
     <string name="menu_settings">Settings</string>
@@ -366,6 +367,7 @@ https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend
     <eat-comment/>
     <string name="prompt_password">Password</string>
     <string name="prompt_user">Username</string>
+    <string name="rate_us">Rate Us!</string>
     <string name="search">Search</string>
     <!-- From: file:/C:/proj/tabsaver/tabsaverandroid/app/build/intermediates/exploded-aar/com.google.android.gms/play-services/6.5.87/res/values/admob_strings.xml -->
     <eat-comment/>
@@ -381,13 +383,14 @@ https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend
     <string name="title_activity_login">Client Sign In</string>
     <string name="title_activity_main">TabSaver</string>
     <string name="title_activity_map">TabSaver</string>
-    <string name="title_activity_privacy_policy">PrivacyPolicy</string>
+    <string name="title_activity_new_settings">Settings</string>
+    <string name="title_activity_privacy_policy">Privacy Policy</string>
     <!-- From: file:/C:/proj/tabsaver/tabsaverandroid/app/src/main/res/values/strings_activity_settings.xml -->
     <eat-comment/>
     <string name="title_activity_settings">Settings</string>
     <!-- From: file:/C:/proj/tabsaver/tabsaverandroid/app/src/main/res/values/strings.xml -->
     <eat-comment/>
-    <string name="title_activity_terms_of_service">TermsOfService</string>
+    <string name="title_activity_terms_of_service">Terms Of Service</string>
     <!-- From: file:/C:/proj/tabsaver/tabsaverandroid/app/build/intermediates/exploded-aar/com.google.android.gms/play-services/6.5.87/res/values/wallet_strings.xml -->
     <eat-comment/>
     <string name="wallet_buy_button_place_holder" translation_description="Text on a button that allows a user to make a payment with Google Wallet [CHAR LIMIT=30]">Buy with Google</string>

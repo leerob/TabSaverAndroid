@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="General">
+        <EditTextPreference
+            android:title="City"
+            android:text="Ames"/>
+
+        <CheckBoxPreference
+            android:title="Show Closed Bars"
+            android:text="Show bars that are currently closed."
+            android:key="showClosedBars" />
+
+        <CheckBoxPreference
+            android:title="Show Bars With No Deals"
+            android:text="Show bars that do not have deals for the day."
+            android:key="showBarsWithNoDeals" />
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+        android:title="Miscellaneous" >
+
+        <Preference android:title="Contact Us" >
+            <intent android:action="com.tabsaver._Screens.Active.ContactActivity" />
+        </Preference>
+
+
+        <Preference android:title="Terms Of Service" >
+            <intent android:action="com.tabsaver._Screens.Active.TermsOfService" />
+        </Preference>
+
+        <Preference android:title="Privacy Policy" >
+            <intent android:action="com.tabsaver._Screens.Active.PrivacyPolicy" />
+        </Preference>
+
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -33,6 +33,7 @@ import com.tabsaver.Helpers.BarObjectManager;
 import com.tabsaver.Helpers.ParseAnalyticsFunctions;
 import com.tabsaver.Helpers.SessionStorage;
 import com.tabsaver.R;
+import com.tabsaver._Screens.Inactive.OldSettingsActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -311,7 +312,7 @@ public class MapActivity extends ActionBarActivity {
             builder.setPositiveButton(R.string.go_to_settings, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     //Navigate to settings
-                    Intent settings = new Intent(getApplicationContext(), SettingsActivity.class);
+                    Intent settings = new Intent(getApplicationContext(), OldSettingsActivity.class);
                     startActivity(settings);
                 }
             });
@@ -422,21 +423,16 @@ public class MapActivity extends ActionBarActivity {
         switch (item.getItemId()) {
             //Go to settings
             case R.id.action_settings:
-                Intent settings = new Intent(getApplicationContext(), SettingsActivity.class);
+                Intent settings = new Intent(getApplicationContext(), OldSettingsActivity.class);
                 startActivity(settings);
                 finish();
                 return true;
 
             //Go to list view
             case R.id.action_list:
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-
-                //Disabling animation
-                i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivityForResult(i, 0);
+                Intent list = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(list);
                 overridePendingTransition(0, 0);
-
-                startActivity(i);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

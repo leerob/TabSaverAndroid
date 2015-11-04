@@ -96,6 +96,11 @@
         <activity
             android:name="com.tabsaver._Screens.Active.ContactActivity"
             android:label="@string/title_activity_contact" >
+            <intent-filter>
+                <action android:name="com.tabsaver._Screens.Active.ContactActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
         <activity
             android:name="com.tabsaver._Screens.Active.SettingsActivity"
@@ -109,6 +114,28 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.tabsaver._Screens.Active.PrivacyPolicy"
+            android:label="@string/title_activity_privacy_policy" >
+            <intent-filter>
+                <action android:name="com.tabsaver._Screens.Active.PrivacyPolicy" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.tabsaver._Screens.Active.TermsOfService"
+            android:label="@string/title_activity_terms_of_service" >
+            <intent-filter>
+                <action android:name="com.tabsaver._Screens.Active.TermsOfService" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.tabsaver._Screens.Active.NewSettingsActivity"
+            android:label="@string/title_activity_new_settings" >
         </activity>
 
         <service android:name="com.parse.PushService" />
@@ -139,15 +166,6 @@
                 <category android:name="com.tabsaver" />
             </intent-filter>
         </receiver>
-
-        <activity
-            android:name="com.tabsaver._Screens.Active.PrivacyPolicy"
-            android:label="@string/title_activity_privacy_policy" >
-        </activity>
-        <activity
-            android:name="com.tabsaver._Screens.Active.TermsOfService"
-            android:label="@string/title_activity_terms_of_service" >
-        </activity>
     </application>
 
 </manifest>

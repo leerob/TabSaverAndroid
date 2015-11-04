@@ -17,9 +17,8 @@ public class SessionStorage {
     //The context
     public Context _context;
 
-
     //The name of the shared preference storing the data
-    private static final String prefName = "userState";
+    public static final String prefName = "com.tabsaver.userState";
 
     /**
      * Createa a new user session with the given context. Suppressed a warning that pref.edit
@@ -65,23 +64,18 @@ public class SessionStorage {
         edit.commit();
     }
 
-    public void setDistancePreference(int distance){
-        edit.putInt("distance", distance);
-        edit.commit();
-    }
-
     public void setLastUpdateTime(){
         edit.putLong("lastUpdateTime", System.currentTimeMillis());
         edit.commit();
     }
 
-    public void setBarCount(int num){
-        edit.putInt("barCountForThisCity", num);
+    public void incrementTimesLoaded(){
+        edit.putLong("timesUpdate", getTimesLoaded() + 1);
         edit.commit();
     }
 
-    public int getBarCount(){
-        return pref.getInt("barCountForThisCity", 0);
+    public long getTimesLoaded(){
+        return pref.getLong("timesUpdated", 0);
     }
 
     public long getLastUpdateTime(){

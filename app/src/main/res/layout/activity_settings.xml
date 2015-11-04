@@ -4,7 +4,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.tabsaver._Screens.Active.SettingsActivity"
+    tools:context="com.tabsaver._Screens.Inactive.OldSettingsActivity"
     android:fillViewport="false"
     android:id="@+id/settings_page">
 
@@ -68,46 +68,62 @@
                 android:paddingTop="15dp"
                 android:layout_below="@+id/line_break_1"
                 android:maxLines="1"
-                android:hint="Start typing a city" />
+                android:hint="Start typing a city"
+                android:layout_marginTop="15dp" />
         </LinearLayout>
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone">
+            android:layout_height="match_parent">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Current Cities:"
-                android:paddingTop="20dp"
-                android:id="@+id/cities_label"
-                android:layout_below="@+id/locationLabel"
-                android:paddingRight="17dp"
+                android:text="Show Closed Bars:"
+                android:id="@+id/textView"
+                android:layout_below="@+id/line_break_1"
+                android:paddingRight="20dp"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_marginTop="15dp"
                 android:textSize="20sp" />
 
-            <GridLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/selected_cities"></GridLayout>
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/showClosedBars"
+                android:layout_marginTop="15dp"
+                android:checked="true" />
+
         </LinearLayout>
 
-        <SeekBar
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/deprecated_location"
-            android:paddingTop="25dp"
-            android:layout_below="@+id/locationLabel"
-            android:layout_toRightOf="@+id/cities_label"
-            android:layout_toEndOf="@+id/cities_label"
-            android:max="250"
-            android:indeterminate="false"
-            android:visibility="gone" />
+            android:layout_height="match_parent" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Show Bars With No Deals:"
+                android:id="@+id/textView15"
+                android:layout_below="@+id/line_break_1"
+                android:paddingRight="20dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="15dp"
+                android:textSize="20sp" />
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/showBarsNoDeals"
+                android:layout_marginTop="15dp"
+                android:checked="true" />
+        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
