@@ -1,10 +1,11 @@
-package com.tabsaver;
+package com.tabsaver._Screens.Active;
 
 import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -15,15 +16,21 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import org.json.JSONArray;
+
+import com.tabsaver.Adapters.ArrayAdapterSearchView;
+import com.tabsaver.Helpers.BarObjectManager;
+import com.tabsaver.Helpers.ParseAnalyticsFunctions;
+import com.tabsaver.Helpers.SessionStorage;
+import com.tabsaver.Adapters.ListArrayAdapter;
+import com.tabsaver.R;
+
 import org.json.JSONException;
-import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -32,9 +39,6 @@ public class MainActivity extends ActionBarActivity {
 
     //All bars information
     private ArrayList<HashMap<String, String>> bars;
-
-    //All cities
-    private ArrayList<HashMap<String, String>> cities;
 
     //Listview
     private ListView listview;
@@ -46,7 +50,7 @@ public class MainActivity extends ActionBarActivity {
     private ProgressBar loader;
 
     //Storing and retrieving session information
-    private ClientSessionManager session;
+    private SessionStorage session;
 
     //Our current location
     private Location myLocation = null;
@@ -55,13 +59,15 @@ public class MainActivity extends ActionBarActivity {
     //Frequency in which the app should force update = ms * sec * min * hours * day
     private static final int UPDATEFREQUENCY = 1000 * 60 * 60 * 24 * 1;
 
+    private String dayOfWeek;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         //Setup the session
-        session = new ClientSessionManager(getApplicationContext());
+        session = new SessionStorage(getApplicationContext());
 
         //First things first - validate that we're up to date!
         if (shouldUpdate()){
@@ -79,6 +85,20 @@ public class MainActivity extends ActionBarActivity {
 
         //Setup our swipe refresh
         setupSwipeRefresh();
+
+        //Drop in the tabsaver logo
+        setIconAsLogo();
+
+        this.dayOfWeek = "today";
+    }
+
+    /**
+     * Add logo to action bar
+     */
+    public void setIconAsLogo(){
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setLogo(R.drawable.ic_mug);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
     }
 
     public void setupSwipeRefresh(){
@@ -98,9 +118,6 @@ public class MainActivity extends ActionBarActivity {
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
-
-        //Refresh swipe container
-        swipeContainer.setRefreshing(true);
     }
 
     /**
@@ -119,11 +136,6 @@ public class MainActivity extends ActionBarActivity {
                 if ( !myLocationDetermined ) {
                     myLocationDetermined = true;
                     refreshListView();
-
-                    if ( session.getCity().equals("none") ) {
-                        cities = DataManagement.setupCitiesHashmap(getApplicationContext());
-                        DataManagement.determineClosestCity(cities, myLocation, getApplicationContext());
-                    }
                 }
 
             }
@@ -161,7 +173,7 @@ public class MainActivity extends ActionBarActivity {
         //display everything
         try {
             //Setup the bars hashmap
-            bars = DataManagement.setupBarsHashmap(getApplicationContext(), myLocation);
+            bars = BarObjectManager.setupBarsHashmap(getApplicationContext(), myLocation);
 
             if ( myLocationDetermined ) {
                 sortBarsByDistance();
@@ -180,9 +192,30 @@ public class MainActivity extends ActionBarActivity {
     public void onResume(){
         super.onResume();
 
-        if ( adapter != null ) {
-            adapter.filterByDistancePreference();
-        }
+        refreshListView();
+    }
+
+    public void showDayDialog(View view){
+        AlertDialog.Builder b = new AlertDialog.Builder(this);
+
+        b.setTitle("Choose A day");
+        //b.setMessage("Want to see deals for a different day? Go ahead and choose below!");
+
+        b.setIcon(R.drawable.ic_mug);
+
+        final String[] types = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+        b.setItems(types, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dayOfWeek = types[which];
+                refreshListView();
+                dialog.dismiss();
+            }
+
+        });
+
+        b.show();
     }
 
     /**
@@ -191,7 +224,7 @@ public class MainActivity extends ActionBarActivity {
      */
     public void hailCab(View view){
         //Update analytics
-        AnalyticsFunctions.incrementAndroidAnalyticsValue("Taxi", "Clicks");
+        ParseAnalyticsFunctions.incrementAndroidAnalyticsValue("Taxi", "Clicks");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -216,7 +249,7 @@ public class MainActivity extends ActionBarActivity {
             builder.setPositiveButton(R.string.take_me_home, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     //Update analytics
-                    AnalyticsFunctions.incrementAndroidAnalyticsValue("Taxi", "Calls");
+                    ParseAnalyticsFunctions.incrementAndroidAnalyticsValue("Taxi", "Calls");
 
                     //Parse phone number, send off the call to the taxi service
                     Intent intent = new Intent(Intent.ACTION_DIAL);
@@ -256,9 +289,9 @@ public class MainActivity extends ActionBarActivity {
      */
     public void displayListView() {
         listview = (ListView) findViewById(R.id.listview);
-        adapter = new ListArrayAdapter(MainActivity.this, bars);
+        adapter = new ListArrayAdapter(MainActivity.this, bars, dayOfWeek);
         listview.setAdapter(adapter);
-        listview.setEmptyView((TextView) findViewById(R.id.emptyListViewText));
+        listview.setEmptyView(findViewById(R.id.emptyListViewText));
     }
 
     /**
@@ -358,4 +391,5 @@ public class MainActivity extends ActionBarActivity {
     public void yell(String message){
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
+
 }

@@ -1,4 +1,4 @@
-package com.tabsaver;
+package com.tabsaver._Screens.Active;
 
 import android.app.AlertDialog;
 import android.app.SearchManager;
@@ -9,8 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
-import android.opengl.Visibility;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -19,9 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.SearchView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -32,10 +27,12 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
+import com.tabsaver.Adapters.ArrayAdapterSearchView;
+import com.tabsaver.Adapters.CustomMapsWindowAdapter;
+import com.tabsaver.Helpers.BarObjectManager;
+import com.tabsaver.Helpers.ParseAnalyticsFunctions;
+import com.tabsaver.Helpers.SessionStorage;
+import com.tabsaver.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,7 +49,6 @@ public class MapActivity extends ActionBarActivity {
 
     //Json representations of cities and bars
     private ArrayList<HashMap<String, String>> bars = new ArrayList<>();
-    private ArrayList<HashMap<String, String>> cities = new ArrayList<>();
 
     //All of the bar markers on the map
     private List<Marker> markers = new ArrayList<>();
@@ -64,7 +60,7 @@ public class MapActivity extends ActionBarActivity {
     private boolean myLocationDetermined = false;
 
     //Storing and retrieving session information
-    private ClientSessionManager session;
+    private SessionStorage session;
 
     //The bars list to show up in the search view (Strings instead of the arraylist)
     private String[] barsListForSearchview;
@@ -74,13 +70,12 @@ public class MapActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        session = new ClientSessionManager(getApplicationContext());
+        session = new SessionStorage(getApplicationContext());
 
         //Grab bar and city information
         try {
             //setup bars and cities datastructures
-            bars = DataManagement.setupBarsHashmap(getApplicationContext(), myLocation);
-            cities = DataManagement.setupCitiesHashmap(getApplicationContext());
+            bars = BarObjectManager.setupBarsHashmap(getApplicationContext(), myLocation);
             setupSearchStringArray();
 
             setUpMapIfNeeded();
@@ -124,6 +119,7 @@ public class MapActivity extends ActionBarActivity {
                     .title(name)
                     .snippet(firstDeal + "...")
                     .icon(BitmapDescriptorFactory.fromBitmap(img)));
+
             markers.add((m));
 
             //Listener to zoom to a marker on click
@@ -149,7 +145,7 @@ public class MapActivity extends ActionBarActivity {
                     i.putExtra("BarId", barId);
 
                     //Update analytics
-                    AnalyticsFunctions.incrementBarClickThrough(barId);
+                    ParseAnalyticsFunctions.incrementBarClickThrough(barId);
 
                     //Move on
                     startActivity(i);
@@ -229,10 +225,10 @@ public class MapActivity extends ActionBarActivity {
         public void onMyLocationChange(Location location) {
             myLocation = location;
 
-            //Set our current city
-            if (session.getCity().equals("none")) {
-                session.setCity(DataManagement.determineClosestCity(cities, myLocation, getApplicationContext()));
-            }
+//            //Set our current city
+//            if (session.getCity().equals("none")) {
+//                session.setCity(BarObjectManager.determineClosestCity(cities, myLocation, getApplicationContext()));
+//            }
 
             //Zoom to our location if we haven't yet
             if (!myLocationDetermined) {
@@ -264,6 +260,8 @@ public class MapActivity extends ActionBarActivity {
             //setup our listeners
             mMap.setMyLocationEnabled(true);
             mMap.setOnMyLocationChangeListener(myLocationChangeListener);
+
+            mMap.setInfoWindowAdapter(new CustomMapsWindowAdapter(getLayoutInflater()));
         }
     }
 
@@ -273,7 +271,7 @@ public class MapActivity extends ActionBarActivity {
      */
     public void hailCab(View view){
         //Update analytics
-        AnalyticsFunctions.incrementAndroidAnalyticsValue("Taxi", "Clicks");
+        ParseAnalyticsFunctions.incrementAndroidAnalyticsValue("Taxi", "Clicks");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -298,7 +296,7 @@ public class MapActivity extends ActionBarActivity {
             builder.setPositiveButton(R.string.take_me_home, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     //Update analytics
-                    AnalyticsFunctions.incrementAndroidAnalyticsValue("Taxi", "Calls");
+                    ParseAnalyticsFunctions.incrementAndroidAnalyticsValue("Taxi", "Calls");
 
                     //Parse phone number, send off the call to the taxi service
                     Intent intent = new Intent(Intent.ACTION_DIAL);
@@ -402,7 +400,7 @@ public class MapActivity extends ActionBarActivity {
             @Override
             public boolean onQueryTextChange(String s) {
                 if (s.length() > 3) {
-                    AnalyticsFunctions.saveSearchTerm("Map", s, getApplicationContext());
+                    ParseAnalyticsFunctions.saveSearchTerm("Map", s, getApplicationContext());
                 }
                 return false;
             }
@@ -439,7 +437,6 @@ public class MapActivity extends ActionBarActivity {
                 overridePendingTransition(0, 0);
 
                 startActivity(i);
-                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

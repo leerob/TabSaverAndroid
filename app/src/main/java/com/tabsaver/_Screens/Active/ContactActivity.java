@@ -1,6 +1,5 @@
-package com.tabsaver;
+package com.tabsaver._Screens.Active;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -12,9 +11,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tabsaver.Helpers.JSONFunctions;
+import com.tabsaver.R;
+
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 
 public class ContactActivity extends ActionBarActivity {

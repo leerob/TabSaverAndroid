@@ -108,7 +108,7 @@ ADDED from AndroidManifest.xml:44:9
 		ADDED from AndroidManifest.xml:46:13
 	android:name
 		ADDED from AndroidManifest.xml:45:13
-activity#com.tabsaver.MapActivity
+activity#com.tabsaver.Screens.Active.MapActivity
 ADDED from AndroidManifest.xml:48:9
 	android:label
 		ADDED from AndroidManifest.xml:50:13
@@ -126,19 +126,19 @@ action#android.intent.action.SEARCH
 ADDED from AndroidManifest.xml:56:17
 	android:name
 		ADDED from AndroidManifest.xml:56:25
-activity#com.tabsaver.MainActivity
+activity#com.tabsaver.Screens.Active.MainActivity
 ADDED from AndroidManifest.xml:59:9
 	android:label
 		ADDED from AndroidManifest.xml:61:13
 	android:name
 		ADDED from AndroidManifest.xml:60:13
-activity#com.tabsaver.BarDetail
+activity#com.tabsaver.Screens.Active.BarDetail
 ADDED from AndroidManifest.xml:70:9
 	android:label
 		ADDED from AndroidManifest.xml:72:13
 	android:name
 		ADDED from AndroidManifest.xml:71:13
-activity#com.tabsaver.LoginActivity
+activity#com.tabsaver.Screens.Inactive.LoginActivity
 ADDED from AndroidManifest.xml:74:9
 	android:label
 		ADDED from AndroidManifest.xml:76:13
@@ -146,25 +146,25 @@ ADDED from AndroidManifest.xml:74:9
 		ADDED from AndroidManifest.xml:77:13
 	android:name
 		ADDED from AndroidManifest.xml:75:13
-activity#com.tabsaver.AdminActivity
+activity#com.tabsaver.Screens.Inactive.AdminActivity
 ADDED from AndroidManifest.xml:79:9
 	android:label
 		ADDED from AndroidManifest.xml:81:13
 	android:name
 		ADDED from AndroidManifest.xml:80:13
-activity#com.tabsaver.ContactActivity
+activity#com.tabsaver.Screens.Active.ContactActivity
 ADDED from AndroidManifest.xml:83:9
 	android:label
 		ADDED from AndroidManifest.xml:85:13
 	android:name
 		ADDED from AndroidManifest.xml:84:13
-activity#com.tabsaver.SettingsActivity
+activity#com.tabsaver.Screens.Active.SettingsActivity
 ADDED from AndroidManifest.xml:87:9
 	android:label
 		ADDED from AndroidManifest.xml:89:13
 	android:name
 		ADDED from AndroidManifest.xml:88:13
-activity#com.tabsaver.LoadingActivity
+activity#com.tabsaver.Screens.Active.LoadingActivity
 ADDED from AndroidManifest.xml:91:9
 	android:label
 		ADDED from AndroidManifest.xml:93:13
@@ -238,13 +238,13 @@ category#com.tabsaver
 ADDED from AndroidManifest.xml:126:17
 	android:name
 		ADDED from AndroidManifest.xml:126:27
-activity#com.tabsaver.PrivacyPolicy
+activity#com.tabsaver.Screens.Active.PrivacyPolicy
 ADDED from AndroidManifest.xml:130:9
 	android:label
 		ADDED from AndroidManifest.xml:132:13
 	android:name
 		ADDED from AndroidManifest.xml:131:13
-activity#com.tabsaver.TermsOfService
+activity#com.tabsaver.Screens.Active.TermsOfService
 ADDED from AndroidManifest.xml:134:9
 	android:label
 		ADDED from AndroidManifest.xml:136:13

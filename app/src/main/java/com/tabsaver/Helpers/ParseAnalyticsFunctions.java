@@ -1,9 +1,8 @@
-package com.tabsaver;
+package com.tabsaver.Helpers;
 
 import android.content.Context;
 
 import com.parse.FindCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
@@ -14,7 +13,7 @@ import java.util.List;
 /**
  * Created by Paul on 9/21/2015.
  */
-public class AnalyticsFunctions {
+public class ParseAnalyticsFunctions {
 
 
     public static void incrementBarClickThrough(String barId){
@@ -55,7 +54,7 @@ public class AnalyticsFunctions {
     //Save the entered search term
     public static void saveSearchTerm(String screenSearchedFrom, String value, Context context){
         //Need session to grab stored city name
-        ClientSessionManager session = new ClientSessionManager(context);
+        SessionStorage session = new SessionStorage(context);
 
         ParseObject searchTerm = new ParseObject("BarSearchAnalytics");
         searchTerm.put("value", value);

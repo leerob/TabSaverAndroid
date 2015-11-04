@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- Parse sepecific permissions -->
+    <!-- Parse specific permissions -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -46,8 +46,9 @@
             android:value="AIzaSyDU2L7pd64vwDSggURTcmT7nwuIwLSqtkY" />
 
         <activity
-            android:name=".MapActivity"
-            android:label="@string/title_activity_map" >
+            android:name="._Screens.Active.MapActivity"
+            android:label="@string/title_activity_map"
+            android:launchMode="singleInstance">
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
@@ -57,39 +58,46 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_main" >
+            android:name="._Screens.Active.MainActivity"
+            android:label="@string/title_activity_main"
+            android:icon="@drawable/ic_launcher"
+            android:launchMode="singleInstance"
+            android:uiOptions="splitActionBarWhenNarrow">
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
+                android:resource="@xml/searchable"
+                />
+
+            <meta-data android:name="android.support.UI_OPTIONS"
+                android:value="splitActionBarWhenNarrow" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".BarDetail"
+            android:name="._Screens.Active.BarDetail"
             android:label="@string/title_activity_bar_detail" >
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name="._Screens.Inactive.LoginActivity"
             android:label="@string/title_activity_login"
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity
-            android:name=".AdminActivity"
+            android:name="._Screens.Inactive.AdminActivity"
             android:label="@string/title_activity_admin" >
         </activity>
         <activity
-            android:name=".ContactActivity"
+            android:name="._Screens.Active.ContactActivity"
             android:label="@string/title_activity_contact" >
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name="._Screens.Active.SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
         <activity
-            android:name=".LoadingActivity"
+            android:name="._Screens.Active.LoadingActivity"
             android:label="@string/title_activity_loading" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -128,11 +136,11 @@
         </receiver>
 
         <activity
-            android:name=".PrivacyPolicy"
+            android:name="._Screens.Active.PrivacyPolicy"
             android:label="@string/title_activity_privacy_policy" >
         </activity>
         <activity
-            android:name=".TermsOfService"
+            android:name="._Screens.Active.TermsOfService"
             android:label="@string/title_activity_terms_of_service" >
         </activity>
     </application>

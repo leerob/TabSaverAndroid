@@ -1,7 +1,11 @@
-package com.tabsaver;
+package com.tabsaver.Helpers;
 
 import android.content.Context;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,57 +17,7 @@ import java.util.HashMap;
 /**
  * Created by Paul on 9/28/2015.
  */
-public class DataManagement {
-
-    //TODO: Extract hashmap functions for bars & cities
-    //TODO: Extract determine closest city function
-
-    /**
-     * Given a hashmap of cities and our location, determine which city we are closest to.
-     * @param cities
-     * @param myLocation
-     * @return
-     */
-    public static HashMap<String, String> determineClosestCity(ArrayList<HashMap<String, String>> cities, Location myLocation, Context context) {
-        //Get our session
-        ClientSessionManager session = new ClientSessionManager(context);
-
-        //Current location
-        Location cur = new Location("BS");
-
-        //Minimum location
-        Location min = new Location("BS");
-
-        //City name
-        String name = "None";
-
-        //Set our minimum city to the first
-        HashMap<String, String> city = cities.get(0);
-        min.setLatitude(Double.valueOf(city.get("lat")));
-        min.setLongitude(Double.valueOf(city.get("long")));
-
-        HashMap<String, String> minCity = new HashMap<>();
-        for (int i = 0; i < cities.size(); i++) {
-            //Setting up our current city
-            HashMap<String, String> thisCity = cities.get(i);
-            cur.setLatitude(Double.valueOf(thisCity.get("lat")));
-            cur.setLongitude(Double.valueOf(thisCity.get("long")));
-
-            if (myLocation.distanceTo(cur) <= myLocation.distanceTo(min)) {
-                min.setLatitude(cur.getLatitude());
-                min.setLongitude(cur.getLongitude());
-
-                minCity = thisCity;
-            }
-        }
-
-        AnalyticsFunctions.incrementAndroidAnalyticsValue("LocationBasedCityChange", name);
-
-        session.setCity(minCity);
-
-        //Set our minimum city in the session
-        return minCity;
-    }
+public class BarObjectManager {
 
 
     /**
@@ -73,7 +27,7 @@ public class DataManagement {
      */
     public static ArrayList<HashMap<String,String>> setupCitiesHashmap(Context context) {
         //Need our context for collecting the cities
-        ClientSessionManager session = new ClientSessionManager(context);
+        SessionStorage session = new SessionStorage(context);
 
         ArrayList<HashMap<String,String>> cities = new ArrayList<>();
 
@@ -105,7 +59,7 @@ public class DataManagement {
      */
     public static ArrayList<HashMap<String,String>> setupBarsHashmap(Context context, Location myLocation) throws JSONException {
         //setup our context
-        ClientSessionManager session = new ClientSessionManager(context);
+        SessionStorage session = new SessionStorage(context);
         JSONArray barsJSON = new JSONArray(session.getBars());
 
         ArrayList<HashMap<String,String>> bars = new ArrayList<>();
@@ -147,4 +101,6 @@ public class DataManagement {
 
         return bars;
     }
+
+
 }

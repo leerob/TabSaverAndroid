@@ -1,6 +1,5 @@
-package com.tabsaver;
+package com.tabsaver._Screens.Inactive;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -16,6 +15,10 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.tabsaver.Helpers.SessionStorage;
+import com.tabsaver.Helpers.JSONFunctions;
+import com.tabsaver.R;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -46,7 +49,7 @@ public class AdminActivity extends ActionBarActivity implements AdapterView.OnIt
 
 
     public int currentDay = -1;
-    private ClientSessionManager session;
+    private SessionStorage session;
     private View mProgressView;
     private String bar;
     private String city;
@@ -56,7 +59,7 @@ public class AdminActivity extends ActionBarActivity implements AdapterView.OnIt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
 
-        session = new ClientSessionManager(getApplicationContext());
+        session = new SessionStorage(getApplicationContext());
         bar = session.getBar();
         city = session.getCity();
 

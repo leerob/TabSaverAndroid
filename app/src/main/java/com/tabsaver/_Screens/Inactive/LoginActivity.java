@@ -1,32 +1,26 @@
-package com.tabsaver;
+package com.tabsaver._Screens.Inactive;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.LoaderManager.LoaderCallbacks;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Build.VERSION;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+
+import com.tabsaver.Helpers.SessionStorage;
+import com.tabsaver.Helpers.JSONFunctions;
+import com.tabsaver.R;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -239,7 +233,7 @@ public class LoginActivity extends Activity{
                 //Return true on success
                 if ( success.equals("1") ) {
 
-                    ClientSessionManager session = new ClientSessionManager(getApplicationContext());
+                    SessionStorage session = new SessionStorage(getApplicationContext());
                     session.login(mEmail, requestProps.getString("Token"), requestProps.getString("Bar"), requestProps.getString("City"));
 
                     return true;

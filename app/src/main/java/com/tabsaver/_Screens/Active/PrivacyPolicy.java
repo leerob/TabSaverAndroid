@@ -1,9 +1,11 @@
-package com.tabsaver;
+package com.tabsaver._Screens.Active;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.tabsaver.R;
 
 
 public class PrivacyPolicy extends ActionBarActivity {

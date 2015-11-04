@@ -1,4 +1,4 @@
-package com.tabsaver;
+package com.tabsaver.Helpers;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -7,7 +7,7 @@ import android.content.SharedPreferences.Editor;
 
 import java.util.HashMap;
 
-public class ClientSessionManager {
+public class SessionStorage {
 
     //The shared preference file
     public SharedPreferences pref;
@@ -24,13 +24,12 @@ public class ClientSessionManager {
     /**
      * Createa a new user session with the given context. Suppressed a warning that pref.edit
      * isn't actually commiting any changes.
-     * @param context
+     * @param context - The application context
      */
-    @SuppressLint("CommitPrefEdits") public  ClientSessionManager(Context context) {
+    @SuppressLint("CommitPrefEdits") public SessionStorage(Context context) {
         _context = context;
         pref = context.getSharedPreferences(prefName, 0); // 0 - for private mode
         edit = pref.edit();
-
     }
 
     /**
@@ -56,13 +55,13 @@ public class ClientSessionManager {
         edit.commit();
     }
 
-    public void setBars(String cityJson) {
-        edit.putString("bars", cityJson);
+    public void setBars(String barsJSON) {
+        edit.putString("bars", barsJSON);
         edit.commit();
     }
 
-    public void setCities(String citiesJson) {
-        edit.putString("cities", citiesJson);
+    public void setCities(String citiesJSON) {
+        edit.putString("cities", citiesJSON);
         edit.commit();
     }
 
@@ -71,22 +70,22 @@ public class ClientSessionManager {
         edit.commit();
     }
 
-    public void setNumberOfBars(int numBars){
-        edit.putInt("numBars", numBars);
-        edit.commit();
-    }
-
     public void setLastUpdateTime(){
         edit.putLong("lastUpdateTime", System.currentTimeMillis());
         edit.commit();
     }
 
-    public long getLastUpdateTime(){
-        return pref.getLong("lastUpdateTime", 0);
+    public void setBarCount(int num){
+        edit.putInt("barCountForThisCity", num);
+        edit.commit();
     }
 
-    public int getNumberOfBars(){
-        return pref.getInt("numBars", 0);
+    public int getBarCount(){
+        return pref.getInt("barCountForThisCity", 0);
+    }
+
+    public long getLastUpdateTime(){
+        return pref.getLong("lastUpdateTime", 0);
     }
 
     public String getCities(){
@@ -98,7 +97,7 @@ public class ClientSessionManager {
     }
     /**
      * Get name of saved closest city
-     * @return
+     * @return - The name of the nearest city
      */
     public String getCityName() {
         return pref.getString("city", "none");
@@ -106,7 +105,7 @@ public class ClientSessionManager {
 
     /**
      * Get the taxi service for this city's name
-     * @return
+     * @return - The name of the taxi service for the nearest city
      */
     public String getTaxiName(){
         return pref.getString("taxiService", "none");
@@ -114,7 +113,7 @@ public class ClientSessionManager {
 
     /**
      * Get the taxi service for this city's number
-     * @return
+     * @return - The phone number of the taxi service for the nearest city
      */
     public String getTaxiNumber(){
         return pref.getString("taxiNumber", "none");
@@ -122,7 +121,7 @@ public class ClientSessionManager {
 
     /**
      * Get the latitude setting of city
-     * @return
+     * @return - The latitude of the nearest city
      */
     public Double getLat(){
         return Double.valueOf(pref.getString("lat", "" + 0.0));
@@ -130,40 +129,40 @@ public class ClientSessionManager {
 
     /**
      * Get the longitude setting of city
-     * @return
+     * @return - The longitude of the nearest city
      */
     public Double getLong(){
         return Double.valueOf(pref.getString("lon", "" + 0.0));
     }
 
 
-    /**
-     * Returns the user name that is currently logged in
-     * @return
-     */
-    public String getUser(){
-        return pref.getString("user", null);
-    }
-
-    /**
-     * Returns if the user is logged in or not
-     * @return
-     */
-    public boolean isLoggedIn(){
-        return pref.getBoolean("loggedIn", false);
-    }
-
-    /**
-     * Returns the user's token
-     * @return
-     */
-    public String getToken(){
-        return pref.getString("token", "none");
-    }
+//    /**
+//     * Returns the user name that is currently logged in
+//     * @return - The current user logged in to the Admin Portal
+//     */
+//    public String getUser(){
+//        return pref.getString("user", null);
+//    }
+//
+//    /**
+//     * Returns if the user is logged in or not
+//     * @return - If we are logged in to the admin portal
+//     */
+//    public boolean isLoggedIn(){
+//        return pref.getBoolean("loggedIn", false);
+//    }
+//
+//    /**
+//     * Returns the user's token
+//     * @return - The unique token for communicating with the back-end API
+//     */
+//    public String getToken(){
+//        return pref.getString("token", "none");
+//    }
 
     /**
      * Returns the bar
-     * @return
+     * @return - Not sure
      */
     public String getBar(){
         return pref.getString("bar", "none");
@@ -171,7 +170,7 @@ public class ClientSessionManager {
 
     /**
      * Returns the city
-     * @return
+     * @return - The current city's JSON representation
      */
     public String getCity(){
         return pref.getString("city", "none");
@@ -179,22 +178,22 @@ public class ClientSessionManager {
 
     /**
      * Returns the distance preference
-     * @return
+     * @return - The distance preference
      */
     public int getDistancePreference(){
         return pref.getInt("distance", 10);
     }
 
-    /**
-     * Logout the user
-     */
-    public void logout() {
-
-        edit.putBoolean("loggedIn", false); // Logged out
-        edit.putString("username", null); // null user
-        edit.putString("token", null); // null token
-        edit.commit(); // commit changes
-
-    }
+//    /**
+//     * Logout the user
+//     */
+//    public void logout() {
+//
+//        edit.putBoolean("loggedIn", false); // Logged out
+//        edit.putString("username", null); // null user
+//        edit.putString("token", null); // null token
+//        edit.commit(); // commit changes
+//
+//    }
 
 }

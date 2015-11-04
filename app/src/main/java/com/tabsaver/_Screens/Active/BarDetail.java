@@ -1,4 +1,4 @@
-package com.tabsaver;
+package com.tabsaver._Screens.Active;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -24,6 +24,11 @@ import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.tabsaver.Helpers.ParseAnalyticsFunctions;
+import com.tabsaver.Helpers.SessionStorage;
+import com.tabsaver.Helpers.JSONFunctions;
+import com.tabsaver.R;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,7 +44,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 
 public class BarDetail extends ActionBarActivity implements OnItemSelectedListener {
@@ -59,7 +63,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
     Boolean dealOutOfDateSent;
 
     //Storing and retrieving session information
-    ClientSessionManager session;
+    SessionStorage session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +71,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
         setContentView(R.layout.activity_bar_detail);
 
         //Setup the session
-        session = new ClientSessionManager(getApplicationContext());
+        session = new SessionStorage(getApplicationContext());
 
         //Grab our barID
         Intent intent = getIntent();
@@ -142,7 +146,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
             public void onClick(View v) {
                 if (!bar.get("number").equals("No Number")) {
                     //Update analytics
-                    AnalyticsFunctions.incrementBarAnalyticsValue(barId, "phoneCalls");
+                    ParseAnalyticsFunctions.incrementBarAnalyticsValue(barId, "phoneCalls");
 
                     //Parse phone number, send off the call
                     Intent intent = new Intent(Intent.ACTION_DIAL);
@@ -157,7 +161,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
             @Override
             public void onClick(View v) {
                 //Update analytics
-                AnalyticsFunctions.incrementBarAnalyticsValue(barId, "siteVisits");
+                ParseAnalyticsFunctions.incrementBarAnalyticsValue(barId, "siteVisits");
 
                 //Navigate to website
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(bar.get("website")));
@@ -165,24 +169,24 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
             }
         });
 
-        //Listener to navigate to a site on click
+        //Listener to navigate to yelp
         yelp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Update analytics
-                AnalyticsFunctions.incrementAndroidAnalyticsValue("YelpNavigation", "Clicks");
+                ParseAnalyticsFunctions.incrementAndroidAnalyticsValue("YelpNavigation", "Clicks");
 
                 //Navigate to website
                 //TODO: Navigate to yelp search
             }
         });
 
-        //Listener to navigate to a site on click
+        //Listener to navigate to foursquare
         foursquare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Update analytics
-                AnalyticsFunctions.incrementAndroidAnalyticsValue("FourSquareNavigation", "Clicks");
+                ParseAnalyticsFunctions.incrementAndroidAnalyticsValue("FourSquareNavigation", "Clicks");
 
                 //Navigate to website
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://foursquare.com/v/venue/" + bar.get("foursquare")));
@@ -195,7 +199,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
             @Override
             public void onClick(View v) {
                 //Update analytics
-                AnalyticsFunctions.incrementBarAnalyticsValue(barId, "directionsRequests");
+                ParseAnalyticsFunctions.incrementBarAnalyticsValue(barId, "directionsRequests");
 
                 //Use google maps service to navigate
                 Intent intent = new Intent(android.content.Intent.ACTION_VIEW,

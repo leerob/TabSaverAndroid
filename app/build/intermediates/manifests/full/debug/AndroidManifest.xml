@@ -12,7 +12,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <!-- Parse sepecific permissions -->
+    <!-- Parse specific permissions -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -52,8 +52,9 @@
             android:value="AIzaSyDU2L7pd64vwDSggURTcmT7nwuIwLSqtkY" />
 
         <activity
-            android:name="com.tabsaver.MapActivity"
-            android:label="@string/title_activity_map" >
+            android:name="com.tabsaver._Screens.Active.MapActivity"
+            android:label="@string/title_activity_map"
+            android:launchMode="singleInstance" >
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
@@ -63,39 +64,45 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.tabsaver.MainActivity"
-            android:label="@string/title_activity_main" >
+            android:name="com.tabsaver._Screens.Active.MainActivity"
+            android:icon="@drawable/ic_launcher"
+            android:label="@string/title_activity_main"
+            android:launchMode="singleInstance"
+            android:uiOptions="splitActionBarWhenNarrow" >
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
+            <meta-data
+                android:name="android.support.UI_OPTIONS"
+                android:value="splitActionBarWhenNarrow" />
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
         </activity>
         <activity
-            android:name="com.tabsaver.BarDetail"
+            android:name="com.tabsaver._Screens.Active.BarDetail"
             android:label="@string/title_activity_bar_detail" >
         </activity>
         <activity
-            android:name="com.tabsaver.LoginActivity"
+            android:name="com.tabsaver._Screens.Inactive.LoginActivity"
             android:label="@string/title_activity_login"
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity
-            android:name="com.tabsaver.AdminActivity"
+            android:name="com.tabsaver._Screens.Inactive.AdminActivity"
             android:label="@string/title_activity_admin" >
         </activity>
         <activity
-            android:name="com.tabsaver.ContactActivity"
+            android:name="com.tabsaver._Screens.Active.ContactActivity"
             android:label="@string/title_activity_contact" >
         </activity>
         <activity
-            android:name="com.tabsaver.SettingsActivity"
+            android:name="com.tabsaver._Screens.Active.SettingsActivity"
             android:label="@string/title_activity_settings" >
         </activity>
         <activity
-            android:name="com.tabsaver.LoadingActivity"
+            android:name="com.tabsaver._Screens.Active.LoadingActivity"
             android:label="@string/title_activity_loading" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -134,11 +141,11 @@
         </receiver>
 
         <activity
-            android:name="com.tabsaver.PrivacyPolicy"
+            android:name="com.tabsaver._Screens.Active.PrivacyPolicy"
             android:label="@string/title_activity_privacy_policy" >
         </activity>
         <activity
-            android:name="com.tabsaver.TermsOfService"
+            android:name="com.tabsaver._Screens.Active.TermsOfService"
             android:label="@string/title_activity_terms_of_service" >
         </activity>
     </application>

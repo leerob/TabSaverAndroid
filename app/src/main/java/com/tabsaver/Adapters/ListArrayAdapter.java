@@ -1,4 +1,4 @@
-package com.tabsaver;
+package com.tabsaver.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.LruCache;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -15,11 +14,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.parse.FindCallback;
-import com.parse.GetCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
+import com.tabsaver.Helpers.ParseAnalyticsFunctions;
+import com.tabsaver.Helpers.SessionStorage;
+import com.tabsaver.R;
+import com.tabsaver._Screens.Active.BarDetail;
+import com.tabsaver._Screens.Active.LoadingActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,7 +33,6 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 
 public class ListArrayAdapter extends BaseAdapter {
 
@@ -46,32 +44,29 @@ public class ListArrayAdapter extends BaseAdapter {
     ArrayList<HashMap<String, String>> barData;
     ArrayList<HashMap<String, String>> barDataBackupForSearchFiltering;
 
+    //Sorting by day
+    private String dayOfWeek;
+
     //Caching images
     private LruCache<String, Bitmap> mMemoryCache;
 
     final static long SHOULDUPDATE = 1000 * 60 * 60 * 24;
 
     //Storing and retrieving session information
-    ClientSessionManager session;
+    SessionStorage session;
 
-    public ListArrayAdapter(Context context, ArrayList<HashMap<String, String>> barData) {
+    public ListArrayAdapter(Context context, ArrayList<HashMap<String, String>> barData, String dayOfWeek) {
         this.context = context;
 
         //Setup the session
-        session = new ClientSessionManager(context);
+        session = new SessionStorage(context);
 
         //Store our bar data
         this.barData = barData;
         barDataBackupForSearchFiltering = new ArrayList<>();
         barDataBackupForSearchFiltering.addAll(barData);
 
-        //Now filter the visible data by distance
-        filterByDistancePreference();
-
-        if ( System.currentTimeMillis() - session.getLastUpdateTime() > SHOULDUPDATE) {
-            Intent reload = new Intent(context, LoadingActivity.class);
-            context.startActivity(reload);
-        }
+        this.dayOfWeek = dayOfWeek;
 
         // Get max available VM memory, exceeding this amount will throw an
         // OutOfMemory exception. Stored in kilobytes as LruCache takes an
@@ -130,7 +125,7 @@ public class ListArrayAdapter extends BaseAdapter {
                 context.startActivity(i);
 
                 //Update bar analytics for clickthrough
-                AnalyticsFunctions.incrementBarClickThrough(barId);
+                ParseAnalyticsFunctions.incrementBarClickThrough(barId);
             }
         });
 
@@ -163,8 +158,7 @@ public class ListArrayAdapter extends BaseAdapter {
     public Bitmap getBitmapFromMemCache(String key) {
         return mMemoryCache.get(key);
     }
-    public static int calculateInSampleSize(
-            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image
         final int height = options.outHeight;
         final int width = options.outWidth;
@@ -305,10 +299,26 @@ public class ListArrayAdapter extends BaseAdapter {
      * @return the string representation of the day of the week
      */
     private String getDealsString(HashMap<String, String> currentBar) {
-        Calendar calendar = Calendar.getInstance();
 
-        //Determines the day of the week if it applies to the bar
-        int day = determineDayOfWeekForBar(currentBar);
+        int day;
+
+        if ( dayOfWeek.equals("Sunday") ) {
+            day = 1;
+        } else if ( dayOfWeek.equals("Monday") ) {
+            day = 2;
+        } else if ( dayOfWeek.equals("Tuesday") ) {
+            day = 3;
+        } else if ( dayOfWeek.equals("Wednesday") ) {
+            day = 4;
+        } else if ( dayOfWeek.equals("Thursday") ) {
+            day = 5;
+        } else if ( dayOfWeek.equals("Friday") ) {
+            day = 6;
+        } else if ( dayOfWeek.equals("Saturday") ) {
+            day = 7;
+        } else {
+            day = determineDayOfWeekForBar(currentBar);
+        }
 
         try {
             JSONObject deals = new JSONObject(currentBar.get("deals"));
@@ -412,11 +422,10 @@ public class ListArrayAdapter extends BaseAdapter {
         barData.clear();
         if (text.length() == 0) {
             barData.addAll(barDataBackupForSearchFiltering);
-            filterByDistancePreference();
         }
         else {
             if ( text.length() > 3){
-                AnalyticsFunctions.saveSearchTerm("List View", text, context);
+                ParseAnalyticsFunctions.saveSearchTerm("List View", text, context);
             }
 
             for (HashMap<String, String> bar : barDataBackupForSearchFiltering)
@@ -432,23 +441,6 @@ public class ListArrayAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    /**
-     * Filtering by the distance preference
-     */
-    public void filterByDistancePreference(){
-
-        for (HashMap<String, String> bar : barDataBackupForSearchFiltering) {
-
-            if ( barData.contains(bar) &&  Double.valueOf(bar.get("distance")) > session.getDistancePreference()) {
-                barData.remove(bar);
-            } else if ( !barData.contains(bar) && Double.valueOf(bar.get("distance")) <= session.getDistancePreference() ) {
-                barData.add(bar);
-            }
-
-        }
-
-        notifyDataSetChanged();
-    }
 
     @Override
     public int getCount() {
