@@ -43,8 +43,7 @@ public class ParseDownloadManager {
     //Activity to move to if we want
     private Class moveToNext;
 
-    private int imageCount, barCount;
-
+    //If we find
     public boolean foundCity;
 
     /**
@@ -62,8 +61,6 @@ public class ParseDownloadManager {
         //Optional parameters
         loadingMessageTextView = textView;
         moveToNext = nextClass;
-
-        imageCount = barCount = 0;
 
         foundCity = false;
     }
