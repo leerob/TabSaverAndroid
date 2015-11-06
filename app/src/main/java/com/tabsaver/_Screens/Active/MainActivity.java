@@ -11,7 +11,6 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,6 +26,7 @@ import com.tabsaver.Helpers.SessionStorage;
 import com.tabsaver.Adapters.ListArrayAdapter;
 import com.tabsaver.R;
 import com.tabsaver._Screens.Inactive.OldSettingsActivity;
+import com.tabsaver._Screens.Extensions.TabsaverActionBarActivity;
 
 import org.json.JSONException;
 
@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends TabsaverActionBarActivity {
 
     //All bars information
     private ArrayList<HashMap<String, String>> bars;
@@ -86,7 +86,7 @@ public class MainActivity extends ActionBarActivity {
         setupSwipeRefresh();
 
         //Drop in the tabsaver logo
-        setIconAsLogo();
+        super.setIconAsLogo(this);
 
         //For look ahead options
         this.dayOfWeek = "today";
@@ -96,15 +96,6 @@ public class MainActivity extends ActionBarActivity {
         askToRate();
 
         shouldUpdate();
-    }
-
-    /**
-     * Add logo to action bar
-     */
-    public void setIconAsLogo(){
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setLogo(R.mipmap.ic_actionbar_logo);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
     }
 
     public void setupSwipeRefresh(){
@@ -218,6 +209,8 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                ParseAnalyticsFunctions.verboseLog(ParseAnalyticsFunctions.CHANGEDAY, types[which]);
+
                 dayOfWeek = types[which];
                 refreshListView();
                 dialog.dismiss();
@@ -254,6 +247,8 @@ public class MainActivity extends ActionBarActivity {
         //OnConfirm
         builder.setPositiveButton(R.string.rate_us, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
+                ParseAnalyticsFunctions.verboseLog("Selected", "Rate In Play Store");
+
                 final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
                 try {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
@@ -309,6 +304,7 @@ public class MainActivity extends ActionBarActivity {
                 public void onClick(DialogInterface dialog, int id) {
                     //Update analytics
                     ParseAnalyticsFunctions.incrementAndroidAnalyticsValue("Taxi", "Calls");
+                    ParseAnalyticsFunctions.verboseLog(ParseAnalyticsFunctions.TAXI, session.getCityName());
 
                     //Parse phone number, send off the call to the taxi service
                     Intent intent = new Intent(Intent.ACTION_DIAL);

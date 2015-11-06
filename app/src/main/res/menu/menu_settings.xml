@@ -7,11 +7,5 @@
         android:id="@+id/cancelSettings"
         android:title="Back"
         app:showAsAction="ifRoom"/>
-
-    <item
-        android:id="@+id/saveSettings"
-        android:title="Save"
-        app:showAsAction="ifRoom"/>
-
-
+    
 </menu>

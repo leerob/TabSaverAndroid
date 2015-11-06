@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,6 +33,7 @@ import com.tabsaver.Helpers.ParseAnalyticsFunctions;
 import com.tabsaver.Helpers.SessionStorage;
 import com.tabsaver.R;
 import com.tabsaver._Screens.Inactive.OldSettingsActivity;
+import com.tabsaver._Screens.Extensions.TabsaverActionBarActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,7 +44,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
-public class MapActivity extends ActionBarActivity {
+public class MapActivity extends TabsaverActionBarActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
@@ -72,6 +72,8 @@ public class MapActivity extends ActionBarActivity {
         setContentView(R.layout.activity_map);
 
         session = new SessionStorage(getApplicationContext());
+
+        super.setIconAsLogo(this);
 
         //Grab bar and city information
         try {
@@ -298,6 +300,7 @@ public class MapActivity extends ActionBarActivity {
                 public void onClick(DialogInterface dialog, int id) {
                     //Update analytics
                     ParseAnalyticsFunctions.incrementAndroidAnalyticsValue("Taxi", "Calls");
+                    ParseAnalyticsFunctions.verboseLog(ParseAnalyticsFunctions.TAXI, session.getCityName());
 
                     //Parse phone number, send off the call to the taxi service
                     Intent intent = new Intent(Intent.ACTION_DIAL);
@@ -423,11 +426,9 @@ public class MapActivity extends ActionBarActivity {
         switch (item.getItemId()) {
             //Go to settings
             case R.id.action_settings:
-                Intent settings = new Intent(getApplicationContext(), OldSettingsActivity.class);
+                Intent settings = new Intent(getApplicationContext(), SettingsActivity.class);
                 startActivity(settings);
-                finish();
                 return true;
-
             //Go to list view
             case R.id.action_list:
                 Intent list = new Intent(getApplicationContext(), MainActivity.class);

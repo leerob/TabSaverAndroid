@@ -16,25 +16,18 @@
         <dex dex="C:\proj\tabsaver\tabsaverandroid\app\build\intermediates\pre-dexed\debug\support-annotations-21.0.3-2b290a8f151748c5fc8f3cdefeaee530d72e5ca4.jar" />
     </item>
     <item
-        jar="C:\Users\Paul\.gradle\caches\modules-2\files-2.1\com.parse.bolts\bolts-android\1.2.0\6ee2953ccf51ce72b6d548c30c4633b99eb4f9dd\bolts-android-1.2.0.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="6ee2953ccf51ce72b6d548c30c4633b99eb4f9dd">
-        <dex dex="C:\proj\tabsaver\tabsaverandroid\app\build\intermediates\pre-dexed\debug\bolts-android-1.2.0-e69dd23aa902bc19463a3546fc81df33fb9696f2.jar" />
-    </item>
-    <item
-        jar="C:\proj\tabsaver\tabsaverandroid\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\libs\internal_impl-21.0.3.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
-        <dex dex="C:\proj\tabsaver\tabsaverandroid\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-39375efbbce7ed5b5027a8633cfa40fe2899e4bb.jar" />
-    </item>
-    <item
         jar="C:\proj\tabsaver\tabsaverandroid\app\build\intermediates\exploded-aar\com.google.android.gms\play-services\6.5.87\classes.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="dd9247ea0fabe8ee479638c4b4a23e93752be256">
         <dex dex="C:\proj\tabsaver\tabsaverandroid\app\build\intermediates\pre-dexed\debug\classes-7731bbe5183f2263c9141f31e9ae7320640f13e9.jar" />
+    </item>
+    <item
+        jar="C:\Users\Paul\.gradle\caches\modules-2\files-2.1\com.parse.bolts\bolts-android\1.2.1\44780c2cf98f6a3cf4e77f1234d644758b329201\bolts-android-1.2.1.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="44780c2cf98f6a3cf4e77f1234d644758b329201">
+        <dex dex="C:\proj\tabsaver\tabsaverandroid\app\build\intermediates\pre-dexed\debug\bolts-android-1.2.1-4a1d83c3b4661a5fb1bc10f754f3a7845cb3bbbb.jar" />
     </item>
     <item
         jar="C:\proj\tabsaver\tabsaverandroid\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\21.0.3\classes.jar"
@@ -49,6 +42,13 @@
         revision="21.1.2"
         sha1="1b065010f3c9d441ede9078aca8eabcd1c81e647">
         <dex dex="C:\proj\tabsaver\tabsaverandroid\app\build\intermediates\pre-dexed\debug\Parse-1.9.1-a40423e89ffb607adbec502e35a1c8b8446c9065.jar" />
+    </item>
+    <item
+        jar="C:\proj\tabsaver\tabsaverandroid\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\libs\internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="C:\proj\tabsaver\tabsaverandroid\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-39375efbbce7ed5b5027a8633cfa40fe2899e4bb.jar" />
     </item>
 
 </items>

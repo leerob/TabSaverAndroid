@@ -2,19 +2,25 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
         android:title="General">
-        <EditTextPreference
+
+        <com.tabsaver._Screens.Extensions.AutoCompleteEditTextPreference
             android:title="City"
-            android:text="Ames"/>
+            android:defaultValue="Ames"
+            android:summary="Click to choose a city"
+            android:key="city"
+            android:id="@+id/city_autocomplete"/>
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:title="Show Closed Bars"
-            android:text="Show bars that are currently closed."
-            android:key="showClosedBars" />
+            android:summary="Show bars that are currently closed."
+            android:key="showClosedBars"
+            android:defaultValue="true"/>
 
-        <CheckBoxPreference
+        <SwitchPreference
             android:title="Show Bars With No Deals"
-            android:text="Show bars that do not have deals for the day."
-            android:key="showBarsWithNoDeals" />
+            android:summary="Show bars that do not have deals for the day."
+            android:key="showBarsWithNoDeals"
+            android:defaultValue="true"/>
     </PreferenceCategory>
 
 

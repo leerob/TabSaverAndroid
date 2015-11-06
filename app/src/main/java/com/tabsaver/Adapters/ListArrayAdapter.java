@@ -100,6 +100,16 @@ public class ListArrayAdapter extends BaseAdapter {
         // Determine Day of Week
         String dealsStr = getDealsString(currentBar);
 
+        //Remove closed bars  if it's in the preferences
+        if ( !session.getShowClosedBars() && dealsStr.contains("Closed") ) {
+            return null; //TODO: Not working
+        }
+
+        //Remove bars w/ no deals if it's in the preferences
+        if ( !session.getShowBarsWithNoDeals() && dealsStr.contains("No Deals") ) {
+            return null; //TODO: Not working
+        }
+
         //setup formater for distance
         NumberFormat formatter = new DecimalFormat("#0.0");
 
@@ -126,6 +136,7 @@ public class ListArrayAdapter extends BaseAdapter {
 
                 //Update bar analytics for clickthrough
                 ParseAnalyticsFunctions.incrementBarClickThrough(barId);
+                ParseAnalyticsFunctions.verboseLog(barName, ParseAnalyticsFunctions.BARCLICK);
             }
         });
 

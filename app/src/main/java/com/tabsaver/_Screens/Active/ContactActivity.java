@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tabsaver.Helpers.JSONFunctions;
+import com.tabsaver.Helpers.ParseAnalyticsFunctions;
 import com.tabsaver.R;
 
 import org.json.JSONArray;
@@ -28,15 +29,17 @@ public class ContactActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
 
+        ParseAnalyticsFunctions.verboseLog("Selected", "Contact Us");
+
         ((Button) findViewById(R.id.contact_send)).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 email = (TextView) findViewById(R.id.contact_email);
                 message = (TextView) findViewById(R.id.contact_message);
 
-                if( isEmailValid( email.getText() ) ) {
+                if (isEmailValid(email.getText())) {
+                    ParseAnalyticsFunctions.verboseLog("Send", "Contact Us Form");
                     new SendContactEmail().execute();
-                }
-                else{
+                } else {
                     email.setError(getString(R.string.error_invalid_email));
                 }
             }
@@ -66,33 +69,32 @@ public class ContactActivity extends ActionBarActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_settings, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    /**
+     * Handle settings menu interactions
+     * @param item
+     * @return
+     */
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.closeContact) {
-            finish();
-            return true;
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.cancelSettings:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     boolean isEmailValid(CharSequence email) {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
-
-    /**
-     * Setup our menu items
-     * @param menu Menu for this page
-     * @return Not sure
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu items for use in the action bar
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_contact, menu);
-        return true;
-    }
-
 
 }

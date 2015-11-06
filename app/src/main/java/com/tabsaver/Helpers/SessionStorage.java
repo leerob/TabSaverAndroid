@@ -49,6 +49,7 @@ public class SessionStorage {
         edit.putString("city", city.get("name"));
         edit.putString("lat" , city.get("lat"));
         edit.putString("lon", city.get("long"));
+        edit.putString("state", city.get("state"));
         edit.putString("taxiService", city.get("taxiService"));
         edit.putString("taxiNumber", city.get("taxiNumber"));
         edit.commit();
@@ -74,8 +75,16 @@ public class SessionStorage {
         edit.commit();
     }
 
+    public boolean getShowClosedBars(){
+        return pref.getBoolean("showClosedBars", true);
+    }
+
+    public boolean getShowBarsWithNoDeals(){
+        return pref.getBoolean("showBarsWithNoDeals", true);
+    }
+
     public long getTimesLoaded(){
-        return pref.getLong("timesUpdated", 0);
+        return pref.getLong("timesUpdate", 0);
     }
 
     public long getLastUpdateTime(){
@@ -168,6 +177,10 @@ public class SessionStorage {
      */
     public String getCity(){
         return pref.getString("city", "none");
+    }
+
+    public String getCityState(){
+        return pref.getString("state", "none");
     }
 
     /**

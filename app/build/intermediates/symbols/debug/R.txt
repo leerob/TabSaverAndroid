@@ -592,7 +592,6 @@ int id progress_horizontal 0x7f0c0006
 int id radio 0x7f0c003f
 int id sandbox 0x7f0c0026
 int id satellite 0x7f0c0019
-int id saveSettings 0x7f0c00c0
 int id scrollView 0x7f0c0056
 int id scrollView2 0x7f0c0064
 int id search 0x7f0c00b9
@@ -705,10 +704,9 @@ int menu menu_list_view 0x7f100003
 int menu menu_loading 0x7f100004
 int menu menu_login 0x7f100005
 int menu menu_main 0x7f100006
-int menu menu_new_settings 0x7f100007
-int menu menu_privacy_policy 0x7f100008
-int menu menu_settings 0x7f100009
-int menu menu_terms_of 0x7f10000a
+int menu menu_privacy_policy 0x7f100007
+int menu menu_settings 0x7f100008
+int menu menu_terms_of 0x7f100009
 int mipmap ic_actionbar_logo 0x7f030000
 int mipmap ic_calendar 0x7f030001
 int raw gtm_analytics 0x7f070000

@@ -144,43 +144,6 @@ public class OldSettingsActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
-            case R.id.saveSettings:
-
-                //Save the city
-                for(int i = 0; i < fullCities.length(); i++ ){
-                    try {
-                        JSONObject curCity  = fullCities.getJSONObject(i);
-
-                        if ( curCity.getString("name").toLowerCase().contains(location.getText().toString().toLowerCase()) && location.getText().toString().toLowerCase() != session.getCityName().toLowerCase()) {
-                            //Update analytics
-                            ParseAnalyticsFunctions.incrementAndroidAnalyticsValue("SettingsBasedCityChange", curCity.getString("name"));
-
-                            //Setup a hashmap because that's what is expected.. There's probably a better way
-                            HashMap<String, String> city = new HashMap<>();
-                            city.put("name", curCity.getString("name"));
-                            city.put("lat", String.valueOf(curCity.getDouble("lat")));
-                            city.put("long", String.valueOf(curCity.getDouble("long")));
-                            city.put("taxiService", curCity.getString("taxiService"));
-                            city.put("taxiNumber", curCity.getString("taxiNumber"));
-
-                            //Set city location
-                            session.setCity(city);
-
-                            Toast.makeText(this, "Downloading bars for " + city.get("name"), Toast.LENGTH_SHORT).show();
-
-                            //Download the bars for this city
-                            ParseDownloadManager pdm = new ParseDownloadManager(getApplicationContext(), null, null);
-                            pdm.getBarsInCity(curCity.getString("name"));
-                        }
-
-                    } catch (JSONException e) {
-                        Toast.makeText(OldSettingsActivity.this, "Failed to save settings.. Is a city selected?", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                //Alert of success
-                Toast.makeText(OldSettingsActivity.this, "Saved settings!", Toast.LENGTH_SHORT).show();
-                return true;
             case R.id.cancelSettings:
                 finish();
                 return true;

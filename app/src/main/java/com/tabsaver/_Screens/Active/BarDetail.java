@@ -147,6 +147,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
                 if (!bar.get("number").equals("No Number")) {
                     //Update analytics
                     ParseAnalyticsFunctions.incrementBarAnalyticsValue(barId, "phoneCalls");
+                    ParseAnalyticsFunctions.verboseLog(bar.get("name"), ParseAnalyticsFunctions.PHONECALL);
 
                     //Parse phone number, send off the call
                     Intent intent = new Intent(Intent.ACTION_DIAL);
@@ -162,6 +163,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
             public void onClick(View v) {
                 //Update analytics
                 ParseAnalyticsFunctions.incrementBarAnalyticsValue(barId, "siteVisits");
+                ParseAnalyticsFunctions.verboseLog(bar.get("name"), ParseAnalyticsFunctions.WEBSITE);
 
                 //Navigate to website
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(bar.get("website")));
@@ -175,9 +177,15 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
             public void onClick(View v) {
                 //Update analytics
                 ParseAnalyticsFunctions.incrementAndroidAnalyticsValue("YelpNavigation", "Clicks");
+                ParseAnalyticsFunctions.verboseLog(bar.get("name"), ParseAnalyticsFunctions.YELP);
 
-                //Navigate to website
-                //TODO: Navigate to yelp search
+                //http://www.yelp.com/search?find_desc=Union&find_loc=Iowa+City,IA
+                String yelpString = "http://www.yelp.com/search?find_desc=";
+                yelpString += bar.get("name").replace(" ", "+") + "&";
+                yelpString += session.getCityName().replace(" ", "+") + ",";
+                yelpString += session.getCityState();
+                Intent yelpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(yelpString));
+                startActivity(yelpIntent);
             }
         });
 
@@ -187,6 +195,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
             public void onClick(View v) {
                 //Update analytics
                 ParseAnalyticsFunctions.incrementAndroidAnalyticsValue("FourSquareNavigation", "Clicks");
+                ParseAnalyticsFunctions.verboseLog(bar.get("name"), ParseAnalyticsFunctions.FOURSQUARE);
 
                 //Navigate to website
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://foursquare.com/v/venue/" + bar.get("foursquare")));
@@ -200,6 +209,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
             public void onClick(View v) {
                 //Update analytics
                 ParseAnalyticsFunctions.incrementBarAnalyticsValue(barId, "directionsRequests");
+                ParseAnalyticsFunctions.verboseLog(bar.get("name"), ParseAnalyticsFunctions.NAVIGATE);
 
                 //Use google maps service to navigate
                 Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
@@ -448,8 +458,12 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
     }
 
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+        String dayOfTheWeek = parent.getItemAtPosition(pos).toString();
+
         //Show the deals for the selected day
-        getDealsForDay(parent.getItemAtPosition(pos).toString());
+        getDealsForDay(dayOfTheWeek);
+
+        ParseAnalyticsFunctions.verboseLog(barName, "Show Deals For " + dayOfTheWeek);
 
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, dealsForSelectedDay);
         listview.setAdapter(arrayAdapter);

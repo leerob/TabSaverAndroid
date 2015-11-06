@@ -15,27 +15,45 @@ import java.util.List;
  */
 public class ParseAnalyticsFunctions {
 
+    private static final boolean debugging = false;
+
+    public static final String CHANGEDAY = "changeListviewDay";
+    public static final String TAXI = "callTaxi";
+    public static final String CITYCHANGE = "selected";
+    public static final String SHOWCLOSEDBARS = "showClosedBars";
+    public static final String SHOWBARSNODEALS = "showBarsNowDeals";
+    public static final String BARCLICK = "pageClicks";
+    public static final String YELP = "yelpClicks";
+    public static final String FOURSQUARE = "foursquareClicks";
+    public static final String WEBSITE = "siteVisits";
+    public static final String PHONECALL = "phoneCalled";
+    public static final String NAVIGATE = "directionsRequests";
+
+
 
     public static void incrementBarClickThrough(String barId){
-        //query and load up the bars.
-        ParseQuery getAnalytics = ParseQuery.getQuery("BarAnalytics");
-        getAnalytics.whereEqualTo("barId", barId);
 
-        // Retrieve the object by id
-        getAnalytics.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
+        if ( !debugging  ) {
+            //query and load up the bars.
+            ParseQuery getAnalytics = ParseQuery.getQuery("BarAnalytics");
+            getAnalytics.whereEqualTo("barId", barId);
 
-                    //Should only return 1 bar - but check just in case
-                    if ( objects.size() > 0 ) {
-                        ParseObject bar = objects.get(0);
-                        bar.increment("pageClicks");
-                        bar.saveInBackground();
+            // Retrieve the object by id
+            getAnalytics.findInBackground(new FindCallback<ParseObject>() {
+                public void done(List<ParseObject> objects, ParseException e) {
+                    if (e == null) {
+
+                        //Should only return 1 bar - but check just in case
+                        if (objects.size() > 0) {
+                            ParseObject bar = objects.get(0);
+                            bar.increment("pageClicks");
+                            bar.saveInBackground();
+                        }
+
                     }
-
                 }
-            }
-        });
+            });
+        }
     }
 
     /**
@@ -43,74 +61,95 @@ public class ParseAnalyticsFunctions {
      * @param city
      */
     public static void setInstallationCity(final String city){
-        //Grab the current installation
-        ParseInstallation currentInstallation = ParseInstallation.getCurrentInstallation();
 
-        //Set the location and save
-        currentInstallation.put("location", city);
-        currentInstallation.saveInBackground();
+        if ( !debugging  ) {
+            //Grab the current installation
+            ParseInstallation currentInstallation = ParseInstallation.getCurrentInstallation();
+
+            //Set the location and save
+            currentInstallation.put("location", city);
+            currentInstallation.saveInBackground();
+        }
     }
 
     //Save the entered search term
     public static void saveSearchTerm(String screenSearchedFrom, String value, Context context){
-        //Need session to grab stored city name
-        SessionStorage session = new SessionStorage(context);
+        if ( !debugging  ) {
+            //Need session to grab stored city name
+            SessionStorage session = new SessionStorage(context);
 
-        ParseObject searchTerm = new ParseObject("BarSearchAnalytics");
-        searchTerm.put("value", value);
-        searchTerm.put("device", ParseInstallation.getCurrentInstallation().getInstallationId());
-        searchTerm.put("deviceType", "Android");
-        searchTerm.put("ScreenSearchedFrom", screenSearchedFrom);
-        searchTerm.put("location", session.getCityName());
-        searchTerm.saveInBackground();
+            ParseObject searchTerm = new ParseObject("BarSearchAnalytics");
+            searchTerm.put("value", value);
+            searchTerm.put("device", ParseInstallation.getCurrentInstallation().getInstallationId());
+            searchTerm.put("deviceType", "Android");
+            searchTerm.put("ScreenSearchedFrom", screenSearchedFrom);
+            searchTerm.put("location", session.getCityName());
+            searchTerm.saveInBackground();
+        }
     }
 
     //Given the action and value (as shown in parse) increment it.
     public static void incrementAndroidAnalyticsValue(String action, String value){
-        //query and load up the bars.
-        ParseQuery getAnalytics = ParseQuery.getQuery("AndroidAnalytics");
+        if ( !debugging  ) {
+            //query and load up the bars.
+            ParseQuery getAnalytics = ParseQuery.getQuery("AndroidAnalytics");
 
-        //Updating City Incrememnt property
-        getAnalytics.whereEqualTo("value", value);
-        getAnalytics.whereEqualTo("action", action);
+            //Updating City Incrememnt property
+            getAnalytics.whereEqualTo("value", value);
+            getAnalytics.whereEqualTo("action", action);
 
-        getAnalytics.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
+            getAnalytics.findInBackground(new FindCallback<ParseObject>() {
+                public void done(List<ParseObject> objects, ParseException e) {
+                    if (e == null) {
 
-                    //Should only return 1 bar - but check just in case
-                    if ( objects.size() > 0 ) {
-                        ParseObject city = objects.get(0);
-                        city.increment("count");
-                        city.saveInBackground();
+                        //Should only return 1 bar - but check just in case
+                        if (objects.size() > 0) {
+                            ParseObject city = objects.get(0);
+                            city.increment("count");
+                            city.saveInBackground();
+                        }
+
                     }
-
                 }
-            }
-        });
+            });
+        }
     }
 
     //Given the action and value (as shown in parse) increment it.
     public static void incrementBarAnalyticsValue(String barId, final String value){
-        //query and load up the bars.
-        ParseQuery getAnalytics = ParseQuery.getQuery("BarAnalytics");
+        if ( !debugging  ) {
+            //query and load up the bars.
+            ParseQuery getAnalytics = ParseQuery.getQuery("BarAnalytics");
 
-        //Updating City Incrememnt property
-        getAnalytics.whereEqualTo("barId", barId);
+            //Updating City Incrememnt property
+            getAnalytics.whereEqualTo("barId", barId);
 
-        getAnalytics.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
+            getAnalytics.findInBackground(new FindCallback<ParseObject>() {
+                public void done(List<ParseObject> objects, ParseException e) {
+                    if (e == null) {
 
-                    //Should only return 1 bar
-                    if ( objects.size() > 0 ) {
-                        ParseObject city = objects.get(0);
-                        city.increment(value);
-                        city.saveInBackground();
+                        //Should only return 1 bar
+                        if (objects.size() > 0) {
+                            ParseObject city = objects.get(0);
+                            city.increment(value);
+                            city.saveInBackground();
+                        }
+
                     }
-
                 }
-            }
-        });
+            });
+        }
+    }
+
+    //Save the entered search term
+    public static void verboseLog(String action, String secondaryAction){
+
+        if ( !debugging  ) {
+            ParseObject verboseLog = new ParseObject("Logs");
+            verboseLog.put("action", action);
+            verboseLog.put("secondaryAction", secondaryAction);
+            verboseLog.put("deviceType", "Android");
+            verboseLog.saveInBackground();
+        }
     }
 }

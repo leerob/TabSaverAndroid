@@ -1856,7 +1856,6 @@ containing a value of this type.
         public static final int radio=0x7f0c003f;
         public static final int sandbox=0x7f0c0026;
         public static final int satellite=0x7f0c0019;
-        public static final int saveSettings=0x7f0c00c0;
         public static final int scrollView=0x7f0c0056;
         public static final int scrollView2=0x7f0c0064;
         public static final int search=0x7f0c00b9;
@@ -1975,10 +1974,9 @@ containing a value of this type.
         public static final int menu_loading=0x7f100004;
         public static final int menu_login=0x7f100005;
         public static final int menu_main=0x7f100006;
-        public static final int menu_new_settings=0x7f100007;
-        public static final int menu_privacy_policy=0x7f100008;
-        public static final int menu_settings=0x7f100009;
-        public static final int menu_terms_of=0x7f10000a;
+        public static final int menu_privacy_policy=0x7f100007;
+        public static final int menu_settings=0x7f100008;
+        public static final int menu_terms_of=0x7f100009;
     }
     public static final class mipmap {
         public static final int ic_actionbar_logo=0x7f030000;

@@ -1,6 +1,6 @@
 C:\proj\tabsaver\tabsaverandroid\app\build\intermediates\classes\debug
 C:\proj\tabsaver\tabsaverandroid\app\build\intermediates\pre-dexed\debug\support-annotations-21.0.3-2b290a8f151748c5fc8f3cdefeaee530d72e5ca4.jar
-C:\proj\tabsaver\tabsaverandroid\app\build\intermediates\pre-dexed\debug\bolts-android-1.2.0-e69dd23aa902bc19463a3546fc81df33fb9696f2.jar
+C:\proj\tabsaver\tabsaverandroid\app\build\intermediates\pre-dexed\debug\bolts-android-1.2.1-4a1d83c3b4661a5fb1bc10f754f3a7845cb3bbbb.jar
 C:\proj\tabsaver\tabsaverandroid\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-39375efbbce7ed5b5027a8633cfa40fe2899e4bb.jar
 C:\proj\tabsaver\tabsaverandroid\app\build\intermediates\pre-dexed\debug\classes-4ef48634dd7ec1508557d8c4efbbcd59f2291e9e.jar
 C:\proj\tabsaver\tabsaverandroid\app\build\intermediates\pre-dexed\debug\Parse-1.9.1-a40423e89ffb607adbec502e35a1c8b8446c9065.jar
