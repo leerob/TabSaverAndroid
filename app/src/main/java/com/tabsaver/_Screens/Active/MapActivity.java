@@ -16,6 +16,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -27,7 +29,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.tabsaver.Adapters.ArrayAdapterSearchView;
-import com.tabsaver.Adapters.CustomMapsWindowAdapter;
 import com.tabsaver.Helpers.BarObjectManager;
 import com.tabsaver.Helpers.ParseAnalyticsFunctions;
 import com.tabsaver.Helpers.SessionStorage;
@@ -39,6 +40,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -264,8 +269,94 @@ public class MapActivity extends TabsaverActionBarActivity {
             mMap.setMyLocationEnabled(true);
             mMap.setOnMyLocationChangeListener(myLocationChangeListener);
 
-            mMap.setInfoWindowAdapter(new CustomMapsWindowAdapter(getLayoutInflater()));
+            //TODO: Custom info window
+//            mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+//                @Override
+//                public View getInfoWindow(Marker marker) {
+//                    return null;
+//                }
+//
+//                @Override
+//                public View getInfoContents(Marker marker) {
+//                    //Custom View
+//                    View infoWindow = getLayoutInflater().inflate(R.layout.custom_info_window, null);
+//
+//                    //Set title
+//                    TextView title = (TextView) infoWindow.findViewById(R.id.info_title);
+//                    title.setText(marker.getTitle());
+//
+//                    //Set snippet
+//                    TextView snippet = (TextView) infoWindow.findViewById(R.id.info_deals);
+//                    snippet.setText(marker.getSnippet());
+//
+//                    ImageView thumbnal = (ImageView) infoWindow.findViewById(R.id.info_thumbnail);
+//                    thumbnal.setImageBitmap(getImage(getBarIdFromName(marker.getTitle())));
+//
+//                    return infoWindow;
+//                }
+//            });
         }
+    }
+
+    public Bitmap getImage(final String barId) {
+        //Setup to read the file
+        String imageFilePath = this.getFilesDir() + "/" + barId;
+        File imageFile = new File( imageFilePath );
+        int size = (int) imageFile.length();
+        byte[] bytesForImageFile = new byte[size];
+
+        //Set our bitmap
+        Bitmap bitmap = null;
+
+        //If the file exists
+        if ( size != 0 ) {
+            //Try and read it in
+            try {
+                BufferedInputStream buf = new BufferedInputStream(new FileInputStream(imageFile));
+                buf.read(bytesForImageFile, 0, bytesForImageFile.length);
+                buf.close();
+            } catch (IOException e) {
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+            //Setting up the image to create a bitmap of an appropriate size
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeByteArray(bytesForImageFile, 0, bytesForImageFile.length, options);
+
+            // Calculate inSampleSize
+            options.inSampleSize = calculateInSampleSize(options, 150, 150);
+
+            // Decode bitmap with inSampleSize set
+            options.inJustDecodeBounds = false;
+            bitmap = BitmapFactory.decodeByteArray(bytesForImageFile, 0, bytesForImageFile.length, options);
+
+            return bitmap;
+        } else {
+            return null;
+        }
+    }
+
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
     }
 
     /**

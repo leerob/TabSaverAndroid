@@ -38,6 +38,7 @@ public class SettingsActivity extends ActionBarActivity implements SharedPrefere
     //Session information
     SessionStorage session;
 
+    boolean downloading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +52,8 @@ public class SettingsActivity extends ActionBarActivity implements SharedPrefere
 
         //Setup the session
         session = new SessionStorage(this);
+
+        downloading = false;
 
         setupCitiesData();
 
@@ -84,7 +87,11 @@ public class SettingsActivity extends ActionBarActivity implements SharedPrefere
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.cancelSettings:
-                finish();
+                if ( !downloading ) {
+                    finish();
+                } else {
+                    Toast.makeText(this, "Please wait for downloading to complete", Toast.LENGTH_SHORT).show();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -140,6 +147,8 @@ public class SettingsActivity extends ActionBarActivity implements SharedPrefere
 
                         Toast.makeText(this, "Downloading bars for " + city.get("name"), Toast.LENGTH_SHORT).show();
 
+                        downloading = true;
+
                         //Async load of city info
                         new DownloadCityTask(this, city.get("name")).execute((Void) null);
                     }
@@ -188,7 +197,9 @@ public class SettingsActivity extends ActionBarActivity implements SharedPrefere
         @Override
         protected void onPostExecute(final Boolean success) {
             //Alert of success
-            Toast.makeText(mContext, "Downloaded city succesfully!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Downloaded city successfully!", Toast.LENGTH_SHORT).show();
+
+            downloading = false;
         }
 
 

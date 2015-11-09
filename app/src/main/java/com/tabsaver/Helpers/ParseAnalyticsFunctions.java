@@ -15,11 +15,10 @@ import java.util.List;
  */
 public class ParseAnalyticsFunctions {
 
-    private static final boolean debugging = false;
+    private static final boolean debugging = true;
 
     public static final String CHANGEDAY = "changeListviewDay";
     public static final String TAXI = "callTaxi";
-    public static final String CITYCHANGE = "selected";
     public static final String SHOWCLOSEDBARS = "showClosedBars";
     public static final String SHOWBARSNODEALS = "showBarsNowDeals";
     public static final String BARCLICK = "pageClicks";

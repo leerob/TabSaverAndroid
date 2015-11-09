@@ -200,11 +200,13 @@ public class ParseDownloadManager {
                         yell("Failed to load cities.");
                         yell("If issues persist, reinstall with a reliable internet connection.");
                         ((Activity) context).finish();
+                        ParseAnalyticsFunctions.verboseLog("No Internet Connection", "App Closed");
                     }
                 } else {
                     yell(e.getMessage());
                     yell("If issues persist, reinstall with a reliable internet connection.");
                     ((Activity) context).finish();
+                    ParseAnalyticsFunctions.verboseLog("No Internet Connection", "App Closed");
                 }
 
             }
@@ -214,38 +216,31 @@ public class ParseDownloadManager {
 
     public void getImageForBar(ParseObject PO, String id){
 
-        try {
+        final String barId = PO.getString("barsId");
 
-            final String barId = PO.getString("barsId");
+        //Setup to read the file
+        String imageFilePath = context.getFilesDir() + "/" + barId;
+        File imageFile = new File(imageFilePath);
+        int size = (int) imageFile.length();
 
-            //Setup to read the file
-            String imageFilePath = context.getFilesDir() + "/" + barId;
-            File imageFile = new File(imageFilePath);
-            int size = (int) imageFile.length();
+        //If the file does not exist
+        if (size == 0) {
+            try {
 
-            //If the file does not exist
-            if (size == 0) {
-                try {
+                ParseFile image = (ParseFile) PO.get("imageFile");
+                byte[] imageFileBytes = image.getData();
 
-                    ParseFile image = (ParseFile) PO.get("imageFile");
-                    byte[] imageFileBytes = image.getData();
+                //Now store the file locally
+                File storedImage = new File(context.getFilesDir(), barId + "");
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(storedImage));
+                bos.write(imageFileBytes);
+                bos.flush();
+                bos.close();
 
-                    //Now store the file locally
-                    File storedImage = new File(context.getFilesDir(), barId + "");
-                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(storedImage));
-                    bos.write(imageFileBytes);
-                    bos.flush();
-                    bos.close();
-
-                } catch (Exception ex) {
-                    yell("Failed to load image");
-                    yell("If issues persiste, reinstall with a reliable internet connection.");
-                }
+            } catch (Exception ex) {
+                yell("Failed to load image");
+                yell("If issues persiste, reinstall with a reliable internet connection.");
             }
-
-        } catch (Exception ex) {
-            yell("Failed to load image");
-            yell("If issues persistes, reinstall with a reliable internet connection.");
         }
 
     }
@@ -297,6 +292,7 @@ public class ParseDownloadManager {
             public void onLocationChanged(Location location) {
                 if ( !foundCity ) {
                     determineClosestCity(location, context);
+                    foundCity = true;
                 }
             }
 
@@ -314,6 +310,7 @@ public class ParseDownloadManager {
 
         } catch (IllegalArgumentException e ) {
             Toast.makeText(context, "Unable to access GPS, please try again.", Toast.LENGTH_SHORT).show();
+            ParseAnalyticsFunctions.verboseLog("GPS", "No Conection");
         }
     }
 

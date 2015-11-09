@@ -79,11 +79,20 @@ public class MainActivity extends TabsaverActionBarActivity {
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         loader = (ProgressBar) findViewById(R.id.view_loading);
 
-        //Once location is determined, the view will be loaded
-        setupLocationTracking();
+        //Grab the bars
+        getBarsSortByDistance();
+
+        //Setup the list view
+        listview = (ListView) findViewById(R.id.listview);
+        adapter = new ListArrayAdapter(MainActivity.this, bars, "none");
+        listview.setAdapter(adapter);
+        listview.setEmptyView(findViewById(R.id.emptyListViewText));
 
         //Setup our swipe refresh
         setupSwipeRefresh();
+
+        //Once location is determined, the view will be loaded
+        setupLocationTracking();
 
         //Drop in the tabsaver logo
         super.setIconAsLogo(this);
@@ -106,7 +115,8 @@ public class MainActivity extends TabsaverActionBarActivity {
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                refreshListView();
+                getBarsSortByDistance();
+                displayListView();
             }
         });
 
@@ -132,7 +142,8 @@ public class MainActivity extends TabsaverActionBarActivity {
 
                 if ( !myLocationDetermined ) {
                     myLocationDetermined = true;
-                    refreshListView();
+                    getBarsSortByDistance();
+                    displayListView();
                 }
 
             }
@@ -165,7 +176,7 @@ public class MainActivity extends TabsaverActionBarActivity {
     /**
      * Refreshes the distance for each bar!
      */
-    public void refreshListView(){
+    public void getBarsSortByDistance(){
 
         //display everything
         try {
@@ -176,20 +187,40 @@ public class MainActivity extends TabsaverActionBarActivity {
                 sortBarsByDistance();
             }
 
-            displayListView();
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        swipeContainer.setRefreshing(false);
-        loader.setVisibility(View.INVISIBLE);
+    }
+
+    /**
+     * Method to remove bars that don't meet the current preferences
+     */
+    public void sortBarsByPreferences(){
+        ArrayList<HashMap<String, String>> newBarsList = new ArrayList<>();
+        newBarsList.addAll(bars);
+
+        for(HashMap<String, String> currentBar : bars) {
+            String deals =  BarObjectManager.getDealsString(currentBar, dayOfWeek);
+
+            if ( deals.toLowerCase().contains("no deals") && !session.getShowBarsWithNoDeals() ) {
+                newBarsList.remove(currentBar);
+            }
+
+            if ( deals.toLowerCase().contains("closed") && !session.getShowClosedBars() ) {
+                newBarsList.remove(currentBar);
+            }
+        }
+
+        bars = newBarsList;
     }
 
     @Override
     public void onResume(){
         super.onResume();
 
-        refreshListView();
+        getBarsSortByDistance();
+        displayListView();
     }
 
     /**
@@ -212,7 +243,8 @@ public class MainActivity extends TabsaverActionBarActivity {
                 ParseAnalyticsFunctions.verboseLog(ParseAnalyticsFunctions.CHANGEDAY, types[which]);
 
                 dayOfWeek = types[which];
-                refreshListView();
+                adapter.setDayOfWeek(dayOfWeek);
+                displayListView();
                 dialog.dismiss();
             }
 
@@ -343,10 +375,11 @@ public class MainActivity extends TabsaverActionBarActivity {
      * Add each of our items to the view
      */
     public void displayListView() {
-        listview = (ListView) findViewById(R.id.listview);
-        adapter = new ListArrayAdapter(MainActivity.this, bars, dayOfWeek);
-        listview.setAdapter(adapter);
-        listview.setEmptyView(findViewById(R.id.emptyListViewText));
+        sortBarsByPreferences();
+        adapter.setData(bars);
+        adapter.notifyDataSetChanged();
+        swipeContainer.setRefreshing(false);
+        loader.setVisibility(View.INVISIBLE);
     }
 
     /**
