@@ -123,13 +123,14 @@ public class SettingsActivity extends ActionBarActivity implements SharedPrefere
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if ( key.equals("city") ) { //TODO: Nonblocking updates
-            //Save the city
-            for(int i = 0; i < fullCities.length(); i++ ){
-                try {
-                    JSONObject curCity  = fullCities.getJSONObject(i);
+        if ( key.equals("city") ) {
 
-                    if ( curCity.getString("name").toLowerCase().contains(sharedPreferences.getString("city", "none").toLowerCase()) && sharedPreferences.getString("city", "none").toLowerCase() != session.getCityName().toLowerCase()) {
+            //Save the city
+            for (int i = 0; i < fullCities.length(); i++) {
+                try {
+                    JSONObject curCity = fullCities.getJSONObject(i);
+
+                    if (curCity.getString("name").toLowerCase().contains(sharedPreferences.getString("city", "none").toLowerCase())) {
                         //Update analytics
                         ParseAnalyticsFunctions.incrementAndroidAnalyticsValue("SettingsBasedCityChange", curCity.getString("name"));
                         ParseAnalyticsFunctions.verboseLog("Selected", curCity.getString("name"));
@@ -141,9 +142,6 @@ public class SettingsActivity extends ActionBarActivity implements SharedPrefere
                         city.put("long", String.valueOf(curCity.getDouble("long")));
                         city.put("taxiService", curCity.getString("taxiService"));
                         city.put("taxiNumber", curCity.getString("taxiNumber"));
-
-                        //Set city location
-                        session.setCity(city);
 
                         Toast.makeText(this, "Downloading bars for " + city.get("name"), Toast.LENGTH_SHORT).show();
 
@@ -157,7 +155,6 @@ public class SettingsActivity extends ActionBarActivity implements SharedPrefere
                     Toast.makeText(this, "Failed to download cities.", Toast.LENGTH_SHORT).show();
                 }
             }
-
         }
 
         //Show Closed Bars
