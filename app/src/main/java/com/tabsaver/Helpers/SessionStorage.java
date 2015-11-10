@@ -179,6 +179,21 @@ public class SessionStorage {
         return pref.getString("city", "none");
     }
 
+    /**
+     * Construct and return the hashmap representation of the current ity
+     * @return The hashmap representation of a city
+     */
+    public HashMap<String, String> getCityObject(){
+        HashMap<String, String> city = new HashMap<>();
+        city.put("name", pref.getString("city", "none"));
+        city.put("lat", pref.getString("lat", "none"));
+        city.put("long", pref.getString("lon", "none"));
+        city.put("state", pref.getString("state", "none"));
+        city.put("taxiService", pref.getString("taxiService", "none"));
+        city.put("taxiNumber", pref.getString("taxiNumber", "none"));
+        return city;
+    }
+
     public String getCityState(){
         return pref.getString("state", "none");
     }

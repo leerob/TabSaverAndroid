@@ -33,12 +33,16 @@ import java.util.List;
 public class SettingsActivity extends ActionBarActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     //List of cities
-    JSONArray fullCities;
+    private JSONArray fullCities;
+
+    private HashMap<String, String> previousCity;
 
     //Session information
-    SessionStorage session;
+    private SessionStorage session;
 
-    boolean downloading;
+    private boolean downloading;
+
+    private boolean cityReset;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +52,10 @@ public class SettingsActivity extends ActionBarActivity implements SharedPrefere
         //Setup the session
         session = new SessionStorage(this);
 
-        downloading = false;
+        //Grab the previous city for hard resets
+        previousCity = session.getCityObject();
+
+        downloading = cityReset = false;
 
         setupCitiesData();
 
@@ -93,7 +100,6 @@ public class SettingsActivity extends ActionBarActivity implements SharedPrefere
         }
     }
 
-
     public void setupCitiesData(){
         //Set the city options
         try {
@@ -119,39 +125,54 @@ public class SettingsActivity extends ActionBarActivity implements SharedPrefere
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if ( key.equals("city") ) {
+            int misCount = 0;
 
-            //Save the city
-            for (int i = 0; i < fullCities.length(); i++) {
-                try {
-                    JSONObject curCity = fullCities.getJSONObject(i);
+            if ( !cityReset ) {
+                //Save the city
+                for (int i = 0; i < fullCities.length(); i++) {
+                    try {
+                        JSONObject curCity = fullCities.getJSONObject(i);
 
-                    if (curCity.getString("name").toLowerCase().contains(sharedPreferences.getString("city", "none").toLowerCase())) {
-                        //Update analytics
-                        ParseAnalyticsFunctions.incrementAndroidAnalyticsValue("SettingsBasedCityChange", curCity.getString("name"));
-                        ParseAnalyticsFunctions.verboseLog("Selected", curCity.getString("name"));
+                        if (curCity.getString("name").toLowerCase().equals(sharedPreferences.getString("city", "none").toLowerCase())) {
+                            //Update analytics
+                            ParseAnalyticsFunctions.incrementAndroidAnalyticsValue("SettingsBasedCityChange", curCity.getString("name"));
+                            ParseAnalyticsFunctions.verboseLog("Selected", curCity.getString("name"));
 
-                        //Setup a hashmap because that's what is expected.. There's probably a better way
-                        HashMap<String, String> city = new HashMap<>();
-                        city.put("name", curCity.getString("name"));
-                        city.put("lat", String.valueOf(curCity.getDouble("lat")));
-                        city.put("long", String.valueOf(curCity.getDouble("long")));
-                        city.put("taxiService", curCity.getString("taxiService"));
-                        city.put("taxiNumber", curCity.getString("taxiNumber"));
+                            //Setup a hashmap because that's what is expected.. There's probably a better way
+                            HashMap<String, String> city = new HashMap<>();
+                            city.put("name", curCity.getString("name"));
+                            city.put("lat", String.valueOf(curCity.getDouble("lat")));
+                            city.put("long", String.valueOf(curCity.getDouble("long")));
+                            city.put("taxiService", curCity.getString("taxiService"));
+                            city.put("taxiNumber", curCity.getString("taxiNumber"));
 
-                        session.setCity(city);
+                            session.setCity(city);
+                            previousCity = city;
 
-                        Toast.makeText(this, "Downloading bars for " + city.get("name"), Toast.LENGTH_SHORT).show();
+                            downloading = true;
 
-                        downloading = true;
+                            Toast.makeText(this, "Downloading bars for " + city.get("name"), Toast.LENGTH_SHORT).show();
 
-                        //Async load of city info
-                        new DownloadCityTask(this, city.get("name")).execute((Void) null);
+                            //Async load of city info
+                            new DownloadCityTask(this, city.get("name")).execute((Void) null);
+                        } else {
+                            misCount++;
+                        }
+
+                    } catch (JSONException e) {
+                        Toast.makeText(this, "Failed to download cities.", Toast.LENGTH_SHORT).show();
                     }
-
-                } catch (JSONException e) {
-                    Toast.makeText(this, "Failed to download cities.", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                cityReset = false;
             }
+
+            if ( misCount == fullCities.length() ) {
+                Toast.makeText(this, "Not a valid city", Toast.LENGTH_SHORT).show();
+                cityReset = true;
+                session.setCity(previousCity);
+            }
+
         }
 
         //Show Closed Bars

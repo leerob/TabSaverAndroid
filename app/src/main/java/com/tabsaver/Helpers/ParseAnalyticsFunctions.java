@@ -19,13 +19,13 @@ public class ParseAnalyticsFunctions {
 
     public static final String CHANGEDAY = "changeListviewDay";
     public static final String TAXI = "callTaxi";
-    public static final String SHOWCLOSEDBARS = "showClosedBars";
-    public static final String SHOWBARSNODEALS = "showBarsNowDeals";
+    public static final String SHOWCLOSEDBARS = "Show Closed Bars";
+    public static final String SHOWBARSNODEALS = "Show Bars No Deals";
     public static final String BARCLICK = "pageClicks";
     public static final String YELP = "yelpClicks";
     public static final String FOURSQUARE = "foursquareClicks";
     public static final String WEBSITE = "siteVisits";
-    public static final String PHONECALL = "phoneCalled";
+    public static final String PHONECALL = "phoneCalls";
     public static final String NAVIGATE = "directionsRequests";
 
 

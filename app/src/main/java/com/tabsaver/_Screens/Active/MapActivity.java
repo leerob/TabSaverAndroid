@@ -70,6 +70,8 @@ public class MapActivity extends TabsaverActionBarActivity {
 
     //The bars list to show up in the search view (Strings instead of the arraylist)
     private String[] barsListForSearchview;
+    private ArrayAdapterSearchView searchView;
+    private ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -430,6 +432,12 @@ public class MapActivity extends TabsaverActionBarActivity {
             barsListForSearchview[i] = bars.get(i).get("name");
         }
 
+        if ( adapter != null ) {
+            adapter = new ArrayAdapter<>(this,
+                    R.layout.searchview_listitem, barsListForSearchview);
+            searchView.setAdapter(adapter);
+        }
+
     }
 
     /**
@@ -446,9 +454,9 @@ public class MapActivity extends TabsaverActionBarActivity {
 
         // Associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        final ArrayAdapterSearchView searchView = (ArrayAdapterSearchView) menu.findItem(R.id.searchList).getActionView();
+        searchView = (ArrayAdapterSearchView) menu.findItem(R.id.searchList).getActionView();
 
-        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+        adapter = new ArrayAdapter<>(this,
                 R.layout.searchview_listitem, barsListForSearchview);
         searchView.setAdapter(adapter);
 

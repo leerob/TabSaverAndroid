@@ -164,7 +164,7 @@ public class ParseDownloadManager {
      * Grab all of the cities
      */
     public void getCities(){
-        setWaitingMessage("Where am I?");
+        setWaitingMessage("Determining location..");
 
         final ParseQuery getBars = new ParseQuery("Locations").setLimit(API_MAX_LIMIT);
         final JSONArray cities = new JSONArray();
