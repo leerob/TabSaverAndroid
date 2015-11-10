@@ -196,7 +196,7 @@ public class ListArrayAdapter extends BaseAdapter {
             {
 
                 //If the deal or bar name contains the search term
-                if ( (bar.get("name").toLowerCase().contains(text) || BarObjectManager.getDealsString(bar, dayOfWeek).toLowerCase().contains(text) ) && Double.valueOf(bar.get("distance")) <= session.getDistancePreference())
+                if ( (bar.get("name").toLowerCase().contains(text) || BarObjectManager.getDealsString(bar, dayOfWeek).toLowerCase().contains(text) ) )
                 {
                     barData.add(bar);
                 }

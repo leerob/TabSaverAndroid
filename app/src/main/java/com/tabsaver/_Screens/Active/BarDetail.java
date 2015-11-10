@@ -15,6 +15,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -69,6 +70,15 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bar_detail);
+
+        //Force scroll to bottom
+        final ScrollView scroll = (ScrollView) findViewById(R.id.barDetailScrollView);
+        scroll.post(new Runnable() {
+            @Override
+            public void run() {
+                scroll.scrollTo(0, scroll.getBottom());
+            }
+        });
 
         //Setup the session
         session = new SessionStorage(getApplicationContext());

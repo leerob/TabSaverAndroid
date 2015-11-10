@@ -45,11 +45,6 @@ public class SettingsActivity extends ActionBarActivity implements SharedPrefere
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_settings);
 
-        // Display the fragment as the main content.
-        getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, new SettingsActivityFragment())
-                .commit();
-
         //Setup the session
         session = new SessionStorage(this);
 
@@ -142,6 +137,8 @@ public class SettingsActivity extends ActionBarActivity implements SharedPrefere
                         city.put("long", String.valueOf(curCity.getDouble("long")));
                         city.put("taxiService", curCity.getString("taxiService"));
                         city.put("taxiNumber", curCity.getString("taxiNumber"));
+
+                        session.setCity(city);
 
                         Toast.makeText(this, "Downloading bars for " + city.get("name"), Toast.LENGTH_SHORT).show();
 

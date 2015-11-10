@@ -74,32 +74,17 @@ public class MapActivity extends TabsaverActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        super.setIconAsLogo(this);
         setContentView(R.layout.activity_map);
 
         session = new SessionStorage(getApplicationContext());
-
-        super.setIconAsLogo(this);
-
-        //Grab bar and city information
-        try {
-            //setup bars and cities datastructures
-            bars = BarObjectManager.setupBarsHashmap(getApplicationContext(), myLocation);
-            setupSearchStringArray();
-
-            setUpMapIfNeeded();
-
-            //Load our markers up
-            setupBarMarkers();
-        } catch (JSONException e) {
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-
     }
 
     /**
      * Setup and place the markers
      */
     public void setupBarMarkers() {
+        mMap.clear();
 
         // Add markers to the map
         for (int i = 0; i < bars.size(); i++) {
@@ -223,6 +208,18 @@ public class MapActivity extends TabsaverActionBarActivity {
     protected void onResume() {
         super.onResume();
         setUpMapIfNeeded();
+
+        myLocationDetermined = false;
+
+        try {
+            //setup bars
+            bars = BarObjectManager.setupBarsHashmap(getApplicationContext(), myLocation);
+            setupSearchStringArray();
+            setupBarMarkers();
+        } catch (JSONException e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     /**
@@ -242,8 +239,6 @@ public class MapActivity extends TabsaverActionBarActivity {
             if (!myLocationDetermined) {
                 zoomToCurrentCity();
             }
-
-
         }
     };
 
