@@ -43,7 +43,7 @@ public class LoadingActivity extends Activity {
             pdm.getCities();
         } else {
             pdm.getBarsInCity(session.getCity());
-            ParseAnalyticsFunctions.verboseLog("appOpen", session.getCityName());
+            ParseAnalyticsFunctions.verboseLog("App Open", session.getCityName());
         }
 
     }

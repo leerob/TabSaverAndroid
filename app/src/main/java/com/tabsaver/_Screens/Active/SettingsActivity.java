@@ -143,6 +143,7 @@ public class SettingsActivity extends ActionBarActivity implements SharedPrefere
                             city.put("name", curCity.getString("name"));
                             city.put("lat", String.valueOf(curCity.getDouble("lat")));
                             city.put("long", String.valueOf(curCity.getDouble("long")));
+                            city.put("state", curCity.getString("state"));
                             city.put("taxiService", curCity.getString("taxiService"));
                             city.put("taxiNumber", curCity.getString("taxiNumber"));
 

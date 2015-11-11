@@ -143,12 +143,18 @@ public class ParseAnalyticsFunctions {
     //Save the entered search term
     public static void verboseLog(String action, String secondaryAction){
 
+        ParseObject verboseLog;
+
         if ( !debugging  ) {
-            ParseObject verboseLog = new ParseObject("Logs");
-            verboseLog.put("action", action);
-            verboseLog.put("secondaryAction", secondaryAction);
-            verboseLog.put("deviceType", "Android");
-            verboseLog.saveInBackground();
+            verboseLog = new ParseObject("Logs");
+        } else {
+            verboseLog = new ParseObject("LogsDev");
         }
+
+        verboseLog.put("action", action);
+        verboseLog.put("secondaryAction", secondaryAction);
+        verboseLog.put("deviceType", "Android");
+        verboseLog.saveInBackground();
+
     }
 }

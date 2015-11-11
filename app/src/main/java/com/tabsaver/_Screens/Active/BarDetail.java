@@ -59,6 +59,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
 
     //For the deals out of date
     String barName;
+    String barNameNoSpaces;
     String dayOfWeek;
     String barId;
     Boolean dealOutOfDateSent;
@@ -473,7 +474,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
         //Show the deals for the selected day
         getDealsForDay(dayOfTheWeek);
 
-        ParseAnalyticsFunctions.verboseLog(barName, "Show Deals For " + dayOfTheWeek);
+        ParseAnalyticsFunctions.verboseLog(barNameNoSpaces, "Show Deals For " + dayOfTheWeek);
 
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, dealsForSelectedDay);
         listview.setAdapter(arrayAdapter);
@@ -515,6 +516,7 @@ public class BarDetail extends ActionBarActivity implements OnItemSelectedListen
                     bar.put("id", barJSON.getString("id"));
                     bar.put("name", barJSON.getString("name"));
                     barName = barJSON.getString("name");
+                    barNameNoSpaces = barName;
                     barName = barName.replace(" ", "");
                     bar.put("address", barJSON.getString("address"));
                     bar.put("city", barJSON.getString("city"));
